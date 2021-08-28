@@ -42,9 +42,10 @@ public class CategoriaService {
 
     public CategoriaDTO update(CategoriaDTO categoriaDTO){
         Preconditions.checkArgument(!Objects.isNull(categoriaDTO.id));
-        Preconditions.checkArgument(!Objects.isNull(categoriaDTO.nome));
-        /*Preconditions.checkArgument(!Objects.isNull(categoriaDTO.descrizione));
+        /*Preconditions.checkArgument(!Objects.isNull(categoriaDTO.nome)); -> il nome viene assegnato quando viene creato
+        Preconditions.checkArgument(!Objects.isNull(categoriaDTO.descrizione));
         Preconditions.checkArgument(!Objects.isNull(categoriaDTO.prezzo));*/
+        Preconditions.checkArgument(!Objects.isNull(categoriaDTO.idHotel));
 
         return categoriaHelper.update(categoriaDTO);
     }

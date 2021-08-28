@@ -45,15 +45,14 @@ public class CategoriaHelper {
 
     }
 
-    public CategoriaDTO update(CategoriaDTO categoriaDTO){
+    public CategoriaDTO update(CategoriaDTO categoriaDTO) {
 
-        if(categoriaRepository.existsById(categoriaDTO.id)){
+        if (categoriaRepository.existsById(categoriaDTO.id)) {
             Categoria categoria = categoriaRepository.findById(categoriaDTO.id).get();
 
-            categoria.setId(categoriaDTO.id);
-            categoria.setNome(categoriaDTO.nome);
             categoria.setDescrizione(categoriaDTO.descrizione);
             categoria.setPrezzo(categoriaDTO.prezzo);
+            categoria.setHotel(hotelRepository.findById(categoriaDTO.idHotel).get());
 
             categoriaRepository.save(categoria);
             return new CategoriaDTO(categoria);
@@ -78,9 +77,8 @@ public class CategoriaHelper {
     }
 
 
-
-    public CategoriaDTO findById(Long id){
-        if(categoriaRepository.existsById(id)){
+    public CategoriaDTO findById(Long id) {
+        if (categoriaRepository.existsById(id)) {
             return new CategoriaDTO(categoriaRepository.findById(id).get());
         }
 
@@ -88,9 +86,9 @@ public class CategoriaHelper {
     }
 
 
-    public List<CategoriaDTO> findAll(Long idHotel){
+    public List<CategoriaDTO> findAll(Long idHotel) {
 
-        if(hotelRepository.existsById(idHotel)){
+        if (hotelRepository.existsById(idHotel)) {
             List<Categoria> listCategorie = categoriaRepository.findCategoriasByHotel_Id(idHotel);
             return listCategorie.stream().map(x -> new CategoriaDTO(x)).collect(Collectors.toList());
         }
