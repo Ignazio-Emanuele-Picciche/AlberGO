@@ -1,6 +1,7 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.CategoriaDTO;
+import com.ignaziopicciche.albergo.exception.CategoriaException;
 import com.ignaziopicciche.albergo.model.Categoria;
 import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.CategoriaRepository;
@@ -19,7 +20,7 @@ public class CategoriaHelper {
     @Autowired
     private HotelRepository hotelRepository;
 
-    /*public Categoria create(CategoriaDTO categoriaDTO){
+    public Categoria create(CategoriaDTO categoriaDTO){
 
         if(categoriaRepository.existsByNameAndIdHotel(categoriaDTO.nome, categoriaDTO.idHotel) &&
                 !!categoriaDTO.nome.equals("") && !!categoriaDTO.descrizione.equals("")){
@@ -37,7 +38,7 @@ public class CategoriaHelper {
             return categoriaRepository.save(categoria);
         }
 
-        //throw new CategoriaException(CategoriaException.CategoriaExceptionCode.CATEGORY_ALREADY_EXISTS);
+        throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ALREADY_EXISTS);
 
-    }*/
+    }
 }
