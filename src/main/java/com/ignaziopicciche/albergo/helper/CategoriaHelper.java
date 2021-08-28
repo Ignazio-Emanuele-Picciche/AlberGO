@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class CategoriaHelper {
@@ -22,25 +23,43 @@ public class CategoriaHelper {
     @Autowired
     private HotelRepository hotelRepository;
 
-    public Categoria create(CategoriaDTO categoriaDTO, Long idHotel) {
+    public CategoriaDTO create(CategoriaDTO categoriaDTO) {
 
-        if (categoriaRepository.existsByNameAndIdHotel(categoriaDTO.nome, idHotel) &&
-                !!categoriaDTO.nome.equals("") && !!categoriaDTO.descrizione.equals("")) {
+        Optional<Hotel> hotel = hotelRepository.findById(categoriaDTO.idHotel);
+
+        if (!categoriaRepository.existsCategoriaByNomeAndHotel(categoriaDTO.nome, hotel.get()) &&
+                !categoriaDTO.nome.equals("") && !categoriaDTO.descrizione.equals("")) {
 
             Categoria categoria = new Categoria();
-            Optional<Hotel> hotel;
-
-            hotel = hotelRepository.findById(idHotel);
 
             categoria.setNome(categoriaDTO.nome);
             categoria.setDescrizione(categoriaDTO.descrizione);
             categoria.setPrezzo(categoriaDTO.prezzo);
             categoria.setHotel(hotel.get());
 
-            return categoriaRepository.save(categoria);
+            categoriaRepository.save(categoria);
+            return new CategoriaDTO(categoria);
         }
 
         throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ALREADY_EXISTS);
+
+    }
+
+    public CategoriaDTO update(CategoriaDTO categoriaDTO){
+
+        if(categoriaRepository.existsById(categoriaDTO.id)){
+            Categoria categoria = categoriaRepository.findById(categoriaDTO.id).get();
+
+            categoria.setId(categoriaDTO.id);
+            categoria.setNome(categoriaDTO.nome);
+            categoria.setDescrizione(categoriaDTO.descrizione);
+            categoria.setPrezzo(categoriaDTO.prezzo);
+
+            categoriaRepository.save(categoria);
+            return new CategoriaDTO(categoria);
+        }
+
+        throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ID_NOT_EXIST);
 
     }
 
@@ -59,52 +78,25 @@ public class CategoriaHelper {
     }
 
 
-    public Optional<Categoria> findById(Long id){
+
+    public CategoriaDTO findById(Long id){
         if(categoriaRepository.existsById(id)){
-            return categoriaRepository.findById(id);
+            return new CategoriaDTO(categoriaRepository.findById(id).get());
         }
 
         throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_NOT_FOUND);
     }
 
 
-    public Categoria update(CategoriaDTO categoriaDTO){
-
-        if(categoriaRepository.existsById(categoriaDTO.id)){
-            Categoria categoria = new Categoria();
-            categoria.setId(categoriaDTO.id);
-            categoria.setNome(categoriaDTO.nome);
-            categoria.setDescrizione(categoriaDTO.descrizione);
-            categoria.setPrezzo(categoriaDTO.prezzo);
-
-            return categoriaRepository.save(categoria);
-        }
-
-        throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ID_NOT_EXIST);
-
-    }
-
-
-    public List<Categoria> findAll(Long idHotel){
+    public List<CategoriaDTO> findAll(Long idHotel){
 
         if(hotelRepository.existsById(idHotel)){
-            return categoriaRepository.findAllByIdHotel(idHotel);
+            List<Categoria> listCategorie = categoriaRepository.findCategoriasByHotel_Id(idHotel);
+            return listCategorie.stream().map(x -> new CategoriaDTO(x)).collect(Collectors.toList());
         }
 
         throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
