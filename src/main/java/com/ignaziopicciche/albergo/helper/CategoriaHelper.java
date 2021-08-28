@@ -22,15 +22,15 @@ public class CategoriaHelper {
     @Autowired
     private HotelRepository hotelRepository;
 
-    public Categoria create(CategoriaDTO categoriaDTO) {
+    public Categoria create(CategoriaDTO categoriaDTO, Long idHotel) {
 
-        if (categoriaRepository.existsByNameAndIdHotel(categoriaDTO.nome, categoriaDTO.idHotel) &&
+        if (categoriaRepository.existsByNameAndIdHotel(categoriaDTO.nome, idHotel) &&
                 !!categoriaDTO.nome.equals("") && !!categoriaDTO.descrizione.equals("")) {
 
             Categoria categoria = new Categoria();
-            Optional<Hotel> hotel = Optional.of(new Hotel());
+            Optional<Hotel> hotel;
 
-            hotel = hotelRepository.findById(categoriaDTO.idHotel);
+            hotel = hotelRepository.findById(idHotel);
 
             categoria.setNome(categoriaDTO.nome);
             categoria.setDescrizione(categoriaDTO.descrizione);
