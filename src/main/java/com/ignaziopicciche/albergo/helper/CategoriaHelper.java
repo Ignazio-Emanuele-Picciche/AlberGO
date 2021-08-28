@@ -19,7 +19,7 @@ public class CategoriaHelper {
     @Autowired
     private HotelRepository hotelRepository;
 
-    public Categoria create(CategoriaDTO categoriaDTO){
+    /*public Categoria create(CategoriaDTO categoriaDTO){
 
         if(categoriaRepository.existsByNameAndIdHotel(categoriaDTO.nome, categoriaDTO.idHotel) &&
                 !!categoriaDTO.nome.equals("") && !!categoriaDTO.descrizione.equals("")){
@@ -39,5 +39,5 @@ public class CategoriaHelper {
 
         //throw new CategoriaException(CategoriaException.CategoriaExceptionCode.CATEGORY_ALREADY_EXISTS);
 
-    }
+    }*/
 }
