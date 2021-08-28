@@ -29,5 +29,9 @@ public class Categoria {
     private Hotel hotel;
 
 
-
+    public Categoria(String nome, Double prezzo, String descrizione) {
+        this.nome = nome;
+        this.prezzo = prezzo;
+        this.descrizione = descrizione;
+    }
 }
