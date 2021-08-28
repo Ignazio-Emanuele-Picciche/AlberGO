@@ -1,7 +1,7 @@
 package com.ignaziopicciche.albergo.dto;
 
+import com.ignaziopicciche.albergo.enums.CategoriaNome;
 import com.ignaziopicciche.albergo.model.Categoria;
-import com.sun.istack.NotNull;
 import lombok.*;
 
 @Data
@@ -11,7 +11,7 @@ import lombok.*;
 public class CategoriaDTO {
 
     public Long id;
-    public String nome;
+    public CategoriaNome nome;
     public Double prezzo;
     public String descrizione;
     public Long idHotel;
