@@ -27,10 +27,10 @@ public class StanzaHelper {
     private CategoriaRepository categoriaRepository;
 
 
-    public StanzaDTO create(StanzaDTO stanzaDTO){
+    public StanzaDTO create(StanzaDTO stanzaDTO) {
 
-        if(!stanzaRepository.existsStanzaByNumeroStanzaAndHotel_Id(stanzaDTO.numeroStanza, stanzaDTO.idHotel) &&
-            stanzaDTO.numeroStanza != null && !stanzaDTO.descrizione.equals("")){
+        if (!stanzaRepository.existsStanzaByNumeroStanzaAndHotel_Id(stanzaDTO.numeroStanza, stanzaDTO.idHotel) &&
+                stanzaDTO.numeroStanza != null && !stanzaDTO.descrizione.equals("")) {
 
             Stanza stanza = new Stanza();
 
@@ -48,12 +48,12 @@ public class StanzaHelper {
         throw new StanzaException(StanzaException.StanzaExceptionCode.STANZA_ALREADY_EXISTS);
     }
 
-    public Boolean delete(Long id){
-        if(stanzaRepository.existsById(id)){
-            try{
+    public Boolean delete(Long id) {
+        if (stanzaRepository.existsById(id)) {
+            try {
                 stanzaRepository.deleteById(id);
                 return true;
-            }catch (Exception e){
+            } catch (Exception e) {
                 throw new StanzaException(StanzaException.StanzaExceptionCode.STANZA_DELETE_ERROR);
             }
         }
@@ -62,18 +62,18 @@ public class StanzaHelper {
     }
 
 
-    public StanzaDTO update(StanzaDTO stanzaDTO){
+    public StanzaDTO update(StanzaDTO stanzaDTO) {
 
-        if(stanzaRepository.existsById(stanzaDTO.id)){
+        if (stanzaRepository.existsById(stanzaDTO.id)) {
 
             Stanza stanza = stanzaRepository.findById(stanzaDTO.id).get();
 
-            stanza.setNumeroStanza(stanzaDTO.numeroStanza);
+            //stanza.setNumeroStanza(stanzaDTO.numeroStanza);
             stanza.setDescrizione(stanzaDTO.descrizione);
             stanza.setFuoriServizio(stanzaDTO.fuoriServizio);
-            stanza.setMetriQuadri(stanzaDTO.metriQuadri);
-            stanza.setHotel(hotelRepository.findById(stanzaDTO.idHotel).get());
-            stanza.setCategoria(categoriaRepository.findById(stanzaDTO.idCategoria).get());
+            //stanza.setMetriQuadri(stanzaDTO.metriQuadri);
+            //stanza.setHotel(hotelRepository.findById(stanzaDTO.idHotel).get());
+            //stanza.setCategoria(categoriaRepository.findById(stanzaDTO.idCategoria).get());
 
             stanzaRepository.save(stanza);
             return new StanzaDTO(stanza);
@@ -83,16 +83,16 @@ public class StanzaHelper {
     }
 
 
-    public StanzaDTO findById(Long id){
-        if(stanzaRepository.existsById(id)){
+    public StanzaDTO findById(Long id) {
+        if (stanzaRepository.existsById(id)) {
             return new StanzaDTO(stanzaRepository.findById(id).get());
         }
         throw new StanzaException(StanzaException.StanzaExceptionCode.STANZA_NOT_FOUND);
     }
 
 
-    public List<StanzaDTO> findAll(Long idHotel){
-        if(hotelRepository.existsById(idHotel)){
+    public List<StanzaDTO> findAll(Long idHotel) {
+        if (hotelRepository.existsById(idHotel)) {
             return stanzaRepository.findStanzasByHotel_Id(idHotel).stream().map(x -> new StanzaDTO(x)).collect(Collectors.toList());
         }
 
