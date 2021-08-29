@@ -28,13 +28,13 @@ public class ClienteController {
 
     @PostMapping("/create")
     @ResponseBody
-    public ClienteDTO create(ClienteDTO clienteDTO){
+    public ClienteDTO create(@RequestBody ClienteDTO clienteDTO){
         return clienteService.create(clienteDTO);
     }
 
     @PutMapping("/update")
     @ResponseBody
-    public ClienteDTO update(ClienteDTO clienteDTO){
+    public ClienteDTO update(@RequestBody ClienteDTO clienteDTO){
         return clienteService.update(clienteDTO);
     }
 

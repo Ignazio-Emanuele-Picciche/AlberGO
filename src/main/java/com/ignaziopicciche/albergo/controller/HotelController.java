@@ -21,13 +21,13 @@ public class HotelController {
 
     @PostMapping("/create")
     @ResponseBody
-    public HotelDTO create(HotelDTO hotelDTO){
+    public HotelDTO create(@RequestBody HotelDTO hotelDTO){
         return hotelService.create(hotelDTO);
     }
 
     @PutMapping("/update")
     @ResponseBody
-    public HotelDTO update(HotelDTO hotelDTO){
+    public HotelDTO update(@RequestBody HotelDTO hotelDTO){
         return hotelService.update(hotelDTO);
     }
 }
