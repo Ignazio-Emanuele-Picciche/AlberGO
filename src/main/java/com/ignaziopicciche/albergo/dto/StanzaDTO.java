@@ -26,7 +26,7 @@ public class StanzaDTO {
         this.fuoriServizio = s.getFuoriServizio();
         this.descrizione = s.getDescrizione();
         this.metriQuadri = s.getMetriQuadri();
-        //this.idHotel = s.getHotel().getId();
-        //this.idCategoria = s.getCategoria().getId();
+        this.idHotel = s.getHotel().getId();
+        this.idCategoria = s.getCategoria().getId();
     }
 }
