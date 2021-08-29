@@ -25,8 +25,8 @@ public class PrenotazioneDTO {
         this.id = p.getId();
         this.dataInizio = p.getDataInizio();
         this.dataFine = p.getDataFine();
-        //this.idCliente = p.getCliente().getId();
-        //this.idHotel = p.getHotel().getId();
-        //this.idStanza = p.getStanza().getId();
+        this.idCliente = p.getCliente().getId();
+        this.idHotel = p.getHotel().getId();
+        this.idStanza = p.getStanza().getId();
     }
 }

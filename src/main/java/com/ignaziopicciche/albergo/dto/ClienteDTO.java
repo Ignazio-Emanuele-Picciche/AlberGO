@@ -24,6 +24,6 @@ public class ClienteDTO {
         this.cognome = c.getCognome();
         this.telefono = c.getTelefono();
         this.documento = c.getDocumento();
-        //this.idHotel = c.getHotel().getId();
+        this.idHotel = c.getHotel().getId();
     }
 }
