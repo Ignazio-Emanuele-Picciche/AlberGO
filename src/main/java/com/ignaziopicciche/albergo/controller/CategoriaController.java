@@ -24,7 +24,7 @@ public class CategoriaController {
         return categoriaService.findById(id);
     }
 
-    @GetMapping("/listaCategorie")
+    @GetMapping("/lista")
     public List<CategoriaDTO> findAll(@RequestParam(name = "idHotel") Long idHotel) {
         return categoriaService.findAll(idHotel);
     }
