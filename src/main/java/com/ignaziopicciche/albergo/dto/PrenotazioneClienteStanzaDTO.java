@@ -7,5 +7,35 @@ Numero stanza
 Telefono cliente
  */
 
+import com.ignaziopicciche.albergo.model.Cliente;
+import com.ignaziopicciche.albergo.model.Prenotazione;
+import com.ignaziopicciche.albergo.model.Stanza;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PrenotazioneClienteStanzaDTO {
+    
+    public String nome;
+    public String cognome;
+    public LocalDate dataInizio;
+    public LocalDate dataFine;
+    public Integer numeroStanza;
+    public String telefono;
+    private Long idPrenotazione;
+
+    public PrenotazioneClienteStanzaDTO(Prenotazione p, Cliente c, Stanza s){
+        this.nome = c.getNome();
+        this.cognome = c.getCognome();
+        this.dataInizio = p.getDataInizio();
+        this.dataFine = p.getDataFine();
+        this.numeroStanza = s.getNumeroStanza();
+        this.telefono = c.getTelefono();
+        this.idPrenotazione = p.getId();
+    }
 }
