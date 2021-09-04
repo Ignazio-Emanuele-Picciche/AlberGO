@@ -14,6 +14,17 @@ public class StanzaController {
     @Autowired
     private StanzaService stanzaService;
 
+    //Durante la creazione serve per filtrare le stanze in base alla categoria e DataInizio e Fine
+    //FindStanzasByCategoria_IdAndHotel_IdAndDataInizioAndDataFine
+
+    //Per Grafico Stanze
+    //FindStanzasOccupateByDataInizioAndDataFineAAndHotel_Id
+    //FindStanzasFuoriServizioByDataInizioAndDataFineAAndHotel_Id
+    //FindStanzasLibereByDataInizioAndDataFineAAndHotel_Id
+
+    //Per Tabella Stanze
+    //FindStanzasByDataInizioAndDataFineAndHotel_Id
+
 
     @GetMapping("/dettaglio")
     @ResponseBody
