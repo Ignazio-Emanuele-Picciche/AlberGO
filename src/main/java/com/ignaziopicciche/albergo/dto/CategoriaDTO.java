@@ -11,7 +11,7 @@ import lombok.*;
 public class CategoriaDTO {
 
     public Long id;
-    public CategoriaNome nome;
+    public String nome;
     public Double prezzo;
     public String descrizione;
     public Long idHotel;

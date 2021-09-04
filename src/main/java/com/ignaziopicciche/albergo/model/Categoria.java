@@ -20,7 +20,7 @@ public class Categoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private CategoriaNome nome;  //Singola, Doppia, Tripla, Quadrupla
+    private String nome;
     private Double prezzo;
     private String descrizione;
 
@@ -30,7 +30,7 @@ public class Categoria {
     private Hotel hotel;
 
 
-    public Categoria(CategoriaNome nome, Double prezzo, String descrizione) {
+    public Categoria(String nome, Double prezzo, String descrizione) {
         this.nome = nome;
         this.prezzo = prezzo;
         this.descrizione = descrizione;
