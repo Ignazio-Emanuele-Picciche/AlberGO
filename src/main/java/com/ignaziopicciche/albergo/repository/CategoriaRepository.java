@@ -1,6 +1,5 @@
 package com.ignaziopicciche.albergo.repository;
 
-import com.ignaziopicciche.albergo.enums.CategoriaNome;
 import com.ignaziopicciche.albergo.model.Categoria;
 import com.ignaziopicciche.albergo.model.Hotel;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,7 +1,6 @@
 package com.ignaziopicciche.albergo.model;
 
 
-import com.ignaziopicciche.albergo.enums.CategoriaNome;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

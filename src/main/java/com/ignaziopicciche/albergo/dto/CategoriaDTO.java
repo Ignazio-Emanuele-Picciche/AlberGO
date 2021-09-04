@@ -1,6 +1,5 @@
 package com.ignaziopicciche.albergo.dto;
 
-import com.ignaziopicciche.albergo.enums.CategoriaNome;
 import com.ignaziopicciche.albergo.model.Categoria;
 import lombok.*;
 
