@@ -28,7 +28,7 @@ public class PrenotazioneClienteStanzaDTO {
     public Date dataFine;
     public Integer numeroStanza;
     public String telefono;
-    private Long idPrenotazione;
+    public Long idPrenotazione;
 
     public PrenotazioneClienteStanzaDTO(Prenotazione p, Cliente c, Stanza s){
         this.nome = c.getNome();
