@@ -13,10 +13,9 @@ public interface PrenotazioneRepository extends JpaRepository<Prenotazione, Long
 
     @Query("select p from Prenotazione p where p.dataInizio <= CURRENT_DATE and p.dataFine >= CURRENT_DATE " +
             "and p.id = :idPrenotazione")
-    Boolean checkDataPrenotazione(Long idPrenotazione);
+    Boolean checkDataCreaPrenotazione(Long idPrenotazione);
 
 
-    @Query("")
-    Prenotazione checkStanzaPrenotazione(Long idStanza, Long idPrenotaione);
+    List<Prenotazione> findPrenotazionesByStanza_IdAndHotel_Id(Long idStanza, Long idHotel);
 
 }

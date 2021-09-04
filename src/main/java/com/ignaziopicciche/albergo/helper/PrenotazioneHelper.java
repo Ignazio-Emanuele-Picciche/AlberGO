@@ -34,38 +34,38 @@ public class PrenotazioneHelper {
     private StanzaRepository stanzaRepository;
 
 
-    public PrenotazioneDTO findById(Long id){
-        if(prenotazioneRepository.existsById(id)){
+    public PrenotazioneDTO findById(Long id) {
+        if (prenotazioneRepository.existsById(id)) {
             return new PrenotazioneDTO(prenotazioneRepository.findById(id).get());
         }
 
         throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.PRENOTAZIONE_ID_NOT_EXIST);
     }
 
-    public List<PrenotazioneClienteStanzaDTO> findAll(Long idHotel){
-        if(hotelRepository.existsById(idHotel)){
-           List<Prenotazione> prenotazioni = prenotazioneRepository.findPrenotazionesByHotel_Id(idHotel);
-           List<PrenotazioneClienteStanzaDTO> prenotazioniList = new ArrayList<>();
+    public List<PrenotazioneClienteStanzaDTO> findAll(Long idHotel) {
+        if (hotelRepository.existsById(idHotel)) {
+            List<Prenotazione> prenotazioni = prenotazioneRepository.findPrenotazionesByHotel_Id(idHotel);
+            List<PrenotazioneClienteStanzaDTO> prenotazioniList = new ArrayList<>();
 
-           for(Prenotazione p: prenotazioni){
-               Cliente c = clienteRepository.findById(p.getCliente().getId()).get();
-               Stanza s = stanzaRepository.findById(p.getStanza().getId()).get();
-               prenotazioniList.add(new PrenotazioneClienteStanzaDTO(p, c, s));
-           }
+            for (Prenotazione p : prenotazioni) {
+                Cliente c = clienteRepository.findById(p.getCliente().getId()).get();
+                Stanza s = stanzaRepository.findById(p.getStanza().getId()).get();
+                prenotazioniList.add(new PrenotazioneClienteStanzaDTO(p, c, s));
+            }
 
-           return prenotazioniList;
+            return prenotazioniList;
         }
 
         throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
     }
 
 
-    public Boolean delete(Long id){
-        if(prenotazioneRepository.existsById(id)){
-            try{
+    public Boolean delete(Long id) {
+        if (prenotazioneRepository.existsById(id)) {
+            try {
                 prenotazioneRepository.deleteById(id);
                 return true;
-            }catch (Exception e){
+            } catch (Exception e) {
                 throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.PRENOTAZIONE_DELETE_ERROR);
             }
         }
@@ -74,24 +74,42 @@ public class PrenotazioneHelper {
     }
 
 
-    public PrenotazioneDTO create(PrenotazioneDTO prenotazioneDTO){
-        if(!prenotazioneRepository.existsById(prenotazioneDTO.id)){
+    public PrenotazioneDTO create(PrenotazioneDTO prenotazioneDTO) {
 
-            Prenotazione p = new Prenotazione();
-            p.setDataInizio(prenotazioneDTO.dataInizio);
-            p.setDataFine(prenotazioneDTO.dataFine);
-            p.setCliente(clienteRepository.findById(prenotazioneDTO.idCliente).get());
-            p.setStanza(stanzaRepository.findById(prenotazioneDTO.idStanza).get());
-            p.setHotel(hotelRepository.findById(prenotazioneDTO.idHotel).get());
+        List<Prenotazione> prenotazioniStanza = prenotazioneRepository.findPrenotazionesByStanza_IdAndHotel_Id(prenotazioneDTO.idStanza, prenotazioneDTO.idHotel);
+        Boolean checkDate = true;
 
-            prenotazioneRepository.save(p);
-            return new PrenotazioneDTO(p);
+        if (!prenotazioneRepository.existsById(prenotazioneDTO.id)) {
+            for (Prenotazione ps : prenotazioniStanza) {
+
+                if ((prenotazioneDTO.dataInizio.isAfter(ps.getDataInizio()) && prenotazioneDTO.dataFine.isBefore(ps.getDataFine())) ||
+                        (prenotazioneDTO.dataInizio.isBefore(ps.getDataInizio()) && prenotazioneDTO.dataFine.isAfter(ps.getDataFine())) ||
+                        (prenotazioneDTO.dataInizio.isBefore(ps.getDataInizio()) && prenotazioneDTO.dataFine.isAfter(ps.getDataInizio())) ||
+                        (prenotazioneDTO.dataInizio.isBefore(ps.getDataFine()) && prenotazioneDTO.dataFine.isAfter(ps.getDataFine())) ||
+                        (prenotazioneDTO.dataInizio.equals(ps.getDataInizio()) && prenotazioneDTO.dataFine.equals(ps.getDataFine()))) {
+
+                    checkDate = false;
+                }
+
+                if (checkDate) {
+                    Prenotazione p = new Prenotazione();
+                    p.setDataInizio(prenotazioneDTO.dataInizio);
+                    p.setDataFine(prenotazioneDTO.dataFine);
+                    p.setCliente(clienteRepository.findById(prenotazioneDTO.idCliente).get());
+                    p.setStanza(stanzaRepository.findById(prenotazioneDTO.idStanza).get());
+                    p.setHotel(hotelRepository.findById(prenotazioneDTO.idHotel).get());
+
+                    prenotazioneRepository.save(p);
+                    return new PrenotazioneDTO(p);
+                }
+            }
+
+            throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.PRENOTAZIONE_DATE_NOT_COMPATIBLE);
+
         }
 
         throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.PRENOTAZIONE_ALREADY_EXISTS);
     }
-
-
 
 
 }
