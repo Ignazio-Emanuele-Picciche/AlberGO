@@ -79,30 +79,34 @@ public class PrenotazioneHelper {
         List<Prenotazione> prenotazioniStanza = prenotazioneRepository.findPrenotazionesByStanza_IdAndHotel_Id(prenotazioneDTO.idStanza, prenotazioneDTO.idHotel);
         Boolean checkDate = true;
 
-        if (!prenotazioneRepository.existsById(prenotazioneDTO.id)) {
+        if (!prenotazioneRepository.existsByDataInizioAndDataFine(prenotazioneDTO.dataInizio, prenotazioneDTO.dataFine)) {
             for (Prenotazione ps : prenotazioniStanza) {
 
-                if ((prenotazioneDTO.dataInizio.isAfter(ps.getDataInizio()) && prenotazioneDTO.dataFine.isBefore(ps.getDataFine())) ||
-                        (prenotazioneDTO.dataInizio.isBefore(ps.getDataInizio()) && prenotazioneDTO.dataFine.isAfter(ps.getDataFine())) ||
-                        (prenotazioneDTO.dataInizio.isBefore(ps.getDataInizio()) && prenotazioneDTO.dataFine.isAfter(ps.getDataInizio())) ||
-                        (prenotazioneDTO.dataInizio.isBefore(ps.getDataFine()) && prenotazioneDTO.dataFine.isAfter(ps.getDataFine())) ||
-                        (prenotazioneDTO.dataInizio.equals(ps.getDataInizio()) && prenotazioneDTO.dataFine.equals(ps.getDataFine()))) {
+                if ((prenotazioneDTO.dataInizio.after(ps.getDataInizio()) && prenotazioneDTO.dataFine.before(ps.getDataFine())) ||
+                        (prenotazioneDTO.dataInizio.before(ps.getDataInizio()) && prenotazioneDTO.dataFine.after(ps.getDataFine())) ||
+                        (prenotazioneDTO.dataInizio.before(ps.getDataInizio()) && prenotazioneDTO.dataFine.after(ps.getDataInizio())) ||
+                        (prenotazioneDTO.dataInizio.before(ps.getDataFine()) && prenotazioneDTO.dataFine.after(ps.getDataFine())) ||
+                        (prenotazioneDTO.dataInizio.after(prenotazioneDTO.dataFine)) ||
+                        (prenotazioneDTO.dataInizio.equals(prenotazioneDTO.dataFine)) ||
+                        (prenotazioneDTO.dataInizio.equals(ps.getDataInizio())) ||
+                        (prenotazioneDTO.dataFine.equals(ps.getDataFine())))  {
 
                     checkDate = false;
                 }
-
-                if (checkDate) {
-                    Prenotazione p = new Prenotazione();
-                    p.setDataInizio(prenotazioneDTO.dataInizio);
-                    p.setDataFine(prenotazioneDTO.dataFine);
-                    p.setCliente(clienteRepository.findById(prenotazioneDTO.idCliente).get());
-                    p.setStanza(stanzaRepository.findById(prenotazioneDTO.idStanza).get());
-                    p.setHotel(hotelRepository.findById(prenotazioneDTO.idHotel).get());
-
-                    prenotazioneRepository.save(p);
-                    return new PrenotazioneDTO(p);
-                }
             }
+
+            if (checkDate) {
+                Prenotazione p = new Prenotazione();
+                p.setDataInizio(prenotazioneDTO.dataInizio);
+                p.setDataFine(prenotazioneDTO.dataFine);
+                p.setCliente(clienteRepository.findById(prenotazioneDTO.idCliente).get());
+                p.setStanza(stanzaRepository.findById(prenotazioneDTO.idStanza).get());
+                p.setHotel(hotelRepository.findById(prenotazioneDTO.idHotel).get());
+
+                prenotazioneRepository.save(p);
+                return new PrenotazioneDTO(p);
+            }
+
 
             throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.PRENOTAZIONE_DATE_NOT_COMPATIBLE);
 

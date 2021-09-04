@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Builder
 @AllArgsConstructor
@@ -23,8 +24,8 @@ public class PrenotazioneClienteStanzaDTO {
     
     public String nome;
     public String cognome;
-    public LocalDate dataInizio;
-    public LocalDate dataFine;
+    public Date dataInizio;
+    public Date dataFine;
     public Integer numeroStanza;
     public String telefono;
     private Long idPrenotazione;

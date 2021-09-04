@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @Data
@@ -21,12 +22,12 @@ public class Prenotazione {
     private Long id;
 
     @Temporal(value = TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd", style = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
-    private LocalDate dataInizio;
+    @DateTimeFormat(pattern = "dd-mm-yyyy", style = "dd-mm-yyyy", iso = DateTimeFormat.ISO.DATE)
+    private Date dataInizio;
 
     @Temporal(value = TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd", style = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
-    private LocalDate dataFine;
+    @DateTimeFormat(pattern = "dd-mm-yyyy", style = "dd-mm-yyyy", iso = DateTimeFormat.ISO.DATE)
+    private Date dataFine;
 
     @ManyToOne
     @JoinColumn(name = "ID_PRENOTAZIONE_CLIENTE")

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @Builder
@@ -14,8 +15,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class PrenotazioneDTO {
     public Long id;
-    public LocalDate dataInizio;
-    public LocalDate dataFine;
+    public Date dataInizio;
+    public Date dataFine;
 
     public Long idCliente;
     public Long idHotel;
