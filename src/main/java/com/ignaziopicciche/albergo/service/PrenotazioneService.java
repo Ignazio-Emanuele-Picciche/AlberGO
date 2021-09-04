@@ -14,7 +14,7 @@ import java.util.Objects;
 public class PrenotazioneService {
 
     @Autowired
-    PrenotazioneHelper prenotazioneHelper;
+    private PrenotazioneHelper prenotazioneHelper;
 
     public PrenotazioneDTO findById(Long id){
         Preconditions.checkArgument(!Objects.isNull(id));
