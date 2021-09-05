@@ -31,8 +31,8 @@ public class PrenotazioneClienteStanzaDTO {
     public Long idPrenotazione;
 
     //Da aggiungere
-    public String nomeCategoria;
-    public String documento;
+    //public String nomeCategoria;
+    //public String documento;
 
     public PrenotazioneClienteStanzaDTO(Prenotazione p, Cliente c, Stanza s){
         this.nome = c.getNome();
