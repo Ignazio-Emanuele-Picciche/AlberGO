@@ -15,25 +15,34 @@ public interface StanzaRepository extends JpaRepository<Stanza, Long> {
     List<Stanza> findStanzasByHotel_Id(Long idHotel);
 
     //FindStanzasByCategoria_IdAndHotel_IdAndDataInizioAndDataFine
-    @Query("select s from Stanza s join Prenotazione p on s.id = p.stanza.id where p.dataInizio = :i and " +
-            "p.dataFine = :f and s.categoria.id = :c and s.hotel.id = :h")
-    List<Stanza> findStanzasByCategoria_IdAndHotel_IdAndDates(@Param("c") Long idCategoria, @Param("h") Long idHotel, @Param("i") Date dataInizio, @Param("f") Date dataFine);
+    @Query("select s from Stanza s where s.categoria.id = :c and s.id not in " +
+            "(select p.stanza.id from Prenotazione p where s.id = p.stanza.id and " +
+            "(:i between p.dataInizio and p.dataFine) or" +
+            "(:f between p.dataInizio and p.dataFine) or" +
+            ":i <= p.dataInizio and :f >= p.dataFine)")
+    List<Stanza> findStanzasByCategoria_IdAndDates(@Param("c") Long idCategoria, @Param("i") Date dataInizio, @Param("f") Date dataFine);
 
 
-    //FindStanzasFuoriServizioByDataInizioAndDataFineAAndHotel_Id
-    @Query("select s from Stanza s join Prenotazione p on s.id = p.stanza.id where p.dataInizio = :i and " +
-            "p.dataFine = :f and s.hotel.id = :h and s.fuoriServizio = true ")
-    List<Stanza> findStanzasFuoriServizioByHotel_IDAndDates(@Param("h") Long idHotel, @Param("i") Date dataInizio, @Param("f") Date dataFine);
 
-    //FindStanzasLibereByDataInizioAndDataFineAAndHotel_Id
-    @Query("select s from Stanza s where s.hotel.id = :h and s not in (select s1 from Stanza s1 join Prenotazione p on" +
-            "s1.id = p.stanza.id where p.dataInizio = :i and p.dataFine = :f)")
+    //findCountStanzasFuoriServizioByHotel_Id
+    @Query("select count(s) from Stanza s where s.hotel.id = :h and s.fuoriServizio = true")
+    int findCountStanzasFuoriServizioByHotel_Id(@Param("h") Long idHotel);
+
+
+    //findStanzasLibereByHotel_IdAndDates -> come sopra -> ritorna la lista
+    @Query("select s from Stanza s where s.hotel.id = :h and s.id not in" +
+            "(select p.stanza.id from Prenotazione p where s.id = p.stanza.id and" +
+            "(:i between p.dataInizio and p.dataFine) or" +
+            "(:f between p.dataInizio and p.dataFine) or" +
+            ":i <= p.dataInizio and :f >= p.dataFine)")
     List<Stanza> findStanzasLibereByHotel_IdAndDates(@Param("h") Long idHotel, @Param("i") Date dataInizio, @Param("f") Date dataFine);
 
 
-    //FindStanzasByDataInizioAndDataFineAndHotel_Id
-    @Query("select s from Stanza s join Prenotazione p on s.id = p.stanza.id where s.hotel.id = :h and " +
-            "p.dataInizio = :i and p.dataFine = :f")
-    List<Stanza> FindStanzasByHotel_IdAndDates(@Param("h") Long idHotel, @Param("i") Date dataInizio, @Param("f") Date dataFine);
-
+    //findStanzasOccupateByHotel_IdAndDates
+    @Query("select s from Stanza s where s.hotel.id = :h and s.id in" +
+            "(select p.stanza.id from Prenotazione p where s.id = p.stanza.id and" +
+            "(:i between p.dataInizio and p.dataFine) or" +
+            "(:f between p.dataInizio and p.dataFine) or" +
+            ":i <= p.dataInizio and :f >= p.dataFine)")
+    List<Stanza> findStanzasOccupateByHotel_IdAndDates(@Param("h") Long idHotel, @Param("i") Date dataInizio, @Param("f") Date dataFine);
 }

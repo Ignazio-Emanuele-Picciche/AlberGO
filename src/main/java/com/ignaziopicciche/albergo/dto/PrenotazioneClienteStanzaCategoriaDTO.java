@@ -7,6 +7,7 @@ Numero stanza
 Telefono cliente
  */
 
+import com.ignaziopicciche.albergo.model.Categoria;
 import com.ignaziopicciche.albergo.model.Cliente;
 import com.ignaziopicciche.albergo.model.Prenotazione;
 import com.ignaziopicciche.albergo.model.Stanza;
@@ -20,7 +21,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PrenotazioneClienteStanzaDTO {
+public class PrenotazioneClienteStanzaCategoriaDTO {
     
     public String nome;
     public String cognome;
@@ -29,18 +30,21 @@ public class PrenotazioneClienteStanzaDTO {
     public Integer numeroStanza;
     public String telefono;
     public Long idPrenotazione;
+    public String nomeCategoria;
+    public String documento;
 
-    //Da aggiungere
-    //public String nomeCategoria;
-    //public String documento;
+    public PrenotazioneClienteStanzaCategoriaDTO(Prenotazione p, Cliente cli, Stanza s, Categoria cat){
+        this.nome = cli.getNome();
+        this.cognome = cli.getCognome();
+        this.documento = cli.getDocumento();
+        this.telefono = cli.getTelefono();
 
-    public PrenotazioneClienteStanzaDTO(Prenotazione p, Cliente c, Stanza s){
-        this.nome = c.getNome();
-        this.cognome = c.getCognome();
         this.dataInizio = p.getDataInizio();
         this.dataFine = p.getDataFine();
-        this.numeroStanza = s.getNumeroStanza();
-        this.telefono = c.getTelefono();
         this.idPrenotazione = p.getId();
+
+        this.numeroStanza = s.getNumeroStanza();
+
+        this.nomeCategoria = cat.getNome();
     }
 }

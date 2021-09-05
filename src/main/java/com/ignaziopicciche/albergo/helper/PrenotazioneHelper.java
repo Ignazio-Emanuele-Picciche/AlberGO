@@ -1,16 +1,14 @@
 package com.ignaziopicciche.albergo.helper;
 
-import com.ignaziopicciche.albergo.dto.PrenotazioneClienteStanzaDTO;
+import com.ignaziopicciche.albergo.dto.PrenotazioneClienteStanzaCategoriaDTO;
 import com.ignaziopicciche.albergo.dto.PrenotazioneDTO;
 import com.ignaziopicciche.albergo.exception.HotelException;
 import com.ignaziopicciche.albergo.exception.PrenotazioneException;
+import com.ignaziopicciche.albergo.model.Categoria;
 import com.ignaziopicciche.albergo.model.Cliente;
 import com.ignaziopicciche.albergo.model.Prenotazione;
 import com.ignaziopicciche.albergo.model.Stanza;
-import com.ignaziopicciche.albergo.repository.ClienteRepository;
-import com.ignaziopicciche.albergo.repository.HotelRepository;
-import com.ignaziopicciche.albergo.repository.PrenotazioneRepository;
-import com.ignaziopicciche.albergo.repository.StanzaRepository;
+import com.ignaziopicciche.albergo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +31,9 @@ public class PrenotazioneHelper {
     @Autowired
     private StanzaRepository stanzaRepository;
 
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+
 
     public PrenotazioneDTO findById(Long id) {
         if (prenotazioneRepository.existsById(id)) {
@@ -42,15 +43,17 @@ public class PrenotazioneHelper {
         throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.PRENOTAZIONE_ID_NOT_EXIST);
     }
 
-    public List<PrenotazioneClienteStanzaDTO> findAll(Long idHotel) {
+    public List<PrenotazioneClienteStanzaCategoriaDTO> findAll(Long idHotel) {
         if (hotelRepository.existsById(idHotel)) {
             List<Prenotazione> prenotazioni = prenotazioneRepository.findPrenotazionesByHotel_Id(idHotel);
-            List<PrenotazioneClienteStanzaDTO> prenotazioniList = new ArrayList<>();
+            List<PrenotazioneClienteStanzaCategoriaDTO> prenotazioniList = new ArrayList<>();
 
             for (Prenotazione p : prenotazioni) {
-                Cliente c = clienteRepository.findById(p.getCliente().getId()).get();
+                Cliente cli = clienteRepository.findById(p.getCliente().getId()).get();
                 Stanza s = stanzaRepository.findById(p.getStanza().getId()).get();
-                prenotazioniList.add(new PrenotazioneClienteStanzaDTO(p, c, s));
+                Categoria cat = categoriaRepository.findById(p.getStanza().getCategoria().getId()).get();
+
+                prenotazioniList.add(new PrenotazioneClienteStanzaCategoriaDTO(p, cli, s, cat));
             }
 
             return prenotazioniList;

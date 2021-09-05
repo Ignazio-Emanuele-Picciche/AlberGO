@@ -1,7 +1,7 @@
 package com.ignaziopicciche.albergo.service;
 
 import com.google.common.base.Preconditions;
-import com.ignaziopicciche.albergo.dto.PrenotazioneClienteStanzaDTO;
+import com.ignaziopicciche.albergo.dto.PrenotazioneClienteStanzaCategoriaDTO;
 import com.ignaziopicciche.albergo.dto.PrenotazioneDTO;
 import com.ignaziopicciche.albergo.helper.PrenotazioneHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class PrenotazioneService {
         return prenotazioneHelper.findById(id);
     }
 
-    public List<PrenotazioneClienteStanzaDTO> findAll(Long idHotel){
+    public List<PrenotazioneClienteStanzaCategoriaDTO> findAll(Long idHotel){
         Preconditions.checkArgument(!Objects.isNull(idHotel));
 
         return prenotazioneHelper.findAll(idHotel);

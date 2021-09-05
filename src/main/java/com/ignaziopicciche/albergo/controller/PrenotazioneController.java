@@ -1,6 +1,6 @@
 package com.ignaziopicciche.albergo.controller;
 
-import com.ignaziopicciche.albergo.dto.PrenotazioneClienteStanzaDTO;
+import com.ignaziopicciche.albergo.dto.PrenotazioneClienteStanzaCategoriaDTO;
 import com.ignaziopicciche.albergo.dto.PrenotazioneDTO;
 import com.ignaziopicciche.albergo.service.PrenotazioneService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class PrenotazioneController {
 
     @GetMapping("/lista")
     @ResponseBody
-    public List<PrenotazioneClienteStanzaDTO> findAll(@RequestParam(name = "idHotel") Long idHotel){
+    public List<PrenotazioneClienteStanzaCategoriaDTO> findAll(@RequestParam(name = "idHotel") Long idHotel){
         return prenotazioneService.findAll(idHotel);
     }
 

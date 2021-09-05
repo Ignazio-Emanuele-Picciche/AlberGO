@@ -61,45 +61,27 @@ public class StanzaService {
 
 
 
-    public List<StanzaDTO> findStanzasOccupateByHotel_IdAndDates(Long idHotel, Date dataInizio, Date dataFine){
-        Preconditions.checkArgument(!Objects.isNull(idHotel));
-        Preconditions.checkArgument(!Objects.isNull(dataInizio));
-        Preconditions.checkArgument(!Objects.isNull(dataFine));
-
-        return stanzaHelper.findStanzasOccupateByHotel_IdAndDates(idHotel, dataInizio, dataFine);
-    }
-
-    public List<StanzaDTO> findStanzasFuoriServizioByHotel_IDAndDates(Long idHotel, Date dataInizio, Date dataFine){
-        Preconditions.checkArgument(!Objects.isNull(idHotel));
-        Preconditions.checkArgument(!Objects.isNull(dataInizio));
-        Preconditions.checkArgument(!Objects.isNull(dataFine));
-
-        return stanzaHelper.findStanzasFuoriServizioByHotel_IDAndDates(idHotel, dataInizio, dataFine);
-    }
-
-    public List<StanzaDTO> findStanzasByCategoria_IdAndHotel_IdAndDates(Long idCategoria, Long idHotel, Date dataInizio, Date dataFine){
+    public List<StanzaDTO> findStanzasByCategoria_IdAndDates(Long idCategoria, Date dataInizio, Date dataFine){
         Preconditions.checkArgument(!Objects.isNull(idCategoria));
-        Preconditions.checkArgument(!Objects.isNull(idHotel));
         Preconditions.checkArgument(!Objects.isNull(dataInizio));
         Preconditions.checkArgument(!Objects.isNull(dataFine));
 
-        return stanzaHelper.findStanzasByCategoria_IdAndHotel_IdAndDates(idCategoria, idHotel, dataInizio, dataFine);
+        return stanzaHelper.findStanzasByCategoria_IdAndDates(idCategoria, dataInizio, dataFine);
+    }
+
+
+    public int findCountStanzasFuoriServizioByHotel_Id(Long idHotel){
+        Preconditions.checkArgument(!Objects.isNull(idHotel));
+
+        return stanzaHelper.findCountStanzasFuoriServizioByHotel_Id(idHotel);
     }
 
     public List<StanzaDTO> findStanzasLibereByHotel_IdAndDates(Long idHotel, Date dataInizio, Date dataFine){
         Preconditions.checkArgument(!Objects.isNull(idHotel));
-        Preconditions.checkArgument(!Objects.isNull(dataInizio));
         Preconditions.checkArgument(!Objects.isNull(dataFine));
+        Preconditions.checkArgument(!Objects.isNull(dataInizio));
 
         return stanzaHelper.findStanzasLibereByHotel_IdAndDates(idHotel, dataInizio, dataFine);
-    }
-
-    public List<StanzaDTO> FindStanzasByHotel_IdAndDates(Long idHotel, Date dataInizio, Date dataFine){
-        Preconditions.checkArgument(!Objects.isNull(idHotel));
-        Preconditions.checkArgument(!Objects.isNull(dataInizio));
-        Preconditions.checkArgument(!Objects.isNull(dataFine));
-
-        return stanzaHelper.FindStanzasByHotel_IdAndDates(idHotel, dataInizio, dataFine);
     }
 
 }

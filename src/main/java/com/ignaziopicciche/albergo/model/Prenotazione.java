@@ -22,11 +22,11 @@ public class Prenotazione {
     private Long id;
 
     @Temporal(value = TemporalType.DATE)
-    @DateTimeFormat(pattern = "dd-mm-yyyy", style = "dd-mm-yyyy", iso = DateTimeFormat.ISO.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd", style = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
     private Date dataInizio;
 
     @Temporal(value = TemporalType.DATE)
-    @DateTimeFormat(pattern = "dd-mm-yyyy", style = "dd-mm-yyyy", iso = DateTimeFormat.ISO.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd", style = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
     private Date dataFine;
 
     @ManyToOne
