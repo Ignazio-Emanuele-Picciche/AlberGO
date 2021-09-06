@@ -84,4 +84,13 @@ public class StanzaService {
         return stanzaHelper.findStanzasLibereByHotel_IdAndDates(idHotel, dataInizio, dataFine);
     }
 
+
+    public List<StanzaDTO> findStanzasOccupateByHotel_IdAndDates(Long idHotel, Date dataInizio, Date dataFine){
+        Preconditions.checkArgument(!Objects.isNull(idHotel));
+        Preconditions.checkArgument(!Objects.isNull(dataFine));
+        Preconditions.checkArgument(!Objects.isNull(dataInizio));
+
+        return stanzaHelper.findStanzasOccupateByHotel_IdAndDates(idHotel, dataInizio, dataFine);
+    }
+
 }

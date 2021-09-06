@@ -80,5 +80,12 @@ public class StanzaController {
         return stanzaService.findStanzasLibereByHotel_IdAndDates(idHotel, dataInizio, dataFine);
     }
 
+    @GetMapping("/occupate")
+    @ResponseBody
+    public List<StanzaDTO> findStanzasOccupateByHotel_IdAndDates(@RequestParam(name = "idHotel") Long idHotel, @RequestParam("dataInizio") String dInizio, @RequestParam("dataFine") String dFine) throws ParseException {
+        Date dataInizio =new SimpleDateFormat("yyyy-MM-dd").parse(dInizio);
+        Date dataFine=new SimpleDateFormat("yyyy-MM-dd").parse(dFine);
+        return stanzaService.findStanzasOccupateByHotel_IdAndDates(idHotel, dataInizio, dataFine);
+    }
 
 }
