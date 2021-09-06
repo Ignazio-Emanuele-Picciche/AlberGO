@@ -37,8 +37,8 @@ public class PrenotazioneService {
 
 
     public PrenotazioneDTO create(PrenotazioneDTO prenotazioneDTO){
-        //Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.dataInizio));
-        //Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.dataFine));
+        Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.dataInizio));
+        Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.dataFine));
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.idHotel));
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.idCliente));
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.idStanza));

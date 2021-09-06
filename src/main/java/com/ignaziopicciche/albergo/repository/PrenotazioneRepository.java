@@ -16,7 +16,10 @@ public interface PrenotazioneRepository extends JpaRepository<Prenotazione, Long
 
     List<Prenotazione> findPrenotazionesByStanza_IdAndHotel_Id(Long idStanza, Long idHotel);
 
-    Boolean existsByDataInizioAndDataFine(Date dataInizio, Date dataFine);
+    @Query("select count(p) from Prenotazione p where (:i between p.dataInizio and p.dataFine) or" +
+            "(:f between p.dataInizio and p.dataFine) or" +
+            ":i <= p.dataInizio and :f >= p.dataFine")
+    int checkPrenotazioneDate(@Param("i") Date dataInizio, @Param("f") Date dataFine);
 
     List<Prenotazione> findPrenotazionesByStanza_Id(Long idStanza);
 }
