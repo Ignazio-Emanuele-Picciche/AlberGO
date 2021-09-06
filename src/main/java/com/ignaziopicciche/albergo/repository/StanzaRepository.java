@@ -41,4 +41,9 @@ public interface StanzaRepository extends JpaRepository<Stanza, Long> {
             "(:f between p.dataInizio and p.dataFine) or" +
             ":i <= p.dataInizio and :f >= p.dataFine)")
     List<Stanza> findStanzasOccupateByHotel_IdAndDates(@Param("h") Long idHotel, @Param("i") Date dataInizio, @Param("f") Date dataFine);
+
+
+    @Query("select count(s) from Stanza s where s.categoria.id = :c")
+    int findCountStanzeByCategoria_Id(@Param("c") Long idCategoria);
+
 }

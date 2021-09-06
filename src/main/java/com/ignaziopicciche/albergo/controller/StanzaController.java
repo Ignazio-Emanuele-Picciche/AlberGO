@@ -26,6 +26,9 @@ public class StanzaController {
     //FindStanzasLibereByDataInizioAndDataFineAAndHotel_Id
 
 
+    //findTotStanzeByCategoria_Id -> ritorno idCat, nomeCat, numTot
+
+
 
     @GetMapping("/dettaglio")
     @ResponseBody
@@ -86,6 +89,11 @@ public class StanzaController {
         Date dataInizio =new SimpleDateFormat("yyyy-MM-dd").parse(dInizio);
         Date dataFine=new SimpleDateFormat("yyyy-MM-dd").parse(dFine);
         return stanzaService.findStanzasOccupateByHotel_IdAndDates(idHotel, dataInizio, dataFine);
+    }
+
+    @GetMapping("/categoriaId")
+    public int findCountStanzeByCategoria_Id(@RequestParam(name = "idCategoria") Long idCategoria){
+        return stanzaService.findCountStanzeByCategoria_Id(idCategoria);
     }
 
 }

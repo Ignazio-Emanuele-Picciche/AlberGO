@@ -18,4 +18,5 @@ public interface PrenotazioneRepository extends JpaRepository<Prenotazione, Long
 
     Boolean existsByDataInizioAndDataFine(Date dataInizio, Date dataFine);
 
+    List<Prenotazione> findPrenotazionesByStanza_Id(Long idStanza);
 }

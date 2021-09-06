@@ -4,6 +4,7 @@ import com.ignaziopicciche.albergo.dto.PrenotazioneClienteStanzaCategoriaDTO;
 import com.ignaziopicciche.albergo.dto.PrenotazioneDTO;
 import com.ignaziopicciche.albergo.exception.HotelException;
 import com.ignaziopicciche.albergo.exception.PrenotazioneException;
+import com.ignaziopicciche.albergo.exception.StanzaException;
 import com.ignaziopicciche.albergo.model.Categoria;
 import com.ignaziopicciche.albergo.model.Cliente;
 import com.ignaziopicciche.albergo.model.Prenotazione;
@@ -118,5 +119,14 @@ public class PrenotazioneHelper {
         throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.PRENOTAZIONE_ALREADY_EXISTS);
     }
 
+
+    public List<PrenotazioneDTO> findPrenotazionesByStanza_Id(Long idStanza){
+        if(stanzaRepository.existsById(idStanza)){
+            List<Prenotazione> prenotazioniLista = prenotazioneRepository.findPrenotazionesByStanza_Id(idStanza);
+            return prenotazioniLista.stream().map(x -> new PrenotazioneDTO(x)).collect(Collectors.toList());
+        }
+
+        throw new StanzaException(StanzaException.StanzaExceptionCode.STANZA_ID_NOT_EXIST);
+    }
 
 }

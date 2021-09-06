@@ -93,4 +93,10 @@ public class StanzaService {
         return stanzaHelper.findStanzasOccupateByHotel_IdAndDates(idHotel, dataInizio, dataFine);
     }
 
+    public int findCountStanzeByCategoria_Id(Long idCategoria){
+        Preconditions.checkArgument(!Objects.isNull(idCategoria));
+
+        return stanzaHelper.findCountStanzeByCategoria_Id(idCategoria);
+    }
+
 }

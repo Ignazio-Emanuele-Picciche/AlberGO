@@ -28,6 +28,12 @@ public class PrenotazioneController {
         return prenotazioneService.findAll(idHotel);
     }
 
+
+    @GetMapping("/stanzaId")
+    public List<PrenotazioneDTO> findPrenotazionesByStanza_Id(@RequestParam(name = "idStanza") Long idStanza){
+        return prenotazioneService.findPrenotazionesByStanza_Id(idStanza);
+    }
+
     @PostMapping("/create")
     @ResponseBody
     public PrenotazioneDTO create(@RequestBody PrenotazioneDTO prenotazioneDTO){
@@ -45,6 +51,8 @@ public class PrenotazioneController {
     public Boolean delete(@RequestParam(name = "idPrenotazione") Long id){
         return prenotazioneService.delete(id);
     }
+
+
 
 
 }

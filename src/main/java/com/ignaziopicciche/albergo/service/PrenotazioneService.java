@@ -46,4 +46,11 @@ public class PrenotazioneService {
         return prenotazioneHelper.create(prenotazioneDTO);
     }
 
+
+    public List<PrenotazioneDTO> findPrenotazionesByStanza_Id(Long idStanza){
+        Preconditions.checkArgument(!Objects.isNull(idStanza));
+
+        return prenotazioneHelper.findPrenotazionesByStanza_Id(idStanza);
+    }
+
 }

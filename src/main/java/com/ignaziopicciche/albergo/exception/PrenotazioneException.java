@@ -6,7 +6,8 @@ public class PrenotazioneException extends RuntimeException{
         PRENOTAZIONE_ALREADY_EXISTS,
         PRENOTAZIONE_DELETE_ERROR,
         PRENOTAZIONE_ID_NOT_EXIST,
-        PRENOTAZIONE_DATE_NOT_COMPATIBLE
+        PRENOTAZIONE_DATE_NOT_COMPATIBLE,
+        DATE_ERROR
     }
 
     public PrenotazioneException(PrenotazioneExceptionCode message){

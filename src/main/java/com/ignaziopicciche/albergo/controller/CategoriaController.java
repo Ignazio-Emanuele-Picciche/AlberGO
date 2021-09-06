@@ -17,10 +17,6 @@ public class CategoriaController {
     @Autowired
     private CategoriaService categoriaService;
 
-    /*
-    findNumStanzaByCategorie -> ritorno idCat, nomeCat, numTot
-
-     */
 
 
     @GetMapping("/dettaglio")

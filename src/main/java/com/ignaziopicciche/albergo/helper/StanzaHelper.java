@@ -4,6 +4,7 @@ import com.ignaziopicciche.albergo.dto.CategoriaDTO;
 import com.ignaziopicciche.albergo.dto.StanzaDTO;
 import com.ignaziopicciche.albergo.exception.CategoriaException;
 import com.ignaziopicciche.albergo.exception.HotelException;
+import com.ignaziopicciche.albergo.exception.PrenotazioneException;
 import com.ignaziopicciche.albergo.exception.StanzaException;
 import com.ignaziopicciche.albergo.model.Prenotazione;
 import com.ignaziopicciche.albergo.model.Stanza;
@@ -110,12 +111,15 @@ public class StanzaHelper {
     public List<StanzaDTO> findStanzasByCategoria_IdAndDates(Long idCategoria, Date dataInizio, Date dataFine) {
 
         if (categoriaRepository.existsById(idCategoria)) {
-            List<Stanza> stanzeCategoria = stanzaRepository.findStanzasByCategoria_IdAndDates(idCategoria, dataInizio, dataFine);
-            return stanzeCategoria.stream().map(x -> new StanzaDTO(x)).collect(Collectors.toList());
+            if(dataInizio.before(dataFine)) {
+                List<Stanza> stanzeCategoria = stanzaRepository.findStanzasByCategoria_IdAndDates(idCategoria, dataInizio, dataFine);
+                return stanzeCategoria.stream().map(x -> new StanzaDTO(x)).collect(Collectors.toList());
+            }
+
+            throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.DATE_ERROR);
         }
 
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
-        //throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ID_NOT_EXIST);
+        throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ID_NOT_EXIST);
     }
 
 
@@ -129,8 +133,12 @@ public class StanzaHelper {
 
     public List<StanzaDTO> findStanzasLibereByHotel_IdAndDates(Long idHotel, Date dataInizio, Date dataFine){
         if(hotelRepository.existsById(idHotel)){
-            List<Stanza> stanzeLibere = stanzaRepository.findStanzasLibereByHotel_IdAndDates(idHotel, dataInizio, dataFine);
-            return stanzeLibere.stream().map(x -> new StanzaDTO(x)).collect(Collectors.toList());
+            if(dataInizio.before(dataFine)) {
+                List<Stanza> stanzeLibere = stanzaRepository.findStanzasLibereByHotel_IdAndDates(idHotel, dataInizio, dataFine);
+                return stanzeLibere.stream().map(x -> new StanzaDTO(x)).collect(Collectors.toList());
+            }
+
+            throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.DATE_ERROR);
         }
 
         throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
@@ -138,11 +146,25 @@ public class StanzaHelper {
 
     public List<StanzaDTO> findStanzasOccupateByHotel_IdAndDates(Long idHotel, Date dataInizio, Date dataFine){
         if(hotelRepository.existsById(idHotel)){
-            List<Stanza> stanzeOccupate = stanzaRepository.findStanzasOccupateByHotel_IdAndDates(idHotel, dataInizio, dataFine);
-            return stanzeOccupate.stream().map(x -> new StanzaDTO(x)).collect(Collectors.toList());
+            if(dataInizio.before(dataFine)) {
+                List<Stanza> stanzeOccupate = stanzaRepository.findStanzasOccupateByHotel_IdAndDates(idHotel, dataInizio, dataFine);
+                return stanzeOccupate.stream().map(x -> new StanzaDTO(x)).collect(Collectors.toList());
+            }
+
+            throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.DATE_ERROR);
+
         }
 
         throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
+    }
+
+
+    public int findCountStanzeByCategoria_Id(Long idCategoria){
+        if(categoriaRepository.existsById(idCategoria)){
+            return stanzaRepository.findCountStanzeByCategoria_Id(idCategoria);
+        }
+
+        throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ID_NOT_EXIST);
     }
 
 }
