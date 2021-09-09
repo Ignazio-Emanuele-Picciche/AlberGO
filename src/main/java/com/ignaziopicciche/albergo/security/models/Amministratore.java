@@ -25,7 +25,7 @@ public class Amministratore {
     private String cognome;
     private String username;
 
-    @JsonIgnore
+    //@JsonIgnore
     private String password;
 
     @ManyToOne
