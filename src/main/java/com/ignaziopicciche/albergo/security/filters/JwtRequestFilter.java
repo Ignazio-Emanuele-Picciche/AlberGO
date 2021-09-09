@@ -1,6 +1,6 @@
 package com.ignaziopicciche.albergo.security.filters;
 
-import com.ignaziopicciche.albergo.security.services.UserService;
+import com.ignaziopicciche.albergo.security.services.AmministratoreService;
 import com.ignaziopicciche.albergo.security.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,7 +21,7 @@ import java.io.IOException;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
-    private UserService userDetailsService;
+    private AmministratoreService amministratoreService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -41,7 +41,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = this.amministratoreService.loadUserByUsername(username);
 
             if(jwtUtil.validateToken(jwt, userDetails)){
 

@@ -1,7 +1,7 @@
 package com.ignaziopicciche.albergo.security;
 
 import com.ignaziopicciche.albergo.security.filters.JwtRequestFilter;
-import com.ignaziopicciche.albergo.security.services.UserService;
+import com.ignaziopicciche.albergo.security.services.AmministratoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter  {
 
     @Autowired
-    private UserService userService;
+    private AmministratoreService amministratoreService;
 
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
@@ -28,7 +28,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter  {
     //Autentificazione dell'utente
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception{
-        auth.userDetailsService(userService);
+        auth.userDetailsService(amministratoreService);
     }
 
 

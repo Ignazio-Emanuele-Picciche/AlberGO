@@ -1,5 +1,6 @@
 package com.ignaziopicciche.albergo.model;
 
+import com.ignaziopicciche.albergo.security.models.Amministratore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

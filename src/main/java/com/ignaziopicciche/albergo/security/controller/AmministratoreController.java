@@ -3,8 +3,8 @@ package com.ignaziopicciche.albergo.security.controller;
 
 import com.ignaziopicciche.albergo.security.models.AuthenticationRequest;
 import com.ignaziopicciche.albergo.security.models.AuthenticationResponse;
-import com.ignaziopicciche.albergo.security.models.UserDTO;
-import com.ignaziopicciche.albergo.security.services.UserService;
+import com.ignaziopicciche.albergo.security.models.AmministratoreDTO;
+import com.ignaziopicciche.albergo.security.services.AmministratoreService;
 import com.ignaziopicciche.albergo.security.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class UserController {
+public class AmministratoreController {
 
 
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private UserService userDetailsService; //UserService
+    private AmministratoreService amministratoreService; //UserService
 
     @Autowired
     private JwtUtil jwtTokenUtil;
@@ -49,7 +49,7 @@ public class UserController {
         }
 
 
-        final UserDetails userDetails = userDetailsService
+        final UserDetails userDetails = amministratoreService
                 .loadUserByUsername(authenticationRequest.getUsername());
 
         final String jwt = jwtTokenUtil.generateToken(userDetails);  //prendo il token
@@ -59,8 +59,8 @@ public class UserController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> saveUser(@RequestBody UserDTO user) throws Exception{
-        return ResponseEntity.ok(userDetailsService.save(user));
+    public ResponseEntity<?> saveUser(@RequestBody AmministratoreDTO user) throws Exception{
+        return ResponseEntity.ok(amministratoreService.save(user));
     }
 
 

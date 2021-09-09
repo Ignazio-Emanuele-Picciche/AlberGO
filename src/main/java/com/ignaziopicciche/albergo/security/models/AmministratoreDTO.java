@@ -1,15 +1,17 @@
-package com.ignaziopicciche.albergo.dto;
+package com.ignaziopicciche.albergo.security.models;
 
 
-import com.ignaziopicciche.albergo.model.Amministratore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class AmministratoreDTO {
 
     public Long id;
@@ -25,7 +27,6 @@ public class AmministratoreDTO {
         this.cognome = a.getCognome();
         this.username = a.getUsername();
         this.password = a.getPassword();
-        //this.id = a.getHotel().getId();
+        this.id = a.getHotel().getId();
     }
-
 }
