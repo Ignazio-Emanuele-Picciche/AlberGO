@@ -3,7 +3,7 @@ package com.ignaziopicciche.albergo.dto;
 import com.ignaziopicciche.albergo.model.Categoria;
 import lombok.*;
 
-@Data
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
