@@ -29,9 +29,20 @@ public class PrenotazioneClienteStanzaCategoriaDTO {
     public Date dataFine;
     public Integer numeroStanza;
     public String telefono;
-    public Long idPrenotazione;
+    public Long idPrenotazione; // -> public Prenotazione prenotazione
+    //public Long nomeHotel
     public String nomeCategoria;
     public String documento;
+
+    /*
+    Va cercato per cliente.idCliente
+
+    public Prenotazione prenotazione;
+    public Hotel hotel;
+    public Cliente cliente;
+    public Stanza stanza;
+    public Cetegoria categoria
+     */
 
     public PrenotazioneClienteStanzaCategoriaDTO(Prenotazione p, Cliente cli, Stanza s, Categoria cat){
         this.nome = cli.getNome();
