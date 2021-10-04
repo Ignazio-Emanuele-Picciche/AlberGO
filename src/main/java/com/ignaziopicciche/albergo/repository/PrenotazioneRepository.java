@@ -11,8 +11,8 @@ import java.util.List;
 
 public interface PrenotazioneRepository extends JpaRepository<Prenotazione, Long> {
 
+    List<Prenotazione> findPrenotazionesByCliente_Id(Long idCliente);
     List<Prenotazione> findPrenotazionesByHotel_Id(Long idHotel);
-
 
     List<Prenotazione> findPrenotazionesByStanza_IdAndHotel_Id(Long idStanza, Long idHotel);
 
@@ -20,6 +20,11 @@ public interface PrenotazioneRepository extends JpaRepository<Prenotazione, Long
             "(:f between p.dataInizio and p.dataFine) or" +
             ":i <= p.dataInizio and :f >= p.dataFine")
     int checkPrenotazioneDate(@Param("i") Date dataInizio, @Param("f") Date dataFine);
+
+    @Query("select count(p) from Prenotazione p where ((:dataInizio between p.dataInizio and p.dataFine) or" +
+            "(:dataFine between p.dataInizio and p.dataFine) or" +
+            ":dataInizio <= p.dataInizio and :dataFine >= p.dataFine) and p.id <> :id ")
+    int checkPrenotazioneDateUpdate(@Param("dataInizio") Date dataInizio, @Param("dataFine") Date dataFine, @Param("id") Long idPrenotazione);
 
     List<Prenotazione> findPrenotazionesByStanza_Id(Long idStanza);
 }

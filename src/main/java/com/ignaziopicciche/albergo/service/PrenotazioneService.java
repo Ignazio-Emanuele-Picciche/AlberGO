@@ -1,7 +1,7 @@
 package com.ignaziopicciche.albergo.service;
 
 import com.google.common.base.Preconditions;
-import com.ignaziopicciche.albergo.dto.PrenotazioneClienteStanzaCategoriaDTO;
+import com.ignaziopicciche.albergo.dto.FatturaDTO;
 import com.ignaziopicciche.albergo.dto.PrenotazioneDTO;
 import com.ignaziopicciche.albergo.helper.PrenotazioneHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +13,11 @@ import java.util.Objects;
 @Service
 public class PrenotazioneService {
 
-    @Autowired
-    private PrenotazioneHelper prenotazioneHelper;
+    private final PrenotazioneHelper prenotazioneHelper;
+
+    public PrenotazioneService(PrenotazioneHelper prenotazioneHelper) {
+        this.prenotazioneHelper = prenotazioneHelper;
+    }
 
     public PrenotazioneDTO findById(Long id){
         Preconditions.checkArgument(!Objects.isNull(id));
@@ -22,10 +25,16 @@ public class PrenotazioneService {
         return prenotazioneHelper.findById(id);
     }
 
-    public List<PrenotazioneClienteStanzaCategoriaDTO> findAll(Long idHotel){
+    public List<FatturaDTO> findAll(Long idHotel){
         Preconditions.checkArgument(!Objects.isNull(idHotel));
 
         return prenotazioneHelper.findAll(idHotel);
+    }
+
+    public List<FatturaDTO> findAllFatture(Long idCliente){
+        Preconditions.checkArgument(!Objects.isNull(idCliente));
+
+        return prenotazioneHelper.findAllFatture(idCliente);
     }
 
 
@@ -51,6 +60,15 @@ public class PrenotazioneService {
         Preconditions.checkArgument(!Objects.isNull(idStanza));
 
         return prenotazioneHelper.findPrenotazionesByStanza_Id(idStanza);
+    }
+
+
+    public Long update(PrenotazioneDTO prenotazioneDTO){
+        Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.id));
+        Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.dataFine));
+        Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.dataInizio));
+
+        return prenotazioneHelper.update(prenotazioneDTO);
     }
 
 }

@@ -1,14 +1,12 @@
 package com.ignaziopicciche.albergo.helper;
 
-import com.ignaziopicciche.albergo.dto.PrenotazioneClienteStanzaCategoriaDTO;
+import com.ignaziopicciche.albergo.dto.FatturaDTO;
 import com.ignaziopicciche.albergo.dto.PrenotazioneDTO;
+import com.ignaziopicciche.albergo.exception.ClienteException;
 import com.ignaziopicciche.albergo.exception.HotelException;
 import com.ignaziopicciche.albergo.exception.PrenotazioneException;
 import com.ignaziopicciche.albergo.exception.StanzaException;
-import com.ignaziopicciche.albergo.model.Categoria;
-import com.ignaziopicciche.albergo.model.Cliente;
-import com.ignaziopicciche.albergo.model.Prenotazione;
-import com.ignaziopicciche.albergo.model.Stanza;
+import com.ignaziopicciche.albergo.model.*;
 import com.ignaziopicciche.albergo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,20 +18,19 @@ import java.util.stream.Collectors;
 @Component
 public class PrenotazioneHelper {
 
-    @Autowired
-    private PrenotazioneRepository prenotazioneRepository;
+    private final PrenotazioneRepository prenotazioneRepository;
+    private final HotelRepository hotelRepository;
+    private final ClienteRepository clienteRepository;
+    private final StanzaRepository stanzaRepository;
+    private final CategoriaRepository categoriaRepository;
 
-    @Autowired
-    private HotelRepository hotelRepository;
-
-    @Autowired
-    private ClienteRepository clienteRepository;
-
-    @Autowired
-    private StanzaRepository stanzaRepository;
-
-    @Autowired
-    private CategoriaRepository categoriaRepository;
+    public PrenotazioneHelper(PrenotazioneRepository prenotazioneRepository, HotelRepository hotelRepository, ClienteRepository clienteRepository, StanzaRepository stanzaRepository, CategoriaRepository categoriaRepository) {
+        this.prenotazioneRepository = prenotazioneRepository;
+        this.hotelRepository = hotelRepository;
+        this.clienteRepository = clienteRepository;
+        this.stanzaRepository = stanzaRepository;
+        this.categoriaRepository = categoriaRepository;
+    }
 
 
     public PrenotazioneDTO findById(Long id) {
@@ -44,23 +41,47 @@ public class PrenotazioneHelper {
         throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.PRENOTAZIONE_ID_NOT_EXIST);
     }
 
-    public List<PrenotazioneClienteStanzaCategoriaDTO> findAll(Long idHotel) {
+    public List<FatturaDTO> findAll(Long idHotel) {
         if (hotelRepository.existsById(idHotel)) {
             List<Prenotazione> prenotazioni = prenotazioneRepository.findPrenotazionesByHotel_Id(idHotel);
-            List<PrenotazioneClienteStanzaCategoriaDTO> prenotazioniList = new ArrayList<>();
+            List<FatturaDTO> prenotazioniList = new ArrayList<>();
 
             for (Prenotazione p : prenotazioni) {
-                Cliente cli = clienteRepository.findById(p.getCliente().getId()).get();
-                Stanza s = stanzaRepository.findById(p.getStanza().getId()).get();
-                Categoria cat = categoriaRepository.findById(p.getStanza().getCategoria().getId()).get();
+                Cliente cliente = p.getCliente();
+                Stanza stanza = p.getStanza();
+                Categoria categoria = p.getStanza().getCategoria();
+                Hotel hotel = p.getHotel();
 
-                prenotazioniList.add(new PrenotazioneClienteStanzaCategoriaDTO(p, cli, s, cat));
+
+                prenotazioniList.add(new FatturaDTO(p, cliente, stanza, categoria, hotel));
             }
 
             return prenotazioniList;
         }
 
         throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
+    }
+
+    public List<FatturaDTO> findAllFatture(Long idCliente) {
+        if (clienteRepository.existsById(idCliente)) {
+
+
+            Cliente cliente = clienteRepository.findById(idCliente).get();
+            List<Prenotazione> prenotazioni = prenotazioneRepository.findPrenotazionesByCliente_Id(idCliente);
+            List<FatturaDTO> fattureList = new ArrayList<>();
+
+            for (Prenotazione p : prenotazioni) {
+                Hotel hotel = p.getHotel();
+                Stanza stanza = p.getStanza();
+                Categoria categoria = p.getStanza().getCategoria();
+
+                fattureList.add(new FatturaDTO(p, cliente, stanza, categoria, hotel));
+            }
+
+            return fattureList;
+        }
+
+        throw new ClienteException(ClienteException.ClienteExcpetionCode.CLIENTE_ID_NOT_EXIST);
     }
 
 
@@ -78,8 +99,8 @@ public class PrenotazioneHelper {
     }
 
 
-    public PrenotazioneDTO create (PrenotazioneDTO prenotazioneDTO){
-        if(prenotazioneRepository.checkPrenotazioneDate(prenotazioneDTO.dataInizio, prenotazioneDTO.dataFine) == 0 && prenotazioneDTO.dataInizio.before(prenotazioneDTO.dataFine)){
+    public PrenotazioneDTO create(PrenotazioneDTO prenotazioneDTO) {
+        if (prenotazioneRepository.checkPrenotazioneDate(prenotazioneDTO.dataInizio, prenotazioneDTO.dataFine) == 0 && prenotazioneDTO.dataInizio.before(prenotazioneDTO.dataFine)) {
             Prenotazione prenotazione = new Prenotazione();
 
             prenotazione.setDataInizio(prenotazioneDTO.dataInizio);
@@ -97,13 +118,31 @@ public class PrenotazioneHelper {
     }
 
 
-    public List<PrenotazioneDTO> findPrenotazionesByStanza_Id(Long idStanza){
-        if(stanzaRepository.existsById(idStanza)){
+    public List<PrenotazioneDTO> findPrenotazionesByStanza_Id(Long idStanza) {
+        if (stanzaRepository.existsById(idStanza)) {
             List<Prenotazione> prenotazioniLista = prenotazioneRepository.findPrenotazionesByStanza_Id(idStanza);
             return prenotazioniLista.stream().map(x -> new PrenotazioneDTO(x)).collect(Collectors.toList());
         }
 
         throw new StanzaException(StanzaException.StanzaExceptionCode.STANZA_ID_NOT_EXIST);
+    }
+
+
+    public Long update(PrenotazioneDTO prenotazioneDTO){
+        if(prenotazioneRepository.checkPrenotazioneDateUpdate(prenotazioneDTO.dataInizio, prenotazioneDTO.dataFine, prenotazioneDTO.id) == 0
+                && prenotazioneDTO.dataInizio.before(prenotazioneDTO.dataFine) &&
+                prenotazioneRepository.existsById(prenotazioneDTO.id)){
+
+            Prenotazione prenotazione = prenotazioneRepository.findById(prenotazioneDTO.id).get();
+            prenotazione.setDataInizio(prenotazioneDTO.dataInizio);
+            prenotazione.setDataFine(prenotazioneDTO.dataFine);
+
+            prenotazioneRepository.save(prenotazione);
+            return prenotazione.getId();
+
+        }
+        throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.PRENOTAZIONE_DATE_NOT_COMPATIBLE);
+
     }
 
 }

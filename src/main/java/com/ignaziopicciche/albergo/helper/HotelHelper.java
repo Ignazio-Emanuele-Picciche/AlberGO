@@ -7,11 +7,17 @@ import com.ignaziopicciche.albergo.repository.HotelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class HotelHelper {
 
-    @Autowired
-    private HotelRepository hotelRepository;
+    private final HotelRepository hotelRepository;
+
+    public HotelHelper(HotelRepository hotelRepository) {
+        this.hotelRepository = hotelRepository;
+    }
 
 
     public HotelDTO create(HotelDTO hotelDTO) {
@@ -55,6 +61,19 @@ public class HotelHelper {
             return new HotelDTO(hotelRepository.findById(id).get());
         }
         throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
+    }
+
+
+    public List<HotelDTO> findHotelByName(String nomeHotel) {
+        List<Hotel> hotels = hotelRepository.findHotelByNomeStartingWith(nomeHotel);
+
+        return hotels.stream().map(hotel -> new HotelDTO(hotel)).collect(Collectors.toList());
+
+    }
+
+    public List<HotelDTO> findHotelByIndirizzo(String indirizzoHotel){
+        List<Hotel> hotels = hotelRepository.findHotelByIndirizzoStartingWith(indirizzoHotel);
+        return hotels.stream().map(hotel -> new HotelDTO(hotel)).collect(Collectors.toList());
     }
 
 }
