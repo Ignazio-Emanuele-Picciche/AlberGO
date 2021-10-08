@@ -16,15 +16,15 @@ public interface PrenotazioneRepository extends JpaRepository<Prenotazione, Long
 
     List<Prenotazione> findPrenotazionesByStanza_IdAndHotel_Id(Long idStanza, Long idHotel);
 
-    @Query("select count(p) from Prenotazione p where (:i between p.dataInizio and p.dataFine) or" +
+    @Query("select count(p) from Prenotazione p where p.stanza.id = :idStanza and ((:i between p.dataInizio and p.dataFine) or" +
             "(:f between p.dataInizio and p.dataFine) or" +
-            ":i <= p.dataInizio and :f >= p.dataFine")
-    int checkPrenotazioneDate(@Param("i") Date dataInizio, @Param("f") Date dataFine);
+            ":i <= p.dataInizio and :f >= p.dataFine)")
+    int checkPrenotazioneDate(@Param("i") Date dataInizio, @Param("f") Date dataFine, @Param("idStanza") Long idStanza);
 
     @Query("select count(p) from Prenotazione p where ((:dataInizio between p.dataInizio and p.dataFine) or" +
             "(:dataFine between p.dataInizio and p.dataFine) or" +
-            ":dataInizio <= p.dataInizio and :dataFine >= p.dataFine) and p.id <> :id ")
-    int checkPrenotazioneDateUpdate(@Param("dataInizio") Date dataInizio, @Param("dataFine") Date dataFine, @Param("id") Long idPrenotazione);
+            ":dataInizio <= p.dataInizio and :dataFine >= p.dataFine) and p.id <> :id and p.stanza.id = :idStanza ")
+    int checkPrenotazioneDateUpdate(@Param("dataInizio") Date dataInizio, @Param("dataFine") Date dataFine, @Param("id") Long idPrenotazione, @Param("idStanza") Long idStanza);
 
     List<Prenotazione> findPrenotazionesByStanza_Id(Long idStanza);
 }

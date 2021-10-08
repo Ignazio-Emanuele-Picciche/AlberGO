@@ -100,7 +100,7 @@ public class PrenotazioneHelper {
 
 
     public PrenotazioneDTO create(PrenotazioneDTO prenotazioneDTO) {
-        if (prenotazioneRepository.checkPrenotazioneDate(prenotazioneDTO.dataInizio, prenotazioneDTO.dataFine) == 0 && prenotazioneDTO.dataInizio.before(prenotazioneDTO.dataFine)) {
+        if (prenotazioneRepository.checkPrenotazioneDate(prenotazioneDTO.dataInizio, prenotazioneDTO.dataFine, prenotazioneDTO.idStanza) == 0 && prenotazioneDTO.dataInizio.before(prenotazioneDTO.dataFine)) {
             Prenotazione prenotazione = new Prenotazione();
 
             prenotazione.setDataInizio(prenotazioneDTO.dataInizio);
@@ -129,7 +129,7 @@ public class PrenotazioneHelper {
 
 
     public Long update(PrenotazioneDTO prenotazioneDTO){
-        if(prenotazioneRepository.checkPrenotazioneDateUpdate(prenotazioneDTO.dataInizio, prenotazioneDTO.dataFine, prenotazioneDTO.id) == 0
+        if(prenotazioneRepository.checkPrenotazioneDateUpdate(prenotazioneDTO.dataInizio, prenotazioneDTO.dataFine, prenotazioneDTO.id, prenotazioneDTO.idStanza) == 0
                 && prenotazioneDTO.dataInizio.before(prenotazioneDTO.dataFine) &&
                 prenotazioneRepository.existsById(prenotazioneDTO.id)){
 
