@@ -16,7 +16,10 @@ public class ClienteDTO {
     public String cognome;
     public String telefono;
     public String documento;
-    public Long idHotel;
+    public String username;
+    public String password;
+
+    //public Long idHotel;
 
     public ClienteDTO(Cliente c) {
         this.id = c.getId();
@@ -24,6 +27,9 @@ public class ClienteDTO {
         this.cognome = c.getCognome();
         this.telefono = c.getTelefono();
         this.documento = c.getDocumento();
-        this.idHotel = c.getHotel().getId();
+        this.username = c.getUsername();
+        this.password = c.getPassword();
+
+        //this.idHotel = c.getHotel().getId();
     }
 }

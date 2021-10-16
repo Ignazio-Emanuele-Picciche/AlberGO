@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Component
@@ -24,31 +25,31 @@ public class ClienteHelper {
     private HotelRepository hotelRepository;
 
 
-    public ClienteDTO create(ClienteDTO clienteDTO){
+    public Long create(ClienteDTO clienteDTO) {
 
-        if(!clienteRepository.existsByDocumentoAndHotel_Id(clienteDTO.documento, clienteDTO.idHotel) &&
-                !clienteDTO.documento.equals("")){
+        //exists by username, documento
+        if (!clienteRepository.existsByDocumentoOrUsername(clienteDTO.documento, clienteDTO.username) &&
+                !clienteDTO.documento.equals("") && !clienteDTO.username.equals("")) {
 
-            Cliente cliente = new Cliente();
+            Cliente cliente = Cliente.builder()
+                    .nome(clienteDTO.nome)
+                    .cognome(clienteDTO.cognome)
+                    .documento(clienteDTO.documento)
+                    .telefono(clienteDTO.telefono)
+                    .username(clienteDTO.username)
+                    .password(clienteDTO.password).build();
 
-            cliente.setNome(clienteDTO.nome);
-            cliente.setCognome(clienteDTO.cognome);
-            cliente.setDocumento(clienteDTO.documento);
-            cliente.setTelefono(clienteDTO.telefono);
-            cliente.setHotel(hotelRepository.findById(clienteDTO.idHotel).get());
-
-            clienteRepository.save(cliente);
-            return new ClienteDTO(cliente);
+            cliente = clienteRepository.save(cliente);
+            return cliente.getId();
         }
 
         throw new ClienteException(ClienteException.ClienteExcpetionCode.CLIENTE_ALREADY_EXISTS);
     }
 
 
+    public ClienteDTO update(ClienteDTO clienteDTO) {
 
-    public ClienteDTO update(ClienteDTO clienteDTO){
-
-        if(clienteRepository.existsById(clienteDTO.id)){
+        if (clienteRepository.existsById(clienteDTO.id)) {
 
             Cliente cliente = clienteRepository.findById(clienteDTO.id).get();
 
@@ -64,13 +65,13 @@ public class ClienteHelper {
     }
 
 
-    public Boolean delete(Long id){
+    public Boolean delete(Long id) {
 
-        if(clienteRepository.existsById(id)){
-            try{
+        if (clienteRepository.existsById(id)) {
+            try {
                 clienteRepository.deleteById(id);
                 return true;
-            }catch (Exception e){
+            } catch (Exception e) {
                 throw new ClienteException(ClienteException.ClienteExcpetionCode.CLIENTE_DELETE_ERROR);
             }
         }
@@ -79,17 +80,19 @@ public class ClienteHelper {
     }
 
 
-    public ClienteDTO findById(Long id){
-        if(clienteRepository.existsById(id)){
+    public ClienteDTO findById(Long id) {
+        if (clienteRepository.existsById(id)) {
             return new ClienteDTO(clienteRepository.findById(id).get());
         }
 
         throw new ClienteException(ClienteException.ClienteExcpetionCode.CLIENTE_ID_NOT_EXIST);
     }
 
-    public List<ClienteDTO> findAll(Long idHotel){
-        if(hotelRepository.existsById(idHotel)){
-            return clienteRepository.findClientesByHotel_Id(idHotel).stream().map(x -> new ClienteDTO(x)).collect(Collectors.toList());
+
+    //Cercare clienti per hotel tramite prenotazione
+    public List<ClienteDTO> findAll(Long idHotel) {
+        if (hotelRepository.existsById(idHotel)) {
+            return clienteRepository.findClientiByHotel_Id(idHotel).stream().map(x -> new ClienteDTO(x)).collect(Collectors.toList());
         }
 
         throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);

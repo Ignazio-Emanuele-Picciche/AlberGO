@@ -14,9 +14,11 @@ import java.util.Optional;
 @RequestMapping("/api/categoria")
 public class CategoriaController {
 
-    @Autowired
-    private CategoriaService categoriaService;
+    private final CategoriaService categoriaService;
 
+    public CategoriaController(CategoriaService categoriaService) {
+        this.categoriaService = categoriaService;
+    }
 
 
     @GetMapping("/dettaglio")
@@ -31,14 +33,12 @@ public class CategoriaController {
     }
 
     @PutMapping("/update")
-    @ResponseBody
-    public CategoriaDTO update(@RequestBody CategoriaDTO categoriaDTO) {
+    public Long update(@RequestBody CategoriaDTO categoriaDTO) {
         return categoriaService.update(categoriaDTO);
     }
 
     @PostMapping("/create")
-    @ResponseBody
-    public CategoriaDTO create(@RequestBody CategoriaDTO categoriaDTO) {
+    public Long create(@RequestBody CategoriaDTO categoriaDTO) {
         return categoriaService.create(categoriaDTO);
     }
 

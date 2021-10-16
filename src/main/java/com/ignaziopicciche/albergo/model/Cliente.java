@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -22,10 +23,14 @@ public class Cliente {
     private String cognome;
     private String telefono;
     private String documento;
+    private String username;
+    private String password;
 
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Prenotazione> prenotazioni;
 
-    @ManyToOne
+    /*@ManyToOne
     @JoinColumn(name = "ID_CLIENTE_HOTEL")
-    private Hotel hotel;
+    private Hotel hotel;*/
 
 }

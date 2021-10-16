@@ -14,13 +14,19 @@ import java.util.Optional;
 @Service
 public class CategoriaService {
 
-    @Autowired
-    private CategoriaHelper categoriaHelper;
+    private final CategoriaHelper categoriaHelper;
 
-    public CategoriaDTO create(CategoriaDTO categoriaDTO){
+    public CategoriaService(CategoriaHelper categoriaHelper) {
+        this.categoriaHelper = categoriaHelper;
+    }
+
+    public Long create(CategoriaDTO categoriaDTO){
         Preconditions.checkArgument(!Objects.isNull(categoriaDTO.nome));
         Preconditions.checkArgument(!Objects.isNull(categoriaDTO.descrizione));
         Preconditions.checkArgument(!Objects.isNull(categoriaDTO.prezzo));
+        Preconditions.checkArgument(!Objects.isNull(categoriaDTO.giorniPenale));
+        Preconditions.checkArgument(!Objects.isNull(categoriaDTO.giorniBlocco));
+        Preconditions.checkArgument(!Objects.isNull(categoriaDTO.qtaPenale));
         Preconditions.checkArgument(!Objects.isNull(categoriaDTO.idHotel));
 
         return categoriaHelper.create(categoriaDTO);
@@ -40,12 +46,13 @@ public class CategoriaService {
         return categoriaHelper.findById(id);
     }
 
-    public CategoriaDTO update(CategoriaDTO categoriaDTO){
+    public Long update(CategoriaDTO categoriaDTO){
         Preconditions.checkArgument(!Objects.isNull(categoriaDTO.id));
-        /*Preconditions.checkArgument(!Objects.isNull(categoriaDTO.nome)); -> il nome viene assegnato quando viene creato
+        Preconditions.checkArgument(!Objects.isNull(categoriaDTO.giorniPenale));
+        Preconditions.checkArgument(!Objects.isNull(categoriaDTO.giorniBlocco));
+        Preconditions.checkArgument(!Objects.isNull(categoriaDTO.qtaPenale));
         Preconditions.checkArgument(!Objects.isNull(categoriaDTO.descrizione));
-        Preconditions.checkArgument(!Objects.isNull(categoriaDTO.prezzo));*/
-        Preconditions.checkArgument(!Objects.isNull(categoriaDTO.idHotel));
+        Preconditions.checkArgument(!Objects.isNull(categoriaDTO.prezzo));
 
         return categoriaHelper.update(categoriaDTO);
     }

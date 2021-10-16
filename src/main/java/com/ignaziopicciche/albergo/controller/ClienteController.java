@@ -27,8 +27,7 @@ public class ClienteController {
     }
 
     @PostMapping("/create")
-    @ResponseBody
-    public ClienteDTO create(@RequestBody ClienteDTO clienteDTO){
+    public Long create(@RequestBody ClienteDTO clienteDTO){
         return clienteService.create(clienteDTO);
     }
 

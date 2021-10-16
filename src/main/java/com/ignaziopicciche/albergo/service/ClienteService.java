@@ -15,12 +15,13 @@ public class ClienteService {
     @Autowired
     private ClienteHelper clienteHelper;
 
-    public ClienteDTO create(ClienteDTO clienteDTO){
+    public Long create(ClienteDTO clienteDTO){
         Preconditions.checkArgument(!Objects.isNull(clienteDTO.nome));
         Preconditions.checkArgument(!Objects.isNull(clienteDTO.cognome));
         Preconditions.checkArgument(!Objects.isNull(clienteDTO.documento));
         Preconditions.checkArgument(!Objects.isNull(clienteDTO.telefono));
-        Preconditions.checkArgument(!Objects.isNull(clienteDTO.idHotel));
+        Preconditions.checkArgument(!Objects.isNull(clienteDTO.username));
+        Preconditions.checkArgument(!Objects.isNull(clienteDTO.password));
 
         return clienteHelper.create(clienteDTO);
     }

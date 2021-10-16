@@ -37,7 +37,9 @@ public class HotelHelper {
         throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ALREADY_EXISTS);
     }
 
-
+    /*
+    TODO non si puo cambiare niente
+     */
     public HotelDTO update(HotelDTO hotelDTO) {
 
         if (hotelRepository.existsById(hotelDTO.id)) {

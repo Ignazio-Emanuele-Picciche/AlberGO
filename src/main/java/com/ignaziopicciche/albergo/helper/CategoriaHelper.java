@@ -17,45 +17,53 @@ import java.util.stream.Collectors;
 @Component
 public class CategoriaHelper {
 
-    @Autowired
-    private CategoriaRepository categoriaRepository;
+    private final CategoriaRepository categoriaRepository;
 
-    @Autowired
-    private HotelRepository hotelRepository;
+    private final HotelRepository hotelRepository;
 
-    public CategoriaDTO create(CategoriaDTO categoriaDTO) {
+    public CategoriaHelper(CategoriaRepository categoriaRepository, HotelRepository hotelRepository) {
+        this.categoriaRepository = categoriaRepository;
+        this.hotelRepository = hotelRepository;
+    }
+
+    public Long create(CategoriaDTO categoriaDTO) {
 
         Optional<Hotel> hotel = hotelRepository.findById(categoriaDTO.idHotel);
 
         if (!categoriaRepository.existsCategoriaByNomeAndHotel(categoriaDTO.nome, hotel.get()) &&
                 !categoriaDTO.nome.equals("") && !categoriaDTO.descrizione.equals("")) {
 
-            Categoria categoria = new Categoria();
+            Categoria categoria = Categoria.builder()
+                    .nome(categoriaDTO.nome)
+                    .descrizione(categoriaDTO.descrizione)
+                    .prezzo(categoriaDTO.prezzo)
+                    .giorniPenale(categoriaDTO.giorniPenale)
+                    .qtaPenale(categoriaDTO.qtaPenale)
+                    .giorniBlocco(categoriaDTO.giorniBlocco)
+                    .hotel(hotel.get()).build();
 
-            categoria.setNome(categoriaDTO.nome);
-            categoria.setDescrizione(categoriaDTO.descrizione);
-            categoria.setPrezzo(categoriaDTO.prezzo);
-            categoria.setHotel(hotel.get());
 
-            categoriaRepository.save(categoria);
-            return new CategoriaDTO(categoria);
+            categoria = categoriaRepository.save(categoria);
+            return categoria.getId();
         }
 
         throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ALREADY_EXISTS);
 
     }
 
-    public CategoriaDTO update(CategoriaDTO categoriaDTO) {
+    public Long update(CategoriaDTO categoriaDTO) {
 
         if (categoriaRepository.existsById(categoriaDTO.id)) {
             Categoria categoria = categoriaRepository.findById(categoriaDTO.id).get();
 
             categoria.setDescrizione(categoriaDTO.descrizione);
             categoria.setPrezzo(categoriaDTO.prezzo);
-            categoria.setHotel(hotelRepository.findById(categoriaDTO.idHotel).get());
+            categoria.setGiorniPenale(categoriaDTO.giorniPenale);
+            categoria.setGiorniBlocco(categoriaDTO.giorniBlocco);
+            categoria.setQtaPenale(categoriaDTO.qtaPenale);
 
-            categoriaRepository.save(categoria);
-            return new CategoriaDTO(categoria);
+            categoria = categoriaRepository.save(categoria);
+            return categoria.getId();
         }
 
         throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ID_NOT_EXIST);
