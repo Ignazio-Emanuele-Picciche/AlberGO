@@ -2,13 +2,12 @@ package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.FatturaDTO;
 import com.ignaziopicciche.albergo.dto.PrenotazioneDTO;
-import com.ignaziopicciche.albergo.exception.ClienteException;
-import com.ignaziopicciche.albergo.exception.HotelException;
-import com.ignaziopicciche.albergo.exception.PrenotazioneException;
-import com.ignaziopicciche.albergo.exception.StanzaException;
+import com.ignaziopicciche.albergo.enums.HotelEnum;
+import com.ignaziopicciche.albergo.enums.PrenotazioneEnum;
+import com.ignaziopicciche.albergo.enums.StanzaEnum;
+import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.*;
 import com.ignaziopicciche.albergo.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -24,6 +23,10 @@ public class PrenotazioneHelper {
     private final StanzaRepository stanzaRepository;
     private final CategoriaRepository categoriaRepository;
 
+    private static PrenotazioneEnum prenotazioneEnum;
+    private static HotelEnum hotelEnum;
+    private static StanzaEnum stanzaEnum;
+
     public PrenotazioneHelper(PrenotazioneRepository prenotazioneRepository, HotelRepository hotelRepository, ClienteRepository clienteRepository, StanzaRepository stanzaRepository, CategoriaRepository categoriaRepository) {
         this.prenotazioneRepository = prenotazioneRepository;
         this.hotelRepository = hotelRepository;
@@ -38,7 +41,8 @@ public class PrenotazioneHelper {
             return new PrenotazioneDTO(prenotazioneRepository.findById(id).get());
         }
 
-        throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.PRENOTAZIONE_ID_NOT_EXIST);
+        prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_IDNE");
+        throw new ApiRequestException(prenotazioneEnum.getMessage());
     }
 
     public List<FatturaDTO> findAll(Long idHotel) {
@@ -59,7 +63,8 @@ public class PrenotazioneHelper {
             return prenotazioniList;
         }
 
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
+        throw new ApiRequestException(hotelEnum.getMessage());
     }
 
     public List<FatturaDTO> findAllFatture(Long idCliente) {
@@ -81,7 +86,8 @@ public class PrenotazioneHelper {
             return fattureList;
         }
 
-        throw new ClienteException(ClienteException.ClienteExcpetionCode.CLIENTE_ID_NOT_EXIST);
+        prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_IDNE");
+        throw new ApiRequestException(prenotazioneEnum.getMessage());
     }
 
 
@@ -91,11 +97,13 @@ public class PrenotazioneHelper {
                 prenotazioneRepository.deleteById(id);
                 return true;
             } catch (Exception e) {
-                throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.PRENOTAZIONE_DELETE_ERROR);
+                prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_DLE");
+                throw new ApiRequestException(prenotazioneEnum.getMessage());
             }
         }
 
-        throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.PRENOTAZIONE_NOT_FOUND);
+        prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_NF");
+        throw new ApiRequestException(prenotazioneEnum.getMessage());
     }
 
 
@@ -114,7 +122,8 @@ public class PrenotazioneHelper {
             return new PrenotazioneDTO(prenotazione);
         }
 
-        throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.PRENOTAZIONE_DATE_NOT_COMPATIBLE);
+        prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_DNC");
+        throw new ApiRequestException(prenotazioneEnum.getMessage());
     }
 
 
@@ -124,14 +133,15 @@ public class PrenotazioneHelper {
             return prenotazioniLista.stream().map(x -> new PrenotazioneDTO(x)).collect(Collectors.toList());
         }
 
-        throw new StanzaException(StanzaException.StanzaExceptionCode.STANZA_ID_NOT_EXIST);
+        stanzaEnum = StanzaEnum.getStanzaEnumByMessageCode("STA_IDNE");
+        throw new ApiRequestException(stanzaEnum.getMessage());
     }
 
 
-    public Long update(PrenotazioneDTO prenotazioneDTO){
-        if(prenotazioneRepository.checkPrenotazioneDateUpdate(prenotazioneDTO.dataInizio, prenotazioneDTO.dataFine, prenotazioneDTO.id, prenotazioneDTO.idStanza) == 0
+    public Long update(PrenotazioneDTO prenotazioneDTO) {
+        if (prenotazioneRepository.checkPrenotazioneDateUpdate(prenotazioneDTO.dataInizio, prenotazioneDTO.dataFine, prenotazioneDTO.id, prenotazioneDTO.idStanza) == 0
                 && prenotazioneDTO.dataInizio.before(prenotazioneDTO.dataFine) &&
-                prenotazioneRepository.existsById(prenotazioneDTO.id)){
+                prenotazioneRepository.existsById(prenotazioneDTO.id)) {
 
             Prenotazione prenotazione = prenotazioneRepository.findById(prenotazioneDTO.id).get();
             prenotazione.setDataInizio(prenotazioneDTO.dataInizio);
@@ -141,8 +151,9 @@ public class PrenotazioneHelper {
             return prenotazione.getId();
 
         }
-        throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.PRENOTAZIONE_DATE_NOT_COMPATIBLE);
 
+        prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_DNC");
+        throw new ApiRequestException(prenotazioneEnum.getMessage());
     }
 
 }

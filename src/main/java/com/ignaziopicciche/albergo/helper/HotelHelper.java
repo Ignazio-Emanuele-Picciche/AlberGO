@@ -1,10 +1,10 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.HotelDTO;
-import com.ignaziopicciche.albergo.exception.HotelException;
+import com.ignaziopicciche.albergo.enums.HotelEnum;
+import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 public class HotelHelper {
 
     private final HotelRepository hotelRepository;
+
+    private static HotelEnum hotelEnum;
 
     public HotelHelper(HotelRepository hotelRepository) {
         this.hotelRepository = hotelRepository;
@@ -34,7 +36,8 @@ public class HotelHelper {
             return new HotelDTO(hotel);
         }
 
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ALREADY_EXISTS);
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_AE");
+        throw new ApiRequestException(hotelEnum.getMessage());
     }
 
     /*
@@ -53,7 +56,8 @@ public class HotelHelper {
             return new HotelDTO(hotel);
         }
 
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_NOT_FOUND);
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_NF");
+        throw new ApiRequestException(hotelEnum.getMessage());
     }
 
 
@@ -62,7 +66,9 @@ public class HotelHelper {
         if (hotelRepository.existsById(id)) {
             return new HotelDTO(hotelRepository.findById(id).get());
         }
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
+
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
+        throw new ApiRequestException(hotelEnum.getMessage());
     }
 
 

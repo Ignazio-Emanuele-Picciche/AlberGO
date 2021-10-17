@@ -1,9 +1,9 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.ServizioDTO;
-import com.ignaziopicciche.albergo.exception.HotelException;
-import com.ignaziopicciche.albergo.exception.PrenotazioneException;
-import com.ignaziopicciche.albergo.exception.ServizioException;
+import com.ignaziopicciche.albergo.enums.HotelEnum;
+import com.ignaziopicciche.albergo.enums.ServizioEnum;
+import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Servizio;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
 import com.ignaziopicciche.albergo.repository.PrenotazioneRepository;
@@ -20,6 +20,9 @@ public class ServizioHelper {
     private final HotelRepository hotelRepository;
     private final PrenotazioneRepository prenotazioneRepository;
 
+    private static ServizioEnum servizioEnum;
+    private static HotelEnum hotelEnum;
+
     public ServizioHelper(ServizioRepository servizioRepository, HotelRepository hotelRepository, PrenotazioneRepository prenotazioneRepository) {
         this.servizioRepository = servizioRepository;
         this.hotelRepository = hotelRepository;
@@ -33,19 +36,20 @@ public class ServizioHelper {
             return new ServizioDTO(servizio);
         }
 
-        throw new ServizioException(ServizioException.ServizioExcpetionCode.SERVIZIO_ID_NOT_EXIST);
+        servizioEnum = ServizioEnum.getServizioEnumByMessageCode("SERV_IDNE");
+        throw new ApiRequestException(servizioEnum.getMessage());
     }
 
-    public List<ServizioDTO> findAll(Long idHotel){
-        if(hotelRepository.existsById(idHotel)){
+    public List<ServizioDTO> findAll(Long idHotel) {
+        if (hotelRepository.existsById(idHotel)) {
 
             List<Servizio> servizi = servizioRepository.findAllByHotel_Id(idHotel);
             return servizi.stream().map(servizio -> new ServizioDTO(servizio)).collect(Collectors.toList());
         }
 
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
+        throw new ApiRequestException(hotelEnum.getMessage());
     }
-
 
 
     public Long create(ServizioDTO servizioDTO) {
@@ -62,10 +66,10 @@ public class ServizioHelper {
 
         }
 
-        throw new ServizioException(ServizioException.ServizioExcpetionCode.SERVIZIO_ALREADY_EXISTS);
+        servizioEnum = ServizioEnum.getServizioEnumByMessageCode("SERV_AE");
+        throw new ApiRequestException(servizioEnum.getMessage());
 
     }
-
 
 
     public Boolean delete(Long id) {
@@ -74,11 +78,13 @@ public class ServizioHelper {
                 servizioRepository.deleteById(id);
                 return true;
             } catch (Exception e) {
-                throw new ServizioException(ServizioException.ServizioExcpetionCode.SERVIZIO_DELETE_ERROR);
+                servizioEnum = ServizioEnum.getServizioEnumByMessageCode("SERV_DLE");
+                throw new ApiRequestException(servizioEnum.getMessage());
             }
         }
 
-        throw new ServizioException(ServizioException.ServizioExcpetionCode.SERVIZIO_NOT_FOUND);
+        servizioEnum = ServizioEnum.getServizioEnumByMessageCode("SERV_NF");
+        throw new ApiRequestException(servizioEnum.getMessage());
     }
 
 
@@ -94,7 +100,8 @@ public class ServizioHelper {
             return servizio.getId();
         }
 
-        throw new ServizioException(ServizioException.ServizioExcpetionCode.SERVIZIO_ID_NOT_EXIST);
+        servizioEnum = ServizioEnum.getServizioEnumByMessageCode("SERV_IDNE");
+        throw new ApiRequestException(servizioEnum.getMessage());
     }
 
 

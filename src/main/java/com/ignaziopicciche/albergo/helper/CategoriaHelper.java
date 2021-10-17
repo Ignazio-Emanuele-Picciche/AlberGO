@@ -1,13 +1,13 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.CategoriaDTO;
-import com.ignaziopicciche.albergo.exception.CategoriaException;
-import com.ignaziopicciche.albergo.exception.HotelException;
+import com.ignaziopicciche.albergo.enums.CategoriaEnum;
+import com.ignaziopicciche.albergo.enums.HotelEnum;
+import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Categoria;
 import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.CategoriaRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,6 +20,9 @@ public class CategoriaHelper {
     private final CategoriaRepository categoriaRepository;
 
     private final HotelRepository hotelRepository;
+
+    private static CategoriaEnum categoriaEnum;
+    private static HotelEnum hotelEnum;
 
     public CategoriaHelper(CategoriaRepository categoriaRepository, HotelRepository hotelRepository) {
         this.categoriaRepository = categoriaRepository;
@@ -47,7 +50,8 @@ public class CategoriaHelper {
             return categoria.getId();
         }
 
-        throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ALREADY_EXISTS);
+        categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_AE");
+        throw new ApiRequestException(categoriaEnum.getMessage());
 
     }
 
@@ -66,7 +70,8 @@ public class CategoriaHelper {
             return categoria.getId();
         }
 
-        throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ID_NOT_EXIST);
+        categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_IDNE");
+        throw new ApiRequestException(categoriaEnum.getMessage());
 
     }
 
@@ -77,11 +82,14 @@ public class CategoriaHelper {
                 categoriaRepository.deleteById(id);
                 return true;
             } catch (Exception e) {
-                throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_DELETE_ERROR);
+                categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_DLE");
+                throw new ApiRequestException(categoriaEnum.getMessage());
             }
         }
 
-        throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ID_NOT_EXIST);
+
+        categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_IDNE");
+        throw new ApiRequestException(categoriaEnum.getMessage());
     }
 
 
@@ -90,7 +98,8 @@ public class CategoriaHelper {
             return new CategoriaDTO(categoriaRepository.findById(id).get());
         }
 
-        throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_NOT_FOUND);
+        categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_NF");
+        throw new ApiRequestException(categoriaEnum.getMessage());
     }
 
 
@@ -101,8 +110,8 @@ public class CategoriaHelper {
             return listCategorie.stream().map(x -> new CategoriaDTO(x)).collect(Collectors.toList());
         }
 
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
-
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
+        throw new ApiRequestException(hotelEnum.getMessage());
     }
 
 }

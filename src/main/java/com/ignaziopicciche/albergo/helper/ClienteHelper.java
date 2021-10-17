@@ -1,18 +1,16 @@
 package com.ignaziopicciche.albergo.helper;
 
-import com.ignaziopicciche.albergo.dto.CategoriaDTO;
 import com.ignaziopicciche.albergo.dto.ClienteDTO;
-import com.ignaziopicciche.albergo.exception.ClienteException;
-import com.ignaziopicciche.albergo.exception.HotelException;
+import com.ignaziopicciche.albergo.enums.ClienteEnum;
+import com.ignaziopicciche.albergo.enums.HotelEnum;
+import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Cliente;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Component
@@ -24,6 +22,8 @@ public class ClienteHelper {
     @Autowired
     private HotelRepository hotelRepository;
 
+    private static ClienteEnum clienteEnum;
+    private static HotelEnum hotelEnum;
 
     public Long create(ClienteDTO clienteDTO) {
 
@@ -43,7 +43,8 @@ public class ClienteHelper {
             return cliente.getId();
         }
 
-        throw new ClienteException(ClienteException.ClienteExcpetionCode.CLIENTE_ALREADY_EXISTS);
+        clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_AE");
+        throw new ApiRequestException(clienteEnum.getMessage());
     }
 
 
@@ -61,7 +62,8 @@ public class ClienteHelper {
             return new ClienteDTO(cliente);
         }
 
-        throw new ClienteException(ClienteException.ClienteExcpetionCode.CLIENTE_NOT_FOUND);
+        clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_NF");
+        throw new ApiRequestException(clienteEnum.getMessage());
     }
 
 
@@ -72,11 +74,13 @@ public class ClienteHelper {
                 clienteRepository.deleteById(id);
                 return true;
             } catch (Exception e) {
-                throw new ClienteException(ClienteException.ClienteExcpetionCode.CLIENTE_DELETE_ERROR);
+                clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_DLE");
+                throw new ApiRequestException(clienteEnum.getMessage());
             }
         }
 
-        throw new ClienteException(ClienteException.ClienteExcpetionCode.CLIENTE_ID_NOT_EXIST);
+        clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_IDNE");
+        throw new ApiRequestException(clienteEnum.getMessage());
     }
 
 
@@ -85,7 +89,8 @@ public class ClienteHelper {
             return new ClienteDTO(clienteRepository.findById(id).get());
         }
 
-        throw new ClienteException(ClienteException.ClienteExcpetionCode.CLIENTE_ID_NOT_EXIST);
+        clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_IDNE");
+        throw new ApiRequestException(clienteEnum.getMessage());
     }
 
 
@@ -95,6 +100,7 @@ public class ClienteHelper {
             return clienteRepository.findClientiByHotel_Id(idHotel).stream().map(x -> new ClienteDTO(x)).collect(Collectors.toList());
         }
 
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
+        throw new ApiRequestException(hotelEnum.getMessage());
     }
 }
