@@ -1,5 +1,6 @@
 package com.ignaziopicciche.albergo.repository;
 
+import com.ignaziopicciche.albergo.dto.PrenotazioneDTO;
 import com.ignaziopicciche.albergo.model.Prenotazione;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -27,4 +28,27 @@ public interface PrenotazioneRepository extends JpaRepository<Prenotazione, Long
     int checkPrenotazioneDateUpdate(@Param("dataInizio") Date dataInizio, @Param("dataFine") Date dataFine, @Param("id") Long idPrenotazione, @Param("idStanza") Long idStanza);
 
     List<Prenotazione> findPrenotazionesByStanza_Id(Long idStanza);
+
+
+    List<Prenotazione> findPrenotazionesByCliente_NomeStartingWith(String nomeCliente);
+    List<Prenotazione> findPrenotazionesByCliente_CognomeStartingWith(String cognomeCliente);
+
+    @Query("select distinct (p) from Prenotazione p where p.cliente.nome like :nomeCliente% and " +
+            "((:dataInizio between p.dataInizio and p.dataFine) or" +
+            "(:dataFine between p.dataInizio and p.dataFine) or" +
+            ":dataInizio <= p.dataInizio and :dataFine >= p.dataFine)")
+    List<Prenotazione> findAllByNomeClienteAndDataInizioAndDataFine(@Param("nomeCliente") String nomeCliente, @Param("dataInizio") Date dataInizio, @Param("dataFine") Date dataFine);
+
+    @Query("select distinct (p) from Prenotazione p where p.cliente.cognome like :cognomeCliente% and " +
+            "((:dataInizio between p.dataInizio and p.dataFine) or" +
+            "(:dataFine between p.dataInizio and p.dataFine) or" +
+            ":dataInizio <= p.dataInizio and :dataFine >= p.dataFine)")
+    List<Prenotazione> findAllByCognomeClienteAndDataInizioAndDataFine(@Param("cognomeCliente") String cognomeCliente, @Param("dataInizio") Date dataInizio, @Param("dataFine") Date dataFine);
+
+    @Query("select distinct (p) from Prenotazione p where " +
+            "((:dataInizio between p.dataInizio and p.dataFine) or" +
+            "(:dataFine between p.dataInizio and p.dataFine) or" +
+            ":dataInizio <= p.dataInizio and :dataFine >= p.dataFine)")
+    List<Prenotazione> findAllByDataInizioAndDataFine(@Param("dataInizio") Date dataInizio, @Param("dataFine") Date dataFine);
+
 }

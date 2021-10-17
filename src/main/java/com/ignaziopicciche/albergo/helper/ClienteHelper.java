@@ -94,7 +94,6 @@ public class ClienteHelper {
     }
 
 
-    //Cercare clienti per hotel tramite prenotazione
     public List<ClienteDTO> findAll(Long idHotel) {
         if (hotelRepository.existsById(idHotel)) {
             return clienteRepository.findClientiByHotel_Id(idHotel).stream().map(x -> new ClienteDTO(x)).collect(Collectors.toList());
@@ -103,4 +102,20 @@ public class ClienteHelper {
         hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
         throw new ApiRequestException(hotelEnum.getMessage());
     }
+
+    public List<ClienteDTO> findAllByNomeCognome(String nome, String cognome) {
+        List<Cliente> clienti;
+
+        if (cognome == null && nome != null) {
+            clienti = clienteRepository.findClientesByNomeStartingWith(nome);
+            return clienti.stream().map(cliente -> new ClienteDTO(cliente)).collect(Collectors.toList());
+        }else if(nome == null && cognome != null){
+            clienti = clienteRepository.findClientesByCognomeStartingWith(cognome);
+            return clienti.stream().map(cliente -> new ClienteDTO(cliente)).collect(Collectors.toList());
+        }
+
+        clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_NF");
+        throw new ApiRequestException(clienteEnum.getMessage());
+    }
+
 }

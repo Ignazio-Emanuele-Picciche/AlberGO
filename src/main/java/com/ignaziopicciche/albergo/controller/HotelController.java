@@ -35,7 +35,7 @@ public class HotelController {
 
     //TODO aggiornare le api
     //Trova gli hotel con il nome che inizia per...
-    @GetMapping("/searchName")
+    @GetMapping("/searchNome")
     public List<HotelDTO> findHotelByName(@RequestParam("nomeHotel") String nomeHotel){
         return hotelService.findHotelByName(nomeHotel);
     }

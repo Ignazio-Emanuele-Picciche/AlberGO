@@ -3,6 +3,7 @@ package com.ignaziopicciche.albergo.controller;
 import com.ignaziopicciche.albergo.dto.ClienteDTO;
 import com.ignaziopicciche.albergo.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,5 +42,13 @@ public class ClienteController {
     public Boolean delete(@RequestParam(name = "idCliente") Long id){
         return clienteService.delete(id);
     }
+
+    //TODO Aggiungere alla lista delle api
+    //find all Cienti startWith nome or cognome
+    @GetMapping("/searchNomeCognome")
+    public List<ClienteDTO> findAllByNomeCognome(@RequestParam("nome") String nome, @RequestParam("cognome") String cognome){
+        return clienteService.findAllByNomeCognome(nome, cognome);
+    }
+
 
 }

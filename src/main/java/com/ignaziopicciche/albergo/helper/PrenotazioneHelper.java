@@ -8,9 +8,11 @@ import com.ignaziopicciche.albergo.enums.StanzaEnum;
 import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.*;
 import com.ignaziopicciche.albergo.repository.*;
+import org.apache.tomcat.util.buf.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -155,5 +157,34 @@ public class PrenotazioneHelper {
         prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_DNC");
         throw new ApiRequestException(prenotazioneEnum.getMessage());
     }
+
+
+    public List<PrenotazioneDTO> findAllByNomeCognomeClienteAndDataInizioAndDataFine(String nomeCliente, String cognomeCliente, Date dataInizio, Date dataFine) {
+
+        List<Prenotazione> prenotazioni;
+
+
+        if (dataInizio == null && dataFine == null && cognomeCliente == null && nomeCliente != null) {
+            prenotazioni = prenotazioneRepository.findPrenotazionesByCliente_NomeStartingWith(nomeCliente);
+            return prenotazioni.stream().map(prenotazione -> new PrenotazioneDTO(prenotazione)).collect(Collectors.toList());
+        } else if (dataInizio == null && dataFine == null && nomeCliente == null && cognomeCliente != null) {
+            prenotazioni = prenotazioneRepository.findPrenotazionesByCliente_CognomeStartingWith(cognomeCliente);
+            return prenotazioni.stream().map(prenotazione -> new PrenotazioneDTO(prenotazione)).collect(Collectors.toList());
+        } else if (cognomeCliente == null && dataInizio != null && dataFine != null && nomeCliente != null) {
+            prenotazioni = prenotazioneRepository.findAllByNomeClienteAndDataInizioAndDataFine(nomeCliente, dataInizio, dataFine);
+            return prenotazioni.stream().map(prenotazione -> new PrenotazioneDTO(prenotazione)).collect(Collectors.toList());
+        } else if (nomeCliente == null && dataInizio != null && dataFine != null && cognomeCliente != null) {
+            prenotazioni = prenotazioneRepository.findAllByCognomeClienteAndDataInizioAndDataFine(cognomeCliente, dataInizio, dataFine);
+            return prenotazioni.stream().map(prenotazione -> new PrenotazioneDTO(prenotazione)).collect(Collectors.toList());
+        } else if (nomeCliente == null && cognomeCliente == null && dataInizio != null && dataFine != null) {
+            prenotazioni = prenotazioneRepository.findAllByDataInizioAndDataFine(dataInizio, dataFine);
+            return prenotazioni.stream().map(prenotazione -> new PrenotazioneDTO(prenotazione)).collect(Collectors.toList());
+        }
+
+        prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_NF");
+        throw new ApiRequestException(prenotazioneEnum.getMessage());
+
+    }
+
 
 }

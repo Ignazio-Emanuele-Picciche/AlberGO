@@ -1,6 +1,7 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.CategoriaDTO;
+import com.ignaziopicciche.albergo.dto.ClienteDTO;
 import com.ignaziopicciche.albergo.enums.CategoriaEnum;
 import com.ignaziopicciche.albergo.enums.HotelEnum;
 import com.ignaziopicciche.albergo.handler.ApiRequestException;
@@ -114,4 +115,9 @@ public class CategoriaHelper {
         throw new ApiRequestException(hotelEnum.getMessage());
     }
 
+
+    public List<CategoriaDTO> findAllByNome(String nome) {
+        List<Categoria> categorie = categoriaRepository.findCategoriasByNomeStartingWith(nome);
+        return categorie.stream().map(categoria -> new CategoriaDTO(categoria)).collect(Collectors.toList());
+    }
 }

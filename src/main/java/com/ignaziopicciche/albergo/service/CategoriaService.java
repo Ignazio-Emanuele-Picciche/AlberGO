@@ -59,9 +59,14 @@ public class CategoriaService {
 
 
     public List<CategoriaDTO> findAll(Long idHotel){
-        Preconditions.checkNotNull(idHotel);
+        Preconditions.checkArgument(!Objects.isNull(idHotel));
 
         return categoriaHelper.findAll(idHotel);
+    }
+
+    public List<CategoriaDTO> findAllByNome(String nome) {
+        Preconditions.checkArgument(!Objects.isNull(nome));
+        return categoriaHelper.findAllByNome(nome);
     }
 
 }
