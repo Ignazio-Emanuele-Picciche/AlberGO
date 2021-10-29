@@ -43,7 +43,7 @@ public class ClienteController {
         return clienteService.delete(id);
     }
 
-    //TODO Aggiungere alla lista delle api
+
     //find all Cienti startWith nome or cognome
     @GetMapping("/searchNomeCognome")
     public List<ClienteDTO> findAllByNomeCognome(@RequestParam("nome") String nome, @RequestParam("cognome") String cognome){

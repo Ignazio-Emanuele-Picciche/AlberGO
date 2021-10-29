@@ -77,7 +77,7 @@ public class PrenotazioneService {
     }
 
 
-    public List<PrenotazioneDTO> findAllByNomeCognomeClienteAndDataInizioAndDataFine(String nomeCliente, String cognomeCliente, String dInizio, String dFine) throws ParseException {
+    public List<FatturaDTO> findAllByNomeCognomeClienteAndDataInizioAndDataFine(String nomeCliente, String cognomeCliente, String dInizio, String dFine) throws ParseException {
         Date dataInizio = StringUtils.isNotBlank(dInizio) ? new SimpleDateFormat("yyyy-MM-dd").parse(dInizio) : null;
         Date dataFine = StringUtils.isNotBlank(dFine) ? new SimpleDateFormat("yyyy-MM-dd").parse(dFine) : null;
         nomeCliente = StringUtils.isNotBlank(nomeCliente) ? nomeCliente : null;

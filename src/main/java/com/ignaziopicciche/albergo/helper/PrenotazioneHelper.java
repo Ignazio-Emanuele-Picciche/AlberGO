@@ -50,19 +50,11 @@ public class PrenotazioneHelper {
     public List<FatturaDTO> findAll(Long idHotel) {
         if (hotelRepository.existsById(idHotel)) {
             List<Prenotazione> prenotazioni = prenotazioneRepository.findPrenotazionesByHotel_Id(idHotel);
-            List<FatturaDTO> prenotazioniList = new ArrayList<>();
+            List<FatturaDTO> fatture;
 
-            for (Prenotazione p : prenotazioni) {
-                Cliente cliente = p.getCliente();
-                Stanza stanza = p.getStanza();
-                Categoria categoria = p.getStanza().getCategoria();
-                Hotel hotel = p.getHotel();
+            fatture = convertPrenotazioneToFattura(prenotazioni);
 
-
-                prenotazioniList.add(new FatturaDTO(p, cliente, stanza, categoria, hotel));
-            }
-
-            return prenotazioniList;
+            return fatture;
         }
 
         hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
@@ -159,30 +151,48 @@ public class PrenotazioneHelper {
     }
 
 
-    public List<PrenotazioneDTO> findAllByNomeCognomeClienteAndDataInizioAndDataFine(String nomeCliente, String cognomeCliente, Date dataInizio, Date dataFine) {
+    public List<FatturaDTO> findAllByNomeCognomeClienteAndDataInizioAndDataFine(String nomeCliente, String cognomeCliente, Date dataInizio, Date dataFine) {
 
         List<Prenotazione> prenotazioni;
 
 
         if (dataInizio == null && dataFine == null && cognomeCliente == null && nomeCliente != null) {
             prenotazioni = prenotazioneRepository.findPrenotazionesByCliente_NomeStartingWith(nomeCliente);
-            return prenotazioni.stream().map(prenotazione -> new PrenotazioneDTO(prenotazione)).collect(Collectors.toList());
+            return convertPrenotazioneToFattura(prenotazioni);
         } else if (dataInizio == null && dataFine == null && nomeCliente == null && cognomeCliente != null) {
             prenotazioni = prenotazioneRepository.findPrenotazionesByCliente_CognomeStartingWith(cognomeCliente);
-            return prenotazioni.stream().map(prenotazione -> new PrenotazioneDTO(prenotazione)).collect(Collectors.toList());
+            return convertPrenotazioneToFattura(prenotazioni);
         } else if (cognomeCliente == null && dataInizio != null && dataFine != null && nomeCliente != null) {
             prenotazioni = prenotazioneRepository.findAllByNomeClienteAndDataInizioAndDataFine(nomeCliente, dataInizio, dataFine);
-            return prenotazioni.stream().map(prenotazione -> new PrenotazioneDTO(prenotazione)).collect(Collectors.toList());
+            return convertPrenotazioneToFattura(prenotazioni);
         } else if (nomeCliente == null && dataInizio != null && dataFine != null && cognomeCliente != null) {
             prenotazioni = prenotazioneRepository.findAllByCognomeClienteAndDataInizioAndDataFine(cognomeCliente, dataInizio, dataFine);
-            return prenotazioni.stream().map(prenotazione -> new PrenotazioneDTO(prenotazione)).collect(Collectors.toList());
+            return convertPrenotazioneToFattura(prenotazioni);
         } else if (nomeCliente == null && cognomeCliente == null && dataInizio != null && dataFine != null) {
             prenotazioni = prenotazioneRepository.findAllByDataInizioAndDataFine(dataInizio, dataFine);
-            return prenotazioni.stream().map(prenotazione -> new PrenotazioneDTO(prenotazione)).collect(Collectors.toList());
+            return convertPrenotazioneToFattura(prenotazioni);
         }
 
         prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_NF");
         throw new ApiRequestException(prenotazioneEnum.getMessage());
+
+    }
+
+
+    public List<FatturaDTO> convertPrenotazioneToFattura(List<Prenotazione> prenotazioni) {
+
+        List<FatturaDTO> fatture = new ArrayList<>();
+
+        for (Prenotazione p : prenotazioni) {
+            Cliente cliente = p.getCliente();
+            Stanza stanza = p.getStanza();
+            Categoria categoria = p.getStanza().getCategoria();
+            Hotel hotel = p.getHotel();
+
+            fatture.add(new FatturaDTO(p, cliente, stanza, categoria, hotel));
+        }
+
+        return fatture;
 
     }
 
