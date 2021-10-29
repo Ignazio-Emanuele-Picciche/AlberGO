@@ -14,7 +14,6 @@ public class ServizioDTO {
     public String nome;
     public Double prezzo;
     public Long idHotel;
-    public Long idPrenotazione;
 
     public ServizioDTO(Servizio servizio){
         this.id = servizio.getId();

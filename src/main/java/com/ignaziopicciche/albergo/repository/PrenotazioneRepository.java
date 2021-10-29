@@ -30,25 +30,27 @@ public interface PrenotazioneRepository extends JpaRepository<Prenotazione, Long
     List<Prenotazione> findPrenotazionesByStanza_Id(Long idStanza);
 
 
-    List<Prenotazione> findPrenotazionesByCliente_NomeStartingWith(String nomeCliente);
-    List<Prenotazione> findPrenotazionesByCliente_CognomeStartingWith(String cognomeCliente);
+    List<Prenotazione> findPrenotazionesByCliente_NomeStartingWithAndHotel_Id(String nomeCliente, Long idHotel);
+    List<Prenotazione> findPrenotazionesByCliente_CognomeStartingWithAndHotel_Id(String cognomeCliente, Long idHotel);
 
-    @Query("select distinct (p) from Prenotazione p where p.cliente.nome like :nomeCliente% and " +
+    @Query("select distinct (p) from Prenotazione p where p.cliente.nome like :nomeCliente% and p.hotel.id = :idHotel and " +
             "((:dataInizio between p.dataInizio and p.dataFine) or" +
             "(:dataFine between p.dataInizio and p.dataFine) or" +
             ":dataInizio <= p.dataInizio and :dataFine >= p.dataFine)")
-    List<Prenotazione> findAllByNomeClienteAndDataInizioAndDataFine(@Param("nomeCliente") String nomeCliente, @Param("dataInizio") Date dataInizio, @Param("dataFine") Date dataFine);
+    List<Prenotazione> findAllByNomeClienteAndDataInizioAndDataFine(@Param("nomeCliente") String nomeCliente, @Param("dataInizio") Date dataInizio, @Param("dataFine") Date dataFine, @Param("idHotel") Long idHotel);
 
-    @Query("select distinct (p) from Prenotazione p where p.cliente.cognome like :cognomeCliente% and " +
+    @Query("select distinct (p) from Prenotazione p where p.cliente.cognome like :cognomeCliente% and p.hotel.id = :idHotel and" +
             "((:dataInizio between p.dataInizio and p.dataFine) or" +
             "(:dataFine between p.dataInizio and p.dataFine) or" +
             ":dataInizio <= p.dataInizio and :dataFine >= p.dataFine)")
-    List<Prenotazione> findAllByCognomeClienteAndDataInizioAndDataFine(@Param("cognomeCliente") String cognomeCliente, @Param("dataInizio") Date dataInizio, @Param("dataFine") Date dataFine);
+    List<Prenotazione> findAllByCognomeClienteAndDataInizioAndDataFine(@Param("cognomeCliente") String cognomeCliente, @Param("dataInizio") Date dataInizio, @Param("dataFine") Date dataFine, @Param("idHotel") Long idHotel);
 
-    @Query("select distinct (p) from Prenotazione p where " +
+    @Query("select distinct (p) from Prenotazione p where p.hotel.id = :idHotel and" +
             "((:dataInizio between p.dataInizio and p.dataFine) or" +
             "(:dataFine between p.dataInizio and p.dataFine) or" +
             ":dataInizio <= p.dataInizio and :dataFine >= p.dataFine)")
-    List<Prenotazione> findAllByDataInizioAndDataFine(@Param("dataInizio") Date dataInizio, @Param("dataFine") Date dataFine);
+    List<Prenotazione> findAllByDataInizioAndDataFine(@Param("dataInizio") Date dataInizio, @Param("dataFine") Date dataFine, @Param("idHotel") Long idHotel);
 
+
+    Boolean existsPrenotazioneByIdAndHotel_Id(Long idPrenotazione, Long idHotel);
 }

@@ -40,10 +40,8 @@ public class HotelHelper {
         throw new ApiRequestException(hotelEnum.getMessage());
     }
 
-    /*
-    TODO non si puo cambiare niente
-     */
-    public HotelDTO update(HotelDTO hotelDTO) {
+
+    /*public HotelDTO update(HotelDTO hotelDTO) {
 
         if (hotelRepository.existsById(hotelDTO.id)) {
             Hotel hotel = hotelRepository.findById(hotelDTO.id).get();
@@ -58,7 +56,7 @@ public class HotelHelper {
 
         hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_NF");
         throw new ApiRequestException(hotelEnum.getMessage());
-    }
+    }*/
 
 
     public HotelDTO findById(Long id) {

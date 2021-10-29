@@ -4,9 +4,11 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,9 +31,10 @@ public class Servizio {
     @JoinColumn(name = "servizioId"), inverseJoinColumns =
     @JoinColumn(name = "prenotazioneId"))
     @Singular("prenotazione")
-    private List<Prenotazione> prenotazioni;
+    private Set<Prenotazione> prenotazioni;
 
 
-
-
+    public void addPrenotazione(Prenotazione prenotazione) {
+        prenotazioni.add(prenotazione);
+    }
 }

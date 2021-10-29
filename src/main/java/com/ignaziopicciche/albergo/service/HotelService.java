@@ -29,14 +29,14 @@ public class HotelService {
         return hotelHelper.create(hotelDTO);
     }
 
-    public HotelDTO update(HotelDTO hotelDTO) {
+    /*public HotelDTO update(HotelDTO hotelDTO) {
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.id));
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.stelle));
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.descrizione));
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.telefono));
 
         return hotelHelper.update(hotelDTO);
-    }
+    }*/
 
     public HotelDTO findById(Long id) {
         Preconditions.checkArgument(!Objects.isNull(id));

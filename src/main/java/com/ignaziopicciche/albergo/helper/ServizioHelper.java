@@ -2,15 +2,19 @@ package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.ServizioDTO;
 import com.ignaziopicciche.albergo.enums.HotelEnum;
+import com.ignaziopicciche.albergo.enums.PrenotazioneEnum;
 import com.ignaziopicciche.albergo.enums.ServizioEnum;
 import com.ignaziopicciche.albergo.handler.ApiRequestException;
+import com.ignaziopicciche.albergo.model.Prenotazione;
 import com.ignaziopicciche.albergo.model.Servizio;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
 import com.ignaziopicciche.albergo.repository.PrenotazioneRepository;
 import com.ignaziopicciche.albergo.repository.ServizioRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -22,6 +26,7 @@ public class ServizioHelper {
 
     private static ServizioEnum servizioEnum;
     private static HotelEnum hotelEnum;
+    private static PrenotazioneEnum prenotazioneEnum;
 
     public ServizioHelper(ServizioRepository servizioRepository, HotelRepository hotelRepository, PrenotazioneRepository prenotazioneRepository) {
         this.servizioRepository = servizioRepository;
@@ -32,7 +37,7 @@ public class ServizioHelper {
 
     public ServizioDTO findById(Long id) {
         if (servizioRepository.existsById(id)) {
-            Servizio servizio = servizioRepository.findById(id).orElseThrow(RuntimeException::new);
+            Servizio servizio = servizioRepository.findById(id).get();
             return new ServizioDTO(servizio);
         }
 
@@ -58,8 +63,7 @@ public class ServizioHelper {
             Servizio servizio = Servizio.builder()
                     .nome(servizioDTO.nome)
                     .prezzo(servizioDTO.prezzo)
-                    .hotel(hotelRepository.findById(servizioDTO.idHotel).get())
-                    .prenotazione(prenotazioneRepository.findById(servizioDTO.idPrenotazione).orElseThrow(RuntimeException::new)).build();
+                    .hotel(hotelRepository.findById(servizioDTO.idHotel).get()).build();
 
             servizio = servizioRepository.save(servizio);
             return servizio.getId();
@@ -91,7 +95,7 @@ public class ServizioHelper {
     public Long update(ServizioDTO servizioDTO) {
         if (servizioRepository.existsById(servizioDTO.id)) {
 
-            Servizio servizio = servizioRepository.findById(servizioDTO.id).orElseThrow(RuntimeException::new);
+            Servizio servizio = servizioRepository.findById(servizioDTO.id).get();
             servizio.setNome(servizioDTO.nome);
             servizio.setPrezzo(servizioDTO.prezzo);
 
@@ -102,6 +106,55 @@ public class ServizioHelper {
 
         servizioEnum = ServizioEnum.getServizioEnumByMessageCode("SERV_IDNE");
         throw new ApiRequestException(servizioEnum.getMessage());
+    }
+
+
+    public Long insertByPrentazioneAndHotel(Long idServizio, Long idPrenotazione, Long idHotel) {
+        if (servizioRepository.existsServizioByIdAndHotel_Id(idServizio, idHotel)
+                && prenotazioneRepository.existsPrenotazioneByIdAndHotel_Id(idPrenotazione, idHotel)) {
+            Prenotazione prenotazione = prenotazioneRepository.findById(idPrenotazione).get();
+            Servizio servizio = servizioRepository.findById(idServizio).get();
+
+            servizio.addPrenotazione(prenotazione);
+
+            servizio = servizioRepository.save(servizio);
+            System.out.println(prenotazione);
+            return servizio.getId();
+        }
+
+        servizioEnum = ServizioEnum.getServizioEnumByMessageCode("SERV_IDNE");
+        throw new ApiRequestException(servizioEnum.getMessage() + ", oppure la prenotazione o l'hotel che stai cercando non esistono");
+
+    }
+
+    public List<ServizioDTO> findNotInByPrenotazione(Long idPrenotazione) {
+        if (prenotazioneRepository.existsById(idPrenotazione)) {
+            List<Servizio> serviziPrenotazione = prenotazioneRepository.findById(idPrenotazione).get().getServizi();
+            List<Servizio> serviziTotali = servizioRepository.findAllByHotel_Id(prenotazioneRepository.findById(idPrenotazione).get().getHotel().getId());
+
+            List<Servizio> serviziNotInPrenotazione = new ArrayList<>();
+
+            boolean check;
+            for (Servizio st : serviziTotali) {
+                check = false;
+                for (Servizio sp : serviziPrenotazione) {
+                    if (st.getId() == sp.getId()) {
+                        check = true;
+                    }
+                }
+
+                if (!check) {
+                    serviziNotInPrenotazione.add(st);
+                }
+            }
+
+
+            return serviziNotInPrenotazione.stream().map(servizio -> new ServizioDTO(servizio)).collect(Collectors.toList());
+        }
+
+        prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_IDNE");
+        throw new ApiRequestException(prenotazioneEnum.getMessage());
+
     }
 
 

@@ -58,7 +58,6 @@ public class PrenotazioneController {
     }
 
 
-    //TODO aggiornare nella lista delle api
     @GetMapping("/listaFatture")
     public List<FatturaDTO> findAllFatture(@RequestParam(name = "idCliente") Long idClinete) {
         return prenotazioneService.findAllFatture(idClinete);
@@ -67,8 +66,8 @@ public class PrenotazioneController {
 
     //find startingWith nomeCliente or cognomeCliente or dataInizio or dataFine
     @GetMapping("/searchNomeCognomeDate")
-    public List<PrenotazioneDTO> findAllByNomeCognomeClienteAndDataInizioAndDataFine(@RequestParam("nomeCliente") String nomeCliente, @RequestParam("cognomeCliente") String cognomeCliente, @RequestParam("dataInizio") String dInizio, @RequestParam("dataFine") String dFine) throws ParseException {
-        return prenotazioneService.findAllByNomeCognomeClienteAndDataInizioAndDataFine(nomeCliente, cognomeCliente, dInizio, dFine);
+    public List<FatturaDTO> findAllByNomeCognomeClienteAndDataInizioAndDataFine(@RequestParam("nomeCliente") String nomeCliente, @RequestParam("cognomeCliente") String cognomeCliente, @RequestParam("dataInizio") String dInizio, @RequestParam("dataFine") String dFine, @RequestParam("idHotel") Long idHotel) throws ParseException {
+        return prenotazioneService.findAllByNomeCognomeClienteAndDataInizioAndDataFine(nomeCliente, cognomeCliente, dInizio, dFine, idHotel);
     }
 
 

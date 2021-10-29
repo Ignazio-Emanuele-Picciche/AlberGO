@@ -5,6 +5,7 @@ import com.ignaziopicciche.albergo.dto.ServizioDTO;
 import com.ignaziopicciche.albergo.helper.ServizioHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Objects;
@@ -23,7 +24,6 @@ public class ServizioService {
         Preconditions.checkArgument(!Objects.isNull(servizioDTO.nome));
         Preconditions.checkArgument(!Objects.isNull(servizioDTO.prezzo));
         Preconditions.checkArgument(!Objects.isNull(servizioDTO.idHotel));
-        Preconditions.checkArgument(!Objects.isNull(servizioDTO.idPrenotazione));
 
         return servizioHelper.create(servizioDTO);
     }
@@ -56,4 +56,18 @@ public class ServizioService {
         return servizioHelper.update(servizioDTO);
     }
 
+    public Long insertByPrentazioneAndHotel(Long idServizio, Long idPrenotazione, Long idHotel) {
+        Preconditions.checkArgument(!Objects.isNull(idPrenotazione));
+        Preconditions.checkArgument(!Objects.isNull(idServizio));
+        Preconditions.checkArgument(!Objects.isNull(idHotel));
+
+        return servizioHelper.insertByPrentazioneAndHotel(idServizio, idPrenotazione, idHotel);
+    }
+
+
+    public List<ServizioDTO> findNotInByPrenotazione(Long idPrenotazione){
+        Preconditions.checkArgument(!Objects.isNull(idPrenotazione));
+
+        return servizioHelper.findNotInByPrenotazione(idPrenotazione);
+    }
 }

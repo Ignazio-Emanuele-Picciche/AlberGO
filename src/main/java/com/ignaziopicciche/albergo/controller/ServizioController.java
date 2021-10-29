@@ -28,6 +28,11 @@ public class ServizioController {
         return servizioService.findAll(idHotel);
     }
 
+    @GetMapping("/listaNotInPrenotazione")
+    public List<ServizioDTO> findNotInByPrenotazione(@RequestParam("idPrenotazione") Long idPrenotazione){
+        return servizioService.findNotInByPrenotazione(idPrenotazione);
+    }
+
 
     @PostMapping("/create")
     public Long create(@RequestBody ServizioDTO servizioDTO) {
@@ -45,6 +50,14 @@ public class ServizioController {
     public Boolean delete(@RequestParam("idServizio") Long id) {
         return servizioService.delete(id);
     }
+
+
+    @PutMapping("/insertServizioPrenotazione")
+    public Long insertByPrentazioneAndHotel(@RequestParam("idServizio") Long idServzio, @RequestParam("idPrenotazione") Long idPrenotazione, @RequestParam("idHotel") Long idHotel){
+        return servizioService.insertByPrentazioneAndHotel(idServzio, idPrenotazione, idHotel);
+    }
+
+
 
 
 }

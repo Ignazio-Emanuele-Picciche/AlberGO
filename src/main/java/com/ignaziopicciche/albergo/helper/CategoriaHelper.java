@@ -32,9 +32,9 @@ public class CategoriaHelper {
 
     public Long create(CategoriaDTO categoriaDTO) {
 
-        Optional<Hotel> hotel = hotelRepository.findById(categoriaDTO.idHotel);
+        Hotel hotel = hotelRepository.findById(categoriaDTO.idHotel).get();
 
-        if (!categoriaRepository.existsCategoriaByNomeAndHotel(categoriaDTO.nome, hotel.get()) &&
+        if (!categoriaRepository.existsCategoriaByNomeAndHotel_Id(categoriaDTO.nome, hotel.getId()) &&
                 !categoriaDTO.nome.equals("") && !categoriaDTO.descrizione.equals("")) {
 
             Categoria categoria = Categoria.builder()
@@ -44,7 +44,7 @@ public class CategoriaHelper {
                     .giorniPenale(categoriaDTO.giorniPenale)
                     .qtaPenale(categoriaDTO.qtaPenale)
                     .giorniBlocco(categoriaDTO.giorniBlocco)
-                    .hotel(hotel.get()).build();
+                    .hotel(hotel).build();
 
 
             categoria = categoriaRepository.save(categoria);

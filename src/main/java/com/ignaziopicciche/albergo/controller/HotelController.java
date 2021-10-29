@@ -28,19 +28,19 @@ public class HotelController {
         return hotelService.create(hotelDTO);
     }
 
-    @PutMapping("/update")
+    //TODO non si puo fare l'update di hotel, non si puo cambiare niente
+    /*@PutMapping("/update")
     public HotelDTO update(@RequestBody HotelDTO hotelDTO){
         return hotelService.update(hotelDTO);
-    }
+    }*/
 
-    //TODO aggiornare le api
+
     //Trova gli hotel con il nome che inizia per...
     @GetMapping("/searchNome")
     public List<HotelDTO> findHotelByName(@RequestParam("nomeHotel") String nomeHotel){
         return hotelService.findHotelByName(nomeHotel);
     }
 
-    //TODO aggiornare le api
     //Trova gli hotel che iniziano con l'indirizzo
     @GetMapping("/searchIndirizzo")
     public List<HotelDTO> findHotelByIndirizzo(@RequestParam("indirizzoHotel") String indirizzoHotel){

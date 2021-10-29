@@ -77,13 +77,16 @@ public class PrenotazioneService {
     }
 
 
-    public List<PrenotazioneDTO> findAllByNomeCognomeClienteAndDataInizioAndDataFine(String nomeCliente, String cognomeCliente, String dInizio, String dFine) throws ParseException {
+    public List<FatturaDTO> findAllByNomeCognomeClienteAndDataInizioAndDataFine(String nomeCliente, String cognomeCliente, String dInizio, String dFine, Long idHotel) throws ParseException {
+        Preconditions.checkArgument(!Objects.isNull(idHotel));
+
         Date dataInizio = StringUtils.isNotBlank(dInizio) ? new SimpleDateFormat("yyyy-MM-dd").parse(dInizio) : null;
         Date dataFine = StringUtils.isNotBlank(dFine) ? new SimpleDateFormat("yyyy-MM-dd").parse(dFine) : null;
         nomeCliente = StringUtils.isNotBlank(nomeCliente) ? nomeCliente : null;
         cognomeCliente = StringUtils.isNotBlank(cognomeCliente) ? cognomeCliente : null;
 
-        return prenotazioneHelper.findAllByNomeCognomeClienteAndDataInizioAndDataFine(nomeCliente, cognomeCliente, dataInizio, dataFine);
+
+        return prenotazioneHelper.findAllByNomeCognomeClienteAndDataInizioAndDataFine(nomeCliente, cognomeCliente, dataInizio, dataFine, idHotel);
     }
 
 }
