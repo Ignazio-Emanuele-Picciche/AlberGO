@@ -202,4 +202,22 @@ public class PrenotazioneHelper {
     }
 
 
+    public List<FatturaDTO> convertPrenotazioneToFattura(List<Prenotazione> prenotazioni) {
+
+        List<FatturaDTO> fatture = new ArrayList<>();
+
+        for (Prenotazione p : prenotazioni) {
+            Cliente cliente = p.getCliente();
+            Stanza stanza = p.getStanza();
+            Categoria categoria = p.getStanza().getCategoria();
+            Hotel hotel = p.getHotel();
+
+            fatture.add(new FatturaDTO(p, cliente, stanza, categoria, hotel));
+        }
+
+        return fatture;
+
+    }
+
+
 }
