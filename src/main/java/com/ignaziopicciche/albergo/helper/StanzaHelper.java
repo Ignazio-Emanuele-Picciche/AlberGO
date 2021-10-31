@@ -21,22 +21,25 @@ import java.util.stream.Collectors;
 @Component
 public class StanzaHelper {
 
-    @Autowired
-    private StanzaRepository stanzaRepository;
+    private final StanzaRepository stanzaRepository;
 
-    @Autowired
-    private HotelRepository hotelRepository;
+    private final HotelRepository hotelRepository;
 
-    @Autowired
-    private CategoriaRepository categoriaRepository;
+    private final CategoriaRepository categoriaRepository;
 
-    @Autowired
-    private PrenotazioneRepository prenotazioneRepository;
+    private final PrenotazioneRepository prenotazioneRepository;
 
     private static StanzaEnum stanzaEnum;
     private static CategoriaEnum categoriaEnum;
     private static PrenotazioneEnum prenotazioneEnum;
     private static HotelEnum hotelEnum;
+
+    public StanzaHelper(StanzaRepository stanzaRepository, HotelRepository hotelRepository, CategoriaRepository categoriaRepository, PrenotazioneRepository prenotazioneRepository) {
+        this.stanzaRepository = stanzaRepository;
+        this.hotelRepository = hotelRepository;
+        this.categoriaRepository = categoriaRepository;
+        this.prenotazioneRepository = prenotazioneRepository;
+    }
 
 
     public StanzaDTO create(StanzaDTO stanzaDTO) {

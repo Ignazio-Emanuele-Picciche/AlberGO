@@ -13,8 +13,11 @@ import java.util.Objects;
 @Service
 public class ClienteService {
 
-    @Autowired
-    private ClienteHelper clienteHelper;
+    private final ClienteHelper clienteHelper;
+
+    public ClienteService(ClienteHelper clienteHelper) {
+        this.clienteHelper = clienteHelper;
+    }
 
     public Long create(ClienteDTO clienteDTO) {
         Preconditions.checkArgument(!Objects.isNull(clienteDTO.nome));

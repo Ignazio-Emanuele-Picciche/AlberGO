@@ -12,8 +12,11 @@ import java.util.List;
 @RequestMapping("/api/cliente")
 public class ClienteController {
 
-    @Autowired
-    private ClienteService clienteService;
+    private final ClienteService clienteService;
+
+    public ClienteController(ClienteService clienteService) {
+        this.clienteService = clienteService;
+    }
 
     @GetMapping("/dettaglio")
     @ResponseBody

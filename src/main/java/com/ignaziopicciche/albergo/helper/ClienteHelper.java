@@ -16,14 +16,17 @@ import java.util.stream.Collectors;
 @Component
 public class ClienteHelper {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final ClienteRepository clienteRepository;
 
-    @Autowired
-    private HotelRepository hotelRepository;
+    private final HotelRepository hotelRepository;
 
     private static ClienteEnum clienteEnum;
     private static HotelEnum hotelEnum;
+
+    public ClienteHelper(ClienteRepository clienteRepository, HotelRepository hotelRepository) {
+        this.clienteRepository = clienteRepository;
+        this.hotelRepository = hotelRepository;
+    }
 
     public Long create(ClienteDTO clienteDTO) {
 
