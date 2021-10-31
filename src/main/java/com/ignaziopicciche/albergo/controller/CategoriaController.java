@@ -48,8 +48,8 @@ public class CategoriaController {
     }
 
     @GetMapping("/searchNome")
-    public List<CategoriaDTO> findAllByNome(@RequestParam("nome") String nome) {
-        return categoriaService.findAllByNome(nome);
+    public List<CategoriaDTO> findAllByNome(@RequestParam("nome") String nome, @RequestParam("idHotel") Long idHotel) {
+        return categoriaService.findAllByNome(nome, idHotel);
     }
 
 

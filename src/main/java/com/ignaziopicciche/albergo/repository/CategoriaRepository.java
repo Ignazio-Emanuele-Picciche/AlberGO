@@ -12,6 +12,6 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
     List<Categoria> findCategoriasByHotel_Id(Long idHotel);
 
-    List<Categoria> findCategoriasByNomeStartingWith(String nome);
+    List<Categoria> findCategoriasByNomeStartingWithAndHotel_Id(String nome, Long idHotel);
 
 }
