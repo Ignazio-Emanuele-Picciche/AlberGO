@@ -5,6 +5,7 @@ import com.ignaziopicciche.albergo.dto.FatturaDTO;
 import com.ignaziopicciche.albergo.dto.PrenotazioneDTO;
 import com.ignaziopicciche.albergo.helper.PrenotazioneHelper;
 import com.ignaziopicciche.albergo.model.Prenotazione;
+import com.stripe.exception.StripeException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,14 +51,15 @@ public class PrenotazioneService {
     }
 
 
-    public PrenotazioneDTO create(PrenotazioneDTO prenotazioneDTO) {
+    public PrenotazioneDTO create(PrenotazioneDTO prenotazioneDTO, String paymentMethod) throws StripeException {
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.dataInizio));
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.dataFine));
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.idHotel));
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.idCliente));
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.idStanza));
+        Preconditions.checkArgument(!Objects.isNull(paymentMethod));
 
-        return prenotazioneHelper.create(prenotazioneDTO);
+        return prenotazioneHelper.create(prenotazioneDTO, paymentMethod);
     }
 
 

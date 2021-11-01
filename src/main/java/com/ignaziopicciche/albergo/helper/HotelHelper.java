@@ -5,6 +5,7 @@ import com.ignaziopicciche.albergo.enums.HotelEnum;
 import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
+import com.stripe.exception.StripeException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,15 +15,17 @@ import java.util.stream.Collectors;
 public class HotelHelper {
 
     private final HotelRepository hotelRepository;
+    private final StripeHelper stripeHelper;
 
     private static HotelEnum hotelEnum;
 
-    public HotelHelper(HotelRepository hotelRepository) {
+    public HotelHelper(HotelRepository hotelRepository, StripeHelper stripeHelper) {
         this.hotelRepository = hotelRepository;
+        this.stripeHelper = stripeHelper;
     }
 
 
-    public HotelDTO create(HotelDTO hotelDTO) {
+    public HotelDTO create(HotelDTO hotelDTO) throws StripeException {
         if (!hotelRepository.existsByNome(hotelDTO.nome)) {
             Hotel hotel = new Hotel();
 
@@ -31,6 +34,8 @@ public class HotelHelper {
             hotel.setIndirizzo(hotelDTO.indirizzo);
             hotel.setStelle(hotelDTO.stelle);
             hotel.setTelefono(hotelDTO.telefono);
+
+            hotel = stripeHelper.createAccount(hotel);
 
             hotelRepository.save(hotel);
             return new HotelDTO(hotel);

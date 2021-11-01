@@ -2,6 +2,7 @@ package com.ignaziopicciche.albergo.controller;
 
 import com.ignaziopicciche.albergo.dto.HotelDTO;
 import com.ignaziopicciche.albergo.service.HotelService;
+import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class HotelController {
     }
 
     @PostMapping("/create")
-    public HotelDTO create(@RequestBody HotelDTO hotelDTO){
+    public HotelDTO create(@RequestBody HotelDTO hotelDTO) throws StripeException {
         return hotelService.create(hotelDTO);
     }
 

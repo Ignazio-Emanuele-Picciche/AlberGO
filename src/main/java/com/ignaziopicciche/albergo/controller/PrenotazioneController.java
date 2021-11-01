@@ -3,6 +3,7 @@ package com.ignaziopicciche.albergo.controller;
 import com.ignaziopicciche.albergo.dto.FatturaDTO;
 import com.ignaziopicciche.albergo.dto.PrenotazioneDTO;
 import com.ignaziopicciche.albergo.service.PrenotazioneService;
+import com.stripe.exception.StripeException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -41,9 +42,11 @@ public class PrenotazioneController {
         return prenotazioneService.findPrenotazionesByStanza_Id(idStanza);
     }
 
+    //TODO aggiornare api
+    //Nel momento della creazione della prenotazione va richiesto il metodo di pagamento
     @PostMapping("/create")
-    public PrenotazioneDTO create(@RequestBody PrenotazioneDTO prenotazioneDTO) {
-        return prenotazioneService.create(prenotazioneDTO);
+    public PrenotazioneDTO create(@RequestBody PrenotazioneDTO prenotazioneDTO, @RequestParam("paymentMethod") String paymentMethod) throws StripeException {
+        return prenotazioneService.create(prenotazioneDTO, paymentMethod);
     }
 
 

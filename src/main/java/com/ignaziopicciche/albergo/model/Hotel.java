@@ -23,6 +23,10 @@ public class Hotel {
     private String descrizione;
     private String telefono;
 
+    //TODO impl in db
+    private String accountId;
+    private String publicKey;
+
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Amministratore> amministratori;

@@ -23,6 +23,8 @@ public class Cliente {
     private String documento;
     private String username;
     private String password;
+    //TODO aggiunto nel db
+    private String customerId;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Prenotazione> prenotazioni;

@@ -7,7 +7,7 @@ import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Cliente;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.stripe.exception.StripeException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,20 +17,20 @@ import java.util.stream.Collectors;
 public class ClienteHelper {
 
     private final ClienteRepository clienteRepository;
-
     private final HotelRepository hotelRepository;
+    private final StripeHelper stripeHelper;
 
     private static ClienteEnum clienteEnum;
     private static HotelEnum hotelEnum;
 
-    public ClienteHelper(ClienteRepository clienteRepository, HotelRepository hotelRepository) {
+    public ClienteHelper(ClienteRepository clienteRepository, HotelRepository hotelRepository, StripeHelper stripeHelper) {
         this.clienteRepository = clienteRepository;
         this.hotelRepository = hotelRepository;
+        this.stripeHelper = stripeHelper;
     }
 
-    public Long create(ClienteDTO clienteDTO) {
+    public Long create(ClienteDTO clienteDTO) throws StripeException {
 
-        //exists by username, documento
         if (!clienteRepository.existsByDocumentoOrUsername(clienteDTO.documento, clienteDTO.username) &&
                 !clienteDTO.documento.equals("") && !clienteDTO.username.equals("")) {
 
@@ -41,6 +41,8 @@ public class ClienteHelper {
                     .telefono(clienteDTO.telefono)
                     .username(clienteDTO.username)
                     .password(clienteDTO.password).build();
+
+            cliente = stripeHelper.createCustomer(cliente, "");
 
             cliente = clienteRepository.save(cliente);
             return cliente.getId();
@@ -74,6 +76,7 @@ public class ClienteHelper {
 
         if (clienteRepository.existsById(id)) {
             try {
+                stripeHelper.deleteCustomerById(clienteRepository.findById(id).get().getCustomerId());
                 clienteRepository.deleteById(id);
                 return true;
             } catch (Exception e) {

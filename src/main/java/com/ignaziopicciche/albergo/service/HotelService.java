@@ -3,6 +3,7 @@ package com.ignaziopicciche.albergo.service;
 import com.google.common.base.Preconditions;
 import com.ignaziopicciche.albergo.dto.HotelDTO;
 import com.ignaziopicciche.albergo.helper.HotelHelper;
+import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class HotelService {
     }
 
 
-    public HotelDTO create(HotelDTO hotelDTO) {
+    public HotelDTO create(HotelDTO hotelDTO) throws StripeException {
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.nome));
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.indirizzo));
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.stelle));

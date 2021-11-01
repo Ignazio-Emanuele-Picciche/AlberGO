@@ -3,6 +3,7 @@ package com.ignaziopicciche.albergo.service;
 import com.google.common.base.Preconditions;
 import com.ignaziopicciche.albergo.dto.ClienteDTO;
 import com.ignaziopicciche.albergo.helper.ClienteHelper;
+import com.stripe.exception.StripeException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,13 +14,10 @@ import java.util.Objects;
 @Service
 public class ClienteService {
 
-    private final ClienteHelper clienteHelper;
+    @Autowired
+    private ClienteHelper clienteHelper;
 
-    public ClienteService(ClienteHelper clienteHelper) {
-        this.clienteHelper = clienteHelper;
-    }
-
-    public Long create(ClienteDTO clienteDTO) {
+    public Long create(ClienteDTO clienteDTO) throws StripeException {
         Preconditions.checkArgument(!Objects.isNull(clienteDTO.nome));
         Preconditions.checkArgument(!Objects.isNull(clienteDTO.cognome));
         Preconditions.checkArgument(!Objects.isNull(clienteDTO.documento));

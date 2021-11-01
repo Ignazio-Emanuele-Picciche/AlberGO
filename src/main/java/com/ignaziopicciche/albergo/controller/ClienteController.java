@@ -2,6 +2,7 @@ package com.ignaziopicciche.albergo.controller;
 
 import com.ignaziopicciche.albergo.dto.ClienteDTO;
 import com.ignaziopicciche.albergo.service.ClienteService;
+import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class ClienteController {
     }
 
     @PostMapping("/create")
-    public Long create(@RequestBody ClienteDTO clienteDTO){
+    public Long create(@RequestBody ClienteDTO clienteDTO) throws StripeException {
         return clienteService.create(clienteDTO);
     }
 

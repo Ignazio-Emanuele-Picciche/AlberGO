@@ -8,9 +8,12 @@ import com.ignaziopicciche.albergo.enums.StanzaEnum;
 import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.*;
 import com.ignaziopicciche.albergo.repository.*;
-import org.apache.tomcat.util.buf.StringUtils;
+import com.stripe.exception.StripeException;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,17 +27,19 @@ public class PrenotazioneHelper {
     private final ClienteRepository clienteRepository;
     private final StanzaRepository stanzaRepository;
     private final CategoriaRepository categoriaRepository;
+    private final StripeHelper stripeHelper;
 
     private static PrenotazioneEnum prenotazioneEnum;
     private static HotelEnum hotelEnum;
     private static StanzaEnum stanzaEnum;
 
-    public PrenotazioneHelper(PrenotazioneRepository prenotazioneRepository, HotelRepository hotelRepository, ClienteRepository clienteRepository, StanzaRepository stanzaRepository, CategoriaRepository categoriaRepository) {
+    public PrenotazioneHelper(PrenotazioneRepository prenotazioneRepository, HotelRepository hotelRepository, ClienteRepository clienteRepository, StanzaRepository stanzaRepository, CategoriaRepository categoriaRepository, StripeHelper stripeHelper) {
         this.prenotazioneRepository = prenotazioneRepository;
         this.hotelRepository = hotelRepository;
         this.clienteRepository = clienteRepository;
         this.stanzaRepository = stanzaRepository;
         this.categoriaRepository = categoriaRepository;
+        this.stripeHelper = stripeHelper;
     }
 
 
@@ -101,7 +106,7 @@ public class PrenotazioneHelper {
     }
 
 
-    public PrenotazioneDTO create(PrenotazioneDTO prenotazioneDTO) {
+    public PrenotazioneDTO create(PrenotazioneDTO prenotazioneDTO, String paymentMethod) throws StripeException {
         if (prenotazioneRepository.checkPrenotazioneDate(prenotazioneDTO.dataInizio, prenotazioneDTO.dataFine, prenotazioneDTO.idStanza) == 0 && prenotazioneDTO.dataInizio.before(prenotazioneDTO.dataFine)) {
             Prenotazione prenotazione = new Prenotazione();
 
@@ -110,6 +115,13 @@ public class PrenotazioneHelper {
             prenotazione.setHotel(hotelRepository.findById(prenotazioneDTO.idHotel).get());
             prenotazione.setStanza(stanzaRepository.findById(prenotazioneDTO.idStanza).get());
             prenotazione.setCliente(clienteRepository.findById(prenotazioneDTO.idCliente).get());
+
+
+            String customerId = prenotazione.getCliente().getCustomerId();
+            long days = ChronoUnit.DAYS.between(prenotazione.getDataInizio().toInstant(), prenotazione.getDataFine().toInstant());
+            String price = Double.toString(prenotazione.getStanza().getCategoria().getPrezzo() * days);
+            PaymentData paymentData = PaymentData.builder().customerId(customerId).price(price).paymentMethod(paymentMethod).build();
+            stripeHelper.createPaymentIntent(paymentData);
 
             prenotazioneRepository.save(prenotazione);
 
