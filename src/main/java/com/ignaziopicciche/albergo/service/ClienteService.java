@@ -54,10 +54,11 @@ public class ClienteService {
         return clienteHelper.findAll(idHotel);
     }
 
-    public List<ClienteDTO> findAllByNomeCognome(String nome, String cognome) {
+    public List<ClienteDTO> findAllByNomeCognome(String nome, String cognome, Long idHotel) {
         nome = StringUtils.isNotBlank(nome) ? nome : null;
         cognome = StringUtils.isNotBlank(cognome) ? cognome : null;
-        return clienteHelper.findAllByNomeCognome(nome, cognome);
+        Preconditions.checkArgument(!Objects.isNull(idHotel));
+        return clienteHelper.findAllByNomeCognome(nome, cognome, idHotel);
     }
 
 }
