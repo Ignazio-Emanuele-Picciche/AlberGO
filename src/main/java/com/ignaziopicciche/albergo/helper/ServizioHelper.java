@@ -158,4 +158,44 @@ public class ServizioHelper {
     }
 
 
+    public Boolean removeServizioInPrenotazione(Long idServizio, Long idPrenotazione) {
+
+        if (servizioRepository.existsById(idServizio)) {
+            if (prenotazioneRepository.existsById(idPrenotazione)) {
+                try {
+                    Prenotazione prenotazione = prenotazioneRepository.findById(idPrenotazione).get();
+                    Servizio servizio = servizioRepository.findById(idServizio).get();
+                    if(servizio.getPrenotazioni().contains(prenotazione)){
+                        servizio.removePrenotazione(prenotazione);
+                        servizioRepository.save(servizio);
+                        return true;
+                    }
+                } catch (Exception e) {
+                    servizioEnum = ServizioEnum.getServizioEnumByMessageCode("SERV_DLE");
+                    throw new ApiRequestException(servizioEnum.getMessage());
+                }
+
+                throw new ApiRequestException("La prenotazione non contiene il servizio che si vuole rimuovere");
+            }
+            prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_IDNE");
+            throw new ApiRequestException(prenotazioneEnum.getMessage());
+        }
+
+        servizioEnum = ServizioEnum.getServizioEnumByMessageCode("SERV_IDNE");
+        throw new ApiRequestException(servizioEnum.getMessage());
+
+    }
+
+
+    public List<ServizioDTO> findServiziInPrenotazione(Long idPrenotazione) {
+        if (prenotazioneRepository.existsById(idPrenotazione)) {
+            Prenotazione prenotazione = prenotazioneRepository.findById(idPrenotazione).get();
+            List<Servizio> serviziPrenotazione = prenotazione.getServizi();
+            return serviziPrenotazione.stream().map(servizio -> new ServizioDTO(servizio)).collect(Collectors.toList());
+        }
+
+        prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_IDNE");
+        throw new ApiRequestException(prenotazioneEnum.getMessage());
+    }
+
 }

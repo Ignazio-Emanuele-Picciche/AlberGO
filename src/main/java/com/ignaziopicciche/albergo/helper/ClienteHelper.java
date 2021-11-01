@@ -103,14 +103,14 @@ public class ClienteHelper {
         throw new ApiRequestException(hotelEnum.getMessage());
     }
 
-    public List<ClienteDTO> findAllByNomeCognome(String nome, String cognome) {
+    public List<ClienteDTO> findAllByNomeCognome(String nome, String cognome, Long idHotel) {
         List<Cliente> clienti;
 
         if (cognome == null && nome != null) {
-            clienti = clienteRepository.findClientesByNomeStartingWith(nome);
+            clienti = clienteRepository.findClientesByNomeStartingWith(nome, idHotel);
             return clienti.stream().map(cliente -> new ClienteDTO(cliente)).collect(Collectors.toList());
         }else if(nome == null && cognome != null){
-            clienti = clienteRepository.findClientesByCognomeStartingWith(cognome);
+            clienti = clienteRepository.findClientesByCognomeStartingWith(cognome, idHotel);
             return clienti.stream().map(cliente -> new ClienteDTO(cliente)).collect(Collectors.toList());
         }
 

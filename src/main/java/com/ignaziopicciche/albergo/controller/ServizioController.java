@@ -57,6 +57,18 @@ public class ServizioController {
         return servizioService.insertByPrentazioneAndHotel(idServzio, idPrenotazione, idHotel);
     }
 
+    @DeleteMapping("/removeServizioPrenotazione")
+    public Boolean removeServizioInPrenotazione(@RequestParam("idServizio") Long idServizio, @RequestParam("idPrenotazione") Long idPrenotazione) {
+        return servizioService.removeServizioInPrenotazione(idServizio, idPrenotazione);
+    }
+
+    @GetMapping("/listaServiziPrenotazione")
+    public List<ServizioDTO> findServiziInPrenotazione(@RequestParam("idPrenotazione") Long idPrenotazione) {
+        return servizioService.findServiziInPrenotazione(idPrenotazione);
+    }
+
+
+
 
 
 

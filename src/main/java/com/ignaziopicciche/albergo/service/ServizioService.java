@@ -70,4 +70,19 @@ public class ServizioService {
 
         return servizioHelper.findNotInByPrenotazione(idPrenotazione);
     }
+
+
+    public Boolean removeServizioInPrenotazione(Long idServizio, Long idPrenotazione) {
+        Preconditions.checkArgument(!Objects.isNull(idServizio));
+        Preconditions.checkArgument(!Objects.isNull(idPrenotazione));
+
+        return servizioHelper.removeServizioInPrenotazione(idServizio, idPrenotazione);
+    }
+
+
+    public List<ServizioDTO> findServiziInPrenotazione(Long idPrenotazione) {
+        Preconditions.checkArgument(!Objects.isNull(idPrenotazione));
+
+        return servizioHelper.findServiziInPrenotazione(idPrenotazione);
+    }
 }

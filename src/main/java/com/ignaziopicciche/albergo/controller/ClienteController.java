@@ -46,8 +46,8 @@ public class ClienteController {
 
     //find all Cienti startWith nome or cognome
     @GetMapping("/searchNomeCognome")
-    public List<ClienteDTO> findAllByNomeCognome(@RequestParam("nome") String nome, @RequestParam("cognome") String cognome){
-        return clienteService.findAllByNomeCognome(nome, cognome);
+    public List<ClienteDTO> findAllByNomeCognome(@RequestParam("nome") String nome, @RequestParam("cognome") String cognome, @RequestParam("idHotel") Long idHotel){
+        return clienteService.findAllByNomeCognome(nome, cognome, idHotel);
     }
 
 

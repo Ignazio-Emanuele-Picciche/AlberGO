@@ -37,4 +37,8 @@ public class Servizio {
     public void addPrenotazione(Prenotazione prenotazione) {
         prenotazioni.add(prenotazione);
     }
+
+    public void removePrenotazione(Prenotazione prenotazione){
+        prenotazioni.remove(prenotazione);
+    }
 }

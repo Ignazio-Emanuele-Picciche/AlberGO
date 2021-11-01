@@ -4,6 +4,7 @@ package com.ignaziopicciche.albergo.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -32,10 +33,13 @@ public class Categoria {
     private Integer giorniBlocco;
 
 
-
     @ManyToOne
     @JoinColumn(name = "ID_CATEGORIA_HOTEL")
     private Hotel hotel;
+
+
+    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Stanza> stanze;
 
 
 }
