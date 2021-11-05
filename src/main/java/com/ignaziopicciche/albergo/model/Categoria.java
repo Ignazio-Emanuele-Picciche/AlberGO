@@ -22,7 +22,9 @@ public class Categoria {
     private String descrizione;
 
     //TODO aggiornare giovanni. Sono stati aggiunti questi campi
-    //fino a n giorni prima puo modifica/cancellare la prenotazione
+    //fino a n giorni prima puo modifica/cancellare la prenotazione ( e paga la penale)
+    //giorniPenale prima dei giorni blocco
+    //Se sono nei giorni di blocco non posso modificare/cancellare la prenotazione
     private Integer giorniPenale;
 
     //accredito penale
