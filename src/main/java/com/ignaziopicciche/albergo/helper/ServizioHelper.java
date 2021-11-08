@@ -5,16 +5,17 @@ import com.ignaziopicciche.albergo.enums.HotelEnum;
 import com.ignaziopicciche.albergo.enums.PrenotazioneEnum;
 import com.ignaziopicciche.albergo.enums.ServizioEnum;
 import com.ignaziopicciche.albergo.handler.ApiRequestException;
+import com.ignaziopicciche.albergo.model.PaymentData;
 import com.ignaziopicciche.albergo.model.Prenotazione;
 import com.ignaziopicciche.albergo.model.Servizio;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
 import com.ignaziopicciche.albergo.repository.PrenotazioneRepository;
 import com.ignaziopicciche.albergo.repository.ServizioRepository;
+import com.stripe.exception.StripeException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -23,15 +24,17 @@ public class ServizioHelper {
     private final ServizioRepository servizioRepository;
     private final HotelRepository hotelRepository;
     private final PrenotazioneRepository prenotazioneRepository;
+    private final StripeHelper stripeHelper;
 
     private static ServizioEnum servizioEnum;
     private static HotelEnum hotelEnum;
     private static PrenotazioneEnum prenotazioneEnum;
 
-    public ServizioHelper(ServizioRepository servizioRepository, HotelRepository hotelRepository, PrenotazioneRepository prenotazioneRepository) {
+    public ServizioHelper(ServizioRepository servizioRepository, HotelRepository hotelRepository, PrenotazioneRepository prenotazioneRepository, StripeHelper stripeHelper) {
         this.servizioRepository = servizioRepository;
         this.hotelRepository = hotelRepository;
         this.prenotazioneRepository = prenotazioneRepository;
+        this.stripeHelper = stripeHelper;
     }
 
 
@@ -109,13 +112,21 @@ public class ServizioHelper {
     }
 
 
-    public Long insertByPrentazioneAndHotel(Long idServizio, Long idPrenotazione, Long idHotel) {
+    //TODO testare l'addebito
+    public Long insertByPrentazioneAndHotel(Long idServizio, Long idPrenotazione, Long idHotel, String paymentMethod) throws StripeException {
         if (servizioRepository.existsServizioByIdAndHotel_Id(idServizio, idHotel)
                 && prenotazioneRepository.existsPrenotazioneByIdAndHotel_Id(idPrenotazione, idHotel)) {
             Prenotazione prenotazione = prenotazioneRepository.findById(idPrenotazione).get();
             Servizio servizio = servizioRepository.findById(idServizio).get();
 
             servizio.addPrenotazione(prenotazione);
+
+            String customerId = prenotazione.getCliente().getCustomerId();
+            String price = Double.toString(servizio.getPrezzo());
+
+            PaymentData paymentData = PaymentData.builder().customerId(customerId).price(price).paymentMethod(paymentMethod).build();
+            stripeHelper.createPaymentIntent(paymentData);
+
 
             servizio = servizioRepository.save(servizio);
             System.out.println(prenotazione);

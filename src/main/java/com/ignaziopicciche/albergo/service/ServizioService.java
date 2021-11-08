@@ -3,6 +3,7 @@ package com.ignaziopicciche.albergo.service;
 import com.google.common.base.Preconditions;
 import com.ignaziopicciche.albergo.dto.ServizioDTO;
 import com.ignaziopicciche.albergo.helper.ServizioHelper;
+import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -56,12 +57,13 @@ public class ServizioService {
         return servizioHelper.update(servizioDTO);
     }
 
-    public Long insertByPrentazioneAndHotel(Long idServizio, Long idPrenotazione, Long idHotel) {
+    public Long insertByPrentazioneAndHotel(Long idServizio, Long idPrenotazione, Long idHotel, String paymentMethod) throws StripeException {
         Preconditions.checkArgument(!Objects.isNull(idPrenotazione));
         Preconditions.checkArgument(!Objects.isNull(idServizio));
         Preconditions.checkArgument(!Objects.isNull(idHotel));
+        Preconditions.checkArgument(!Objects.isNull(paymentMethod));
 
-        return servizioHelper.insertByPrentazioneAndHotel(idServizio, idPrenotazione, idHotel);
+        return servizioHelper.insertByPrentazioneAndHotel(idServizio, idPrenotazione, idHotel, paymentMethod);
     }
 
 

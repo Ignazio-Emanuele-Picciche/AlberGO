@@ -45,19 +45,19 @@ public class PrenotazioneController {
     //TODO aggiornare api
     //Nel momento della creazione della prenotazione va richiesto il metodo di pagamento
     @PostMapping("/create")
-    public PrenotazioneDTO create(@RequestBody PrenotazioneDTO prenotazioneDTO, @RequestParam("paymentMethod") String paymentMethod) throws StripeException {
+    public PrenotazioneDTO create(@RequestBody PrenotazioneDTO prenotazioneDTO, @RequestParam("paymentMethod") String paymentMethod) throws StripeException, ParseException {
         return prenotazioneService.create(prenotazioneDTO, paymentMethod);
     }
 
 
     @PutMapping("/update")
-    public Long update(@RequestBody PrenotazioneDTO prenotazioneDTO) {
+    public Long update(@RequestBody PrenotazioneDTO prenotazioneDTO) throws ParseException {
         return prenotazioneService.update(prenotazioneDTO);
     }
 
     @DeleteMapping("/delete")
-    public Boolean delete(@RequestParam(name = "idPrenotazione") Long id) {
-        return prenotazioneService.delete(id);
+    public Boolean delete(@RequestParam(name = "idPrenotazione") Long id, @RequestParam("paymentMethod") String paymentMethod) throws StripeException {
+        return prenotazioneService.delete(id, paymentMethod);
     }
 
 

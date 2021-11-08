@@ -11,7 +11,10 @@ import com.ignaziopicciche.albergo.repository.*;
 import com.stripe.exception.StripeException;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
@@ -89,16 +92,44 @@ public class PrenotazioneHelper {
         throw new ApiRequestException(prenotazioneEnum.getMessage());
     }
 
+    //TODO testare
+    public Boolean delete(Long idPrenotazione, String paymentMethod) throws StripeException {
+        if (prenotazioneRepository.existsById(idPrenotazione)) {
 
-    public Boolean delete(Long id) {
-        if (prenotazioneRepository.existsById(id)) {
-            try {
-                prenotazioneRepository.deleteById(id);
-                return true;
-            } catch (Exception e) {
-                prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_DLE");
-                throw new ApiRequestException(prenotazioneEnum.getMessage());
+            Prenotazione prenotazione = prenotazioneRepository.getById(idPrenotazione);
+            Categoria categoria = prenotazione.getStanza().getCategoria();
+            //Cliente cliente = prenotazione.getCliente();
+
+            long diffDataInizioPrenotazione = ChronoUnit.DAYS.between(LocalDate.now(), prenotazione.getDataInizio().toInstant());
+
+            if (diffDataInizioPrenotazione > categoria.getGiorniPenale()) {
+                try {
+                    prenotazioneRepository.deleteById(idPrenotazione);
+                    return true;
+                } catch (Exception e) {
+                    prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_DLE");
+                    throw new ApiRequestException(prenotazioneEnum.getMessage());
+                }
+            } else if (diffDataInizioPrenotazione > categoria.getGiorniBlocco() && diffDataInizioPrenotazione <= categoria.getGiorniPenale()) {
+                String customerId = prenotazione.getCliente().getCustomerId();
+                String price = Double.toString(categoria.getQtaPenale());
+
+                PaymentData paymentData = PaymentData.builder().customerId(customerId).price(price).paymentMethod(paymentMethod).build();
+                stripeHelper.createPaymentIntent(paymentData);
+                try {
+                    prenotazioneRepository.deleteById(idPrenotazione);
+                    return true;
+                } catch (Exception e) {
+                    prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_DLE");
+                    throw new ApiRequestException(prenotazioneEnum.getMessage());
+                }
+
+            } else if (diffDataInizioPrenotazione <= categoria.getGiorniBlocco()) {
+                //TODO chiedere a giovanni cosa vuole che gli torni
+                //throw new ApiRequestException("Impossibile cancellare la prenotazione, prenotazione bloccata");
+                return false;
             }
+
         }
 
         prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_NF");
@@ -106,8 +137,15 @@ public class PrenotazioneHelper {
     }
 
 
-    public PrenotazioneDTO create(PrenotazioneDTO prenotazioneDTO, String paymentMethod) throws StripeException {
-        if (prenotazioneRepository.checkPrenotazioneDate(prenotazioneDTO.dataInizio, prenotazioneDTO.dataFine, prenotazioneDTO.idStanza) == 0 && prenotazioneDTO.dataInizio.before(prenotazioneDTO.dataFine)) {
+    //TODO testare
+    public PrenotazioneDTO create(PrenotazioneDTO prenotazioneDTO, String paymentMethod) throws StripeException, ParseException {
+
+        String data = new Date().toString();
+        Date dataAttuale = new SimpleDateFormat("yyyy-MM-dd").parse(data);
+
+        if (prenotazioneRepository.checkPrenotazioneDate(prenotazioneDTO.dataInizio, prenotazioneDTO.dataFine, prenotazioneDTO.idStanza) == 0
+                && prenotazioneDTO.dataInizio.before(prenotazioneDTO.dataFine)
+                && !(prenotazioneDTO.dataInizio.equals(dataAttuale) || prenotazioneDTO.dataInizio.before(dataAttuale))) {
             Prenotazione prenotazione = new Prenotazione();
 
             prenotazione.setDataInizio(prenotazioneDTO.dataInizio);
@@ -144,10 +182,17 @@ public class PrenotazioneHelper {
     }
 
 
-    public Long update(PrenotazioneDTO prenotazioneDTO) {
+    //TODO gestire il prezzo per la modifica delle date
+    public Long update(PrenotazioneDTO prenotazioneDTO) throws ParseException {
+
+        String data = new Date().toString();
+        Date dataAttuale = new SimpleDateFormat("yyyy-MM-dd").parse(data);
+
         if (prenotazioneRepository.checkPrenotazioneDateUpdate(prenotazioneDTO.dataInizio, prenotazioneDTO.dataFine, prenotazioneDTO.id, prenotazioneDTO.idStanza) == 0
                 && prenotazioneDTO.dataInizio.before(prenotazioneDTO.dataFine) &&
-                prenotazioneRepository.existsById(prenotazioneDTO.id)) {
+                prenotazioneRepository.existsById(prenotazioneDTO.id) &&
+                !(prenotazioneDTO.dataInizio.equals(dataAttuale) || prenotazioneDTO.dataInizio.before(dataAttuale))) {
+
 
             Prenotazione prenotazione = prenotazioneRepository.findById(prenotazioneDTO.id).get();
             prenotazione.setDataInizio(prenotazioneDTO.dataInizio);

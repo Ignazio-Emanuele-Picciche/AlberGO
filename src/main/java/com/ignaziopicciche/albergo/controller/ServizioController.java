@@ -2,6 +2,7 @@ package com.ignaziopicciche.albergo.controller;
 
 import com.ignaziopicciche.albergo.dto.ServizioDTO;
 import com.ignaziopicciche.albergo.service.ServizioService;
+import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,8 +54,8 @@ public class ServizioController {
 
 
     @PutMapping("/insertServizioPrenotazione")
-    public Long insertByPrentazioneAndHotel(@RequestParam("idServizio") Long idServzio, @RequestParam("idPrenotazione") Long idPrenotazione, @RequestParam("idHotel") Long idHotel){
-        return servizioService.insertByPrentazioneAndHotel(idServzio, idPrenotazione, idHotel);
+    public Long insertByPrentazioneAndHotel(@RequestParam("idServizio") Long idServzio, @RequestParam("idPrenotazione") Long idPrenotazione, @RequestParam("idHotel") Long idHotel, @RequestParam("paymentMethod") String paymentMethod) throws StripeException {
+        return servizioService.insertByPrentazioneAndHotel(idServzio, idPrenotazione, idHotel, paymentMethod);
     }
 
 
