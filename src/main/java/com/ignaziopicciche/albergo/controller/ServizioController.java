@@ -52,7 +52,7 @@ public class ServizioController {
     }
 
 
-    @PutMapping("/insertServizioPrenotazione")
+    @PostMapping("/insertServizioPrenotazione")
     public Long insertByPrentazioneAndHotel(@RequestParam("idServizio") Long idServizio, @RequestParam("idPrenotazione") Long idPrenotazione, @RequestParam("idHotel") Long idHotel){
         return servizioService.insertByPrentazioneAndHotel(idServizio, idPrenotazione, idHotel);
     }
