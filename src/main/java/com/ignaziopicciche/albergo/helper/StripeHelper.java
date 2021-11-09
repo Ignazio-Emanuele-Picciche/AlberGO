@@ -152,7 +152,9 @@ public class StripeHelper {
      * @throws StripeException
      */
     public void createPaymentIntent(PaymentData paymentData) throws StripeException {
+        //ogni hotel ha il suo
         //Stripe.apiKey = stripeKey; TODO impl stripe apiKey
+
 
         List<Object> paymentMethodTypes = new ArrayList<>();
         paymentMethodTypes.add("card");

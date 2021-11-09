@@ -26,6 +26,9 @@ public class Cliente {
     //TODO aggiunto nel db
     private String customerId;
 
+    //TODO aggiungere paymentMethod
+    private String paymentMethod;
+
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Prenotazione> prenotazioni;
 
