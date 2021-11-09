@@ -53,8 +53,8 @@ public class ServizioController {
 
 
     @PutMapping("/insertServizioPrenotazione")
-    public Long insertByPrentazioneAndHotel(@RequestParam("idServizio") Long idServzio, @RequestParam("idPrenotazione") Long idPrenotazione, @RequestParam("idHotel") Long idHotel){
-        return servizioService.insertByPrentazioneAndHotel(idServzio, idPrenotazione, idHotel);
+    public Long insertByPrentazioneAndHotel(@RequestParam("idServizio") Long idServizio, @RequestParam("idPrenotazione") Long idPrenotazione, @RequestParam("idHotel") Long idHotel){
+        return servizioService.insertByPrentazioneAndHotel(idServizio, idPrenotazione, idHotel);
     }
 
     @DeleteMapping("/removeServizioPrenotazione")

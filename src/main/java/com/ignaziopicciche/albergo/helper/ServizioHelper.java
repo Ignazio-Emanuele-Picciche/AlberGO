@@ -118,7 +118,6 @@ public class ServizioHelper {
             servizio.addPrenotazione(prenotazione);
 
             servizio = servizioRepository.save(servizio);
-            System.out.println(prenotazione);
             return servizio.getId();
         }
 
