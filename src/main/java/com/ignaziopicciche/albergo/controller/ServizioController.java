@@ -53,9 +53,9 @@ public class ServizioController {
     }
 
 
-    @PutMapping("/insertServizioPrenotazione")
-    public Long insertByPrentazioneAndHotel(@RequestParam("idServizio") Long idServzio, @RequestParam("idPrenotazione") Long idPrenotazione, @RequestParam("idHotel") Long idHotel, @RequestParam("paymentMethod") String paymentMethod) throws StripeException {
-        return servizioService.insertByPrentazioneAndHotel(idServzio, idPrenotazione, idHotel, paymentMethod);
+    @PostMapping("/insertServizioPrenotazione")
+    public Long insertByPrentazioneAndHotel(@RequestParam("idServizio") Long idServzio, @RequestParam("idPrenotazione") Long idPrenotazione, @RequestParam("idHotel") Long idHotel) throws StripeException {
+        return servizioService.insertByPrentazioneAndHotel(idServzio, idPrenotazione, idHotel);
     }
 
 

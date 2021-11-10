@@ -5,6 +5,7 @@ import com.ignaziopicciche.albergo.enums.HotelEnum;
 import com.ignaziopicciche.albergo.enums.PrenotazioneEnum;
 import com.ignaziopicciche.albergo.enums.ServizioEnum;
 import com.ignaziopicciche.albergo.handler.ApiRequestException;
+import com.ignaziopicciche.albergo.model.Cliente;
 import com.ignaziopicciche.albergo.model.PaymentData;
 import com.ignaziopicciche.albergo.model.Prenotazione;
 import com.ignaziopicciche.albergo.model.Servizio;
@@ -113,24 +114,38 @@ public class ServizioHelper {
 
 
     //TODO testare l'addebito
-    public Long insertByPrentazioneAndHotel(Long idServizio, Long idPrenotazione, Long idHotel, String paymentMethod) throws StripeException {
+    public Long insertByPrentazioneAndHotel(Long idServizio, Long idPrenotazione, Long idHotel) throws StripeException {
         if (servizioRepository.existsServizioByIdAndHotel_Id(idServizio, idHotel)
                 && prenotazioneRepository.existsPrenotazioneByIdAndHotel_Id(idPrenotazione, idHotel)) {
+
             Prenotazione prenotazione = prenotazioneRepository.findById(idPrenotazione).get();
             Servizio servizio = servizioRepository.findById(idServizio).get();
+            Cliente cliente = prenotazione.getCliente();
 
-            servizio.addPrenotazione(prenotazione);
+            if(!prenotazione.getServizi().contains(servizio)){
+                servizio.addPrenotazione(prenotazione);
 
-            String customerId = prenotazione.getCliente().getCustomerId();
-            String price = Double.toString(servizio.getPrezzo());
+                String price = Double.toString(servizio.getPrezzo());
+                if (price.indexOf(".") == price.length() - 2) {
+                    StringBuilder priceS = new StringBuilder(price);
+                    priceS.append("0");
+                    price = priceS.toString();
+                }
+                price = price.replace(".", "");
 
-            PaymentData paymentData = PaymentData.builder().customerId(customerId).price(price).paymentMethod(paymentMethod).build();
-            stripeHelper.createPaymentIntent(paymentData);
+                PaymentData paymentData = PaymentData.builder()
+                        .customerId(cliente.getCustomerId())
+                        .price(price)
+                        .paymentMethod(cliente.getPaymentMethodId())
+                        .description("Servizio "+servizio.getNome()).build();
+                stripeHelper.createPaymentIntent(paymentData);
 
+                servizio = servizioRepository.save(servizio);
+                return servizio.getId();
+            }
 
-            servizio = servizioRepository.save(servizio);
-            System.out.println(prenotazione);
-            return servizio.getId();
+            throw new ApiRequestException("Servizio già presente in questa prenotazione");
+
         }
 
         servizioEnum = ServizioEnum.getServizioEnumByMessageCode("SERV_IDNE");

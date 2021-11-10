@@ -57,13 +57,12 @@ public class ServizioService {
         return servizioHelper.update(servizioDTO);
     }
 
-    public Long insertByPrentazioneAndHotel(Long idServizio, Long idPrenotazione, Long idHotel, String paymentMethod) throws StripeException {
+    public Long insertByPrentazioneAndHotel(Long idServizio, Long idPrenotazione, Long idHotel) throws StripeException {
         Preconditions.checkArgument(!Objects.isNull(idPrenotazione));
         Preconditions.checkArgument(!Objects.isNull(idServizio));
         Preconditions.checkArgument(!Objects.isNull(idHotel));
-        Preconditions.checkArgument(!Objects.isNull(paymentMethod));
 
-        return servizioHelper.insertByPrentazioneAndHotel(idServizio, idPrenotazione, idHotel, paymentMethod);
+        return servizioHelper.insertByPrentazioneAndHotel(idServizio, idPrenotazione, idHotel);
     }
 
 
