@@ -42,7 +42,7 @@ public class ClienteHelper {
                     .username(clienteDTO.username)
                     .password(clienteDTO.password).build();
 
-            cliente = stripeHelper.createCustomer(cliente, "");
+            cliente = stripeHelper.createCustomer(cliente);
 
             cliente = clienteRepository.save(cliente);
             return cliente.getId();

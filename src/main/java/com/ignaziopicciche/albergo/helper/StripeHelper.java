@@ -1,9 +1,12 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.model.*;
+import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -15,11 +18,20 @@ import java.util.Map;
 @Component
 public class StripeHelper {
 
+    @Value("${customerBank}")
+    String customerBank;
+
+    private final ClienteRepository clienteRepository;
+
+    public StripeHelper(ClienteRepository clienteRepository) {
+        this.clienteRepository = clienteRepository;
+    }
 
     //TODO implementare eccezioni per stripeHelper
 
     /**
      * Il metodo crea un account stripe
+     *
      * @param hotel
      * @return
      * @throws StripeException
@@ -54,21 +66,20 @@ public class StripeHelper {
     }
 
 
-
-
-
     /**
      * Il metodo crea un customer stripe
+     *
      * @param cliente
      * @return Cliente
      * @throws StripeException
      */
-    public Cliente createCustomer(Cliente cliente, String stripeApiKey) throws StripeException {
-        //Stripe.apiKey = stripeApiKey; TODO impl stripe apiKey
+    public Cliente createCustomer(Cliente cliente) throws StripeException {
+        Stripe.apiKey = customerBank;
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", cliente.getNome());
         params.put("phone", cliente.getTelefono());
+        params.put("email", cliente.getNome()+"."+cliente.getCognome()+"@gmail.com");
         params.put("description", "Documento: " + cliente.getDocumento());
 
         Customer stripeCustomer = Customer.create(params);
@@ -79,6 +90,7 @@ public class StripeHelper {
 
     /**
      * Il metodo elimina il customer stripe
+     *
      * @param stripeCustomerId
      * @throws StripeException
      */
@@ -91,18 +103,22 @@ public class StripeHelper {
 
 
     /**
-     * Il metodo aggiunge un nuvo metodo (carta) di pagamento
+     * Il metodo aggiunge un nuovo metodo (carta) di pagamento
+     *
      * @param cardData
      * @throws Exception
      */
-    public void addPaymentMethod(CardData cardData /*String newPaymentMethod,*/) throws Exception {
-        //Stripe.apiKey = stripeKey; TODO impl stripe apiKey
+    public PaymentMethod addPaymentMethod(CardData cardData) throws Exception {
+        Stripe.apiKey = customerBank;
+
+        Cliente cliente = clienteRepository.findById(cardData.getIdCliente()).get();
 
         Map<String, Object> card = new HashMap<>();
         card.put("number", cardData.getNumber());
         card.put("exp_month", cardData.getExp_month());
         card.put("exp_year", cardData.getExp_year());
         card.put("cvc", cardData.getCvc());
+        //card.put("name", cliente.getNome()+" "+cliente.getCognome());
         Map<String, Object> paramsPaymentMehod = new HashMap<>();
         paramsPaymentMehod.put("type", "card");
         paramsPaymentMehod.put("card", card);
@@ -114,15 +130,21 @@ public class StripeHelper {
                 PaymentMethod.retrieve(newPaymentMethod); //idPaymentMethod*/
 
         Map<String, Object> params = new HashMap<>();
-        params.put("customer", cardData.getCustomerId());
+        params.put("customer", cliente.getCustomerId());
 
         PaymentMethod updatedPaymentMethod =
                 paymentMethod.attach(params);
-        //return updatedPaymentMethod;
+
+        //Assegno il paymentId al cliente
+        cliente.setPaymentMethodId(updatedPaymentMethod.getId());
+        clienteRepository.save(cliente);
+
+        return updatedPaymentMethod;
     }
 
     /**
      * Il metodo resituisce la lista dei metodi di pagamento del customer stripe
+     *
      * @param customerId
      * @return List<PaymentMethodData>
      * @throws StripeException
@@ -148,13 +170,12 @@ public class StripeHelper {
 
     /**
      * Il metodo effettua il pagamento
+     *
      * @param paymentData
      * @throws StripeException
      */
     public void createPaymentIntent(PaymentData paymentData) throws StripeException {
-        //ogni hotel ha il suo
-        //Stripe.apiKey = stripeKey; TODO impl stripe apiKey
-
+        Stripe.apiKey = customerBank;
 
         List<Object> paymentMethodTypes = new ArrayList<>();
         paymentMethodTypes.add("card");
@@ -162,6 +183,7 @@ public class StripeHelper {
         params.put("amount", paymentData.getPrice());
         params.put("payment_method", paymentData.getPaymentMethod());
         params.put("currency", "eur");
+        params.put("description", paymentData.getDescription());
         params.put("customer", paymentData.getCustomerId());
         params.put("confirm", true);
         params.put("payment_method_types", paymentMethodTypes);

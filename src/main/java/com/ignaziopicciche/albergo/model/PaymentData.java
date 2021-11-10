@@ -12,5 +12,6 @@ public class PaymentData {
     private String paymentMethod;
     private String price;
     private String customerId;
+    private String description;
 
 }

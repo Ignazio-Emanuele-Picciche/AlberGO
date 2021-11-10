@@ -44,23 +44,21 @@ public class PrenotazioneService {
     }
 
 
-    public Boolean delete(Long id, String paymentMethod) throws StripeException {
+    public Boolean delete(Long id) throws StripeException {
         Preconditions.checkArgument(!Objects.isNull(id));
-        Preconditions.checkArgument(!Objects.isNull(paymentMethod));
 
-        return prenotazioneHelper.delete(id, paymentMethod);
+        return prenotazioneHelper.delete(id);
     }
 
 
-    public PrenotazioneDTO create(PrenotazioneDTO prenotazioneDTO, String paymentMethod) throws StripeException, ParseException {
+    public PrenotazioneDTO create(PrenotazioneDTO prenotazioneDTO) throws StripeException, ParseException {
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.dataInizio));
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.dataFine));
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.idHotel));
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.idCliente));
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.idStanza));
-        Preconditions.checkArgument(!Objects.isNull(paymentMethod));
 
-        return prenotazioneHelper.create(prenotazioneDTO, paymentMethod);
+        return prenotazioneHelper.create(prenotazioneDTO);
     }
 
 
@@ -71,7 +69,7 @@ public class PrenotazioneService {
     }
 
 
-    public Long update(PrenotazioneDTO prenotazioneDTO) throws ParseException {
+    public Long update(PrenotazioneDTO prenotazioneDTO) throws ParseException, StripeException {
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.id));
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.dataFine));
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.dataInizio));

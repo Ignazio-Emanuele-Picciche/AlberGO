@@ -4,6 +4,7 @@ import com.ignaziopicciche.albergo.model.CardData;
 import com.ignaziopicciche.albergo.model.PaymentMethodData;
 import com.ignaziopicciche.albergo.service.StripeService;
 import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +24,8 @@ public class StripeController {
     //TODO chiedere a giovanni
     //I clienti quando e dove si possono creare?
     @PostMapping("/addPaymentMethod")
-    public void addPaymentMethod(@RequestBody CardData cardData) throws Exception {
-        stripeService.addPaymentMethod(cardData);
+    public PaymentMethod addPaymentMethod(@RequestBody CardData cardData) throws Exception {
+        return stripeService.addPaymentMethod(cardData);
     }
 
 
