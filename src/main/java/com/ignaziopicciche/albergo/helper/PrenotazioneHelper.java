@@ -88,6 +88,9 @@ public class PrenotazioneHelper {
     public Boolean delete(Long id) {
         if (prenotazioneRepository.existsById(id)) {
             try {
+                Prenotazione prenotazione = prenotazioneRepository.findById(id).get();
+                prenotazione.setServizi(null);
+                prenotazioneRepository.save(prenotazione);
                 prenotazioneRepository.deleteById(id);
                 return true;
             } catch (Exception e) {
