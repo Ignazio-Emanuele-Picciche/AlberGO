@@ -35,5 +35,9 @@ public class StripeController {
         return stripeService.getPaymentMethod(customerId);
     }
 
+    @DeleteMapping("/detachPaymentMethod")
+    public void detachPaymentMethod(@RequestParam("idCliente") Long idCliente) throws StripeException {
+        stripeService.detachPaymentMethod(idCliente);
+    }
 
 }

@@ -8,6 +8,7 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +36,12 @@ public class StripeService {
         Preconditions.checkArgument(!Objects.isNull(customerId));
 
         return stripeHelper.getPaymentMethod(customerId);
+    }
+
+    public void detachPaymentMethod(Long idCliente) throws StripeException {
+        Preconditions.checkArgument(!Objects.isNull(idCliente));
+
+        stripeHelper.detachPaymentMethod(idCliente);
     }
 
 

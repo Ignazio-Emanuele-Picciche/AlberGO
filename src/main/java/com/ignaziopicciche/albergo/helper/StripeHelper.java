@@ -167,6 +167,17 @@ public class StripeHelper {
         return paymentDataList;
     }
 
+    public void detachPaymentMethod(Long idCliente) throws StripeException {
+        Stripe.apiKey = customerBank;
+        Cliente cliente = clienteRepository.findById(idCliente).get();
+
+        PaymentMethod paymentMethod =
+                PaymentMethod.retrieve(cliente.getPaymentMethodId());
+
+        PaymentMethod updatedPaymentMethod =
+                paymentMethod.detach();
+    }
+
 
     /**
      * Il metodo effettua il pagamento
