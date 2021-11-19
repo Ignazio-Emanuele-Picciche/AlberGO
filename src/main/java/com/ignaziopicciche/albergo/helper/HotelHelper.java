@@ -35,7 +35,7 @@ public class HotelHelper {
             hotel.setStelle(hotelDTO.stelle);
             hotel.setTelefono(hotelDTO.telefono);
 
-            hotel = stripeHelper.createAccount(hotel);
+            //hotel = stripeHelper.createAccount(hotel);
 
             hotelRepository.save(hotel);
             return new HotelDTO(hotel);

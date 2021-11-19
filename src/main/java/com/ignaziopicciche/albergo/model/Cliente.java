@@ -3,7 +3,9 @@ package com.ignaziopicciche.albergo.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -13,9 +15,8 @@ import java.util.List;
 @Builder
 public class Cliente {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EmbeddedId
+    private ClienteCustomerPK embeddedId;
 
     private String nome;
     private String cognome;
@@ -24,15 +25,14 @@ public class Cliente {
     private String username;
     private String password;
 
-    //TODO aggiunto nel db
-    private String customerId;
-    private String paymentMethodId;
-
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Prenotazione> prenotazioni;
 
-    /*@ManyToOne
-    @JoinColumn(name = "ID_CLIENTE_HOTEL")
-    private Hotel hotel;*/
+
+    @OneToMany(mappedBy = "id.cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    @ToString.Exclude
+    private Set<ClienteHotel> clienteHotels = new HashSet<>();
+
 
 }

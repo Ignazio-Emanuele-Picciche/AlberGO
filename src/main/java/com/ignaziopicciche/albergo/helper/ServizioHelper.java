@@ -134,9 +134,9 @@ public class ServizioHelper {
                 price = price.replace(".", "");
 
                 PaymentData paymentData = PaymentData.builder()
-                        .customerId(cliente.getCustomerId())
+                        .customerId(cliente.getEmbeddedId().getCustomerId())
                         .price(price)
-                        .paymentMethod(cliente.getPaymentMethodId())
+                        .paymentMethod(cliente.getEmbeddedId().getPaymentMethodId())
                         .description("Servizio "+servizio.getNome()).build();
                 stripeHelper.createPaymentIntent(paymentData);
 

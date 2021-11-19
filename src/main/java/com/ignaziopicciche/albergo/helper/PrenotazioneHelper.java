@@ -77,7 +77,7 @@ public class PrenotazioneHelper {
 
 
             Cliente cliente = clienteRepository.findById(idCliente).get();
-            List<Prenotazione> prenotazioni = prenotazioneRepository.findPrenotazionesByCliente_Id(idCliente);
+            List<Prenotazione> prenotazioni = prenotazioneRepository.findPrenotazionesByCliente_EmbeddedId_Id(idCliente);
             List<FatturaDTO> fattureList = new ArrayList<>();
 
             for (Prenotazione p : prenotazioni) {
@@ -126,9 +126,9 @@ public class PrenotazioneHelper {
                 price = price.replace(".", "");
 
                 PaymentData paymentData = PaymentData.builder()
-                        .customerId(cliente.getCustomerId())
+                        .customerId(cliente.getEmbeddedId().getCustomerId())
                         .price(price)
-                        .paymentMethod(cliente.getPaymentMethodId())
+                        .paymentMethod(cliente.getEmbeddedId().getPaymentMethodId())
                         .description("Prenotazione eliminata "+cliente.getNome()+" "+cliente.getCognome()+" "+prenotazione.getDataInizio()+" "+prenotazione.getDataFine()).build();
                 stripeHelper.createPaymentIntent(paymentData);
 
@@ -182,9 +182,9 @@ public class PrenotazioneHelper {
             LocalDate dataFineNuova = prenotazioneDTO.dataFine.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
             PaymentData paymentData = PaymentData.builder()
-                    .customerId(cliente.getCustomerId())
+                    .customerId(cliente.getEmbeddedId().getCustomerId())
                     .price(price)
-                    .paymentMethod(cliente.getPaymentMethodId())
+                    .paymentMethod(cliente.getEmbeddedId().getPaymentMethodId())
                     .description("Prenotazione creata "+cliente.getNome()+" "+cliente.getCognome()+" "+dataInizioNuova+"  "+dataFineNuova).build();
             stripeHelper.createPaymentIntent(paymentData);
 
@@ -250,9 +250,9 @@ public class PrenotazioneHelper {
                 price = price.replace(".", "");
 
                 PaymentData paymentData = PaymentData.builder()
-                        .customerId(cliente.getCustomerId())
+                        .customerId(cliente.getEmbeddedId().getCustomerId())
                         .price(price)
-                        .paymentMethod(cliente.getPaymentMethodId())
+                        .paymentMethod(cliente.getEmbeddedId().getPaymentMethodId())
                         .description("Prenotazione aggiornata "+cliente.getNome()+" "+cliente.getCognome()+" "+dataInizioNuova+"  "+dataFineNuova).build();
                 stripeHelper.createPaymentIntent(paymentData);
             }

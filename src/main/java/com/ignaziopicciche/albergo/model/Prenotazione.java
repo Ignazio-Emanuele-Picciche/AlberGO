@@ -29,7 +29,11 @@ public class Prenotazione {
     private Date dataFine;
 
     @ManyToOne
-    @JoinColumn(name = "ID_PRENOTAZIONE_CLIENTE")
+    @JoinColumns({
+            @JoinColumn(name = "customerId", insertable = false, updatable = false),
+            @JoinColumn(name = "paymentMethodId", insertable = false, updatable = false),
+            @JoinColumn(name = "id", insertable = false, updatable = false)
+    })
     private Cliente cliente;
 
     @ManyToOne

@@ -42,10 +42,8 @@ public class ClienteHelper {
                     .username(clienteDTO.username)
                     .password(clienteDTO.password).build();
 
-            cliente = stripeHelper.createCustomer(cliente);
-
             cliente = clienteRepository.save(cliente);
-            return cliente.getId();
+            return cliente.getEmbeddedId().getId();
         }
 
         clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_AE");
@@ -76,7 +74,7 @@ public class ClienteHelper {
 
         if (clienteRepository.existsById(id)) {
             try {
-                stripeHelper.deleteCustomerById(clienteRepository.findById(id).get().getCustomerId());
+                stripeHelper.deleteCustomerById(clienteRepository.findById(id).get().getEmbeddedId().getCustomerId());
                 clienteRepository.deleteById(id);
                 return true;
             } catch (Exception e) {

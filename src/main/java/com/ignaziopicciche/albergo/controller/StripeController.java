@@ -20,16 +20,12 @@ public class StripeController {
         this.stripeService = stripeService;
     }
 
-    //TODO aggiornare le api
-    //TODO chiedere a giovanni
-    //I clienti quando e dove si possono creare?
+
     @PostMapping("/addPaymentMethod")
     public PaymentMethod addPaymentMethod(@RequestBody CardData cardData) throws Exception {
         return stripeService.addPaymentMethod(cardData);
     }
 
-
-    //TODO aggiornare api
     @GetMapping("/listaPaymentMethod")
     public List<PaymentMethodData> getPaymentMethod(@RequestParam("customerId") String customerId) throws StripeException {
         return stripeService.getPaymentMethod(customerId);
@@ -38,6 +34,12 @@ public class StripeController {
     @DeleteMapping("/detachPaymentMethod")
     public void detachPaymentMethod(@RequestParam("idCliente") Long idCliente) throws StripeException {
         stripeService.detachPaymentMethod(idCliente);
+    }
+
+    //Bisogna andare sul sito di stripe, creare un proprio account e prendere la chiave privata
+    @PutMapping("/insertKey")
+    public void insertKey(@RequestParam("key") String key, @RequestParam("idHotel") Long idHotel) throws StripeException {
+        stripeService.insertKey(key, idHotel);
     }
 
 }

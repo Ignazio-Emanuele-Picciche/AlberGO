@@ -1,9 +1,14 @@
 package com.ignaziopicciche.albergo.model;
 
 import lombok.*;
+import org.hibernate.annotations.JoinColumnOrFormula;
+import org.hibernate.annotations.JoinColumnsOrFormulas;
+import org.hibernate.annotations.JoinFormula;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -23,16 +28,12 @@ public class Hotel {
     private String descrizione;
     private String telefono;
 
-    //TODO impl in db
-    private String accountId;
     private String publicKey;
 
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Amministratore> amministratori;
 
-    /*@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Cliente> clienti;*/
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Prenotazione> prenotazioni;
@@ -45,5 +46,13 @@ public class Hotel {
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Servizio> servizi;
+
+
+    @OneToMany(mappedBy = "id.hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    @ToString.Exclude
+    private Set<ClienteHotel> clientiHotel = new HashSet<>();
+
+
 
 }

@@ -44,5 +44,12 @@ public class StripeService {
         stripeHelper.detachPaymentMethod(idCliente);
     }
 
+    public void insertKey(String key, Long idHotel) throws StripeException {
+        Preconditions.checkArgument(!Objects.isNull(key));
+        Preconditions.checkArgument(!Objects.isNull(idHotel));
+
+        stripeHelper.insertKey(key, idHotel);
+    }
+
 
 }

@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface PrenotazioneRepository extends JpaRepository<Prenotazione, Long> {
 
-    List<Prenotazione> findPrenotazionesByCliente_Id(Long idCliente);
+    List<Prenotazione> findPrenotazionesByCliente_EmbeddedId_Id(Long idCliente);
     List<Prenotazione> findPrenotazionesByHotel_Id(Long idHotel);
 
     List<Prenotazione> findPrenotazionesByStanza_IdAndHotel_Id(Long idStanza, Long idHotel);
