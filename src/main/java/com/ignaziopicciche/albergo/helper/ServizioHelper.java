@@ -5,10 +5,8 @@ import com.ignaziopicciche.albergo.enums.HotelEnum;
 import com.ignaziopicciche.albergo.enums.PrenotazioneEnum;
 import com.ignaziopicciche.albergo.enums.ServizioEnum;
 import com.ignaziopicciche.albergo.handler.ApiRequestException;
-import com.ignaziopicciche.albergo.model.Cliente;
-import com.ignaziopicciche.albergo.model.PaymentData;
-import com.ignaziopicciche.albergo.model.Prenotazione;
-import com.ignaziopicciche.albergo.model.Servizio;
+import com.ignaziopicciche.albergo.model.*;
+import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
 import com.ignaziopicciche.albergo.repository.PrenotazioneRepository;
 import com.ignaziopicciche.albergo.repository.ServizioRepository;
@@ -25,16 +23,18 @@ public class ServizioHelper {
     private final ServizioRepository servizioRepository;
     private final HotelRepository hotelRepository;
     private final PrenotazioneRepository prenotazioneRepository;
+    private final ClienteHotelRepository clienteHotelRepository;
     private final StripeHelper stripeHelper;
 
     private static ServizioEnum servizioEnum;
     private static HotelEnum hotelEnum;
     private static PrenotazioneEnum prenotazioneEnum;
 
-    public ServizioHelper(ServizioRepository servizioRepository, HotelRepository hotelRepository, PrenotazioneRepository prenotazioneRepository, StripeHelper stripeHelper) {
+    public ServizioHelper(ServizioRepository servizioRepository, HotelRepository hotelRepository, PrenotazioneRepository prenotazioneRepository, ClienteHotelRepository clienteHotelRepository, StripeHelper stripeHelper) {
         this.servizioRepository = servizioRepository;
         this.hotelRepository = hotelRepository;
         this.prenotazioneRepository = prenotazioneRepository;
+        this.clienteHotelRepository = clienteHotelRepository;
         this.stripeHelper = stripeHelper;
     }
 
@@ -113,7 +113,6 @@ public class ServizioHelper {
     }
 
 
-    //TODO testare l'addebito
     public Long insertByPrentazioneAndHotel(Long idServizio, Long idPrenotazione, Long idHotel) throws StripeException {
         if (servizioRepository.existsServizioByIdAndHotel_Id(idServizio, idHotel)
                 && prenotazioneRepository.existsPrenotazioneByIdAndHotel_Id(idPrenotazione, idHotel)) {
@@ -133,10 +132,14 @@ public class ServizioHelper {
                 }
                 price = price.replace(".", "");
 
+                Hotel hotel = prenotazione.getHotel();
+                ClienteHotel clienteHotel = clienteHotelRepository.findByCliente_IdAndHotel_Id(cliente.getId(), hotel.getId());
+
                 PaymentData paymentData = PaymentData.builder()
-                        .customerId(cliente.getEmbeddedId().getCustomerId())
+                        .customerId(clienteHotel.getCustomerId())
+                        .key(hotel.getPublicKey())
                         .price(price)
-                        .paymentMethod(cliente.getEmbeddedId().getPaymentMethodId())
+                        .paymentMethod(clienteHotel.getPaymentMethodId())
                         .description("Servizio "+servizio.getNome()).build();
                 stripeHelper.createPaymentIntent(paymentData);
 

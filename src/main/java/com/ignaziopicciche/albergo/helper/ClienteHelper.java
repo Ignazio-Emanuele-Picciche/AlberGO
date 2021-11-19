@@ -5,6 +5,9 @@ import com.ignaziopicciche.albergo.enums.ClienteEnum;
 import com.ignaziopicciche.albergo.enums.HotelEnum;
 import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Cliente;
+import com.ignaziopicciche.albergo.model.ClienteHotel;
+import com.ignaziopicciche.albergo.model.Hotel;
+import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
 import com.stripe.exception.StripeException;
@@ -18,15 +21,19 @@ public class ClienteHelper {
 
     private final ClienteRepository clienteRepository;
     private final HotelRepository hotelRepository;
+    private final ClienteHotelRepository clienteHotelRepository;
     private final StripeHelper stripeHelper;
+    private final ClienteHotelHelper clienteHotelHelper;
 
     private static ClienteEnum clienteEnum;
     private static HotelEnum hotelEnum;
 
-    public ClienteHelper(ClienteRepository clienteRepository, HotelRepository hotelRepository, StripeHelper stripeHelper) {
+    public ClienteHelper(ClienteRepository clienteRepository, HotelRepository hotelRepository, StripeHelper stripeHelper, ClienteHotelRepository clienteHotelRepository, ClienteHotelHelper clienteHotelHelper) {
         this.clienteRepository = clienteRepository;
         this.hotelRepository = hotelRepository;
         this.stripeHelper = stripeHelper;
+        this.clienteHotelRepository = clienteHotelRepository;
+        this.clienteHotelHelper = clienteHotelHelper;
     }
 
     public Long create(ClienteDTO clienteDTO) throws StripeException {
@@ -43,7 +50,16 @@ public class ClienteHelper {
                     .password(clienteDTO.password).build();
 
             cliente = clienteRepository.save(cliente);
-            return cliente.getEmbeddedId().getId();
+
+            List<Hotel> hotels = hotelRepository.findAll();
+
+            for(Hotel hotel: hotels){
+                String customerId = stripeHelper.createCustomer(cliente, hotel.getPublicKey());
+                clienteHotelHelper.createByCliente(cliente, customerId);
+            }
+
+
+            return cliente.getId();
         }
 
         clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_AE");
@@ -74,7 +90,9 @@ public class ClienteHelper {
 
         if (clienteRepository.existsById(id)) {
             try {
-                stripeHelper.deleteCustomerById(clienteRepository.findById(id).get().getEmbeddedId().getCustomerId());
+                List<ClienteHotel> clientiHotel = clienteHotelRepository.findByCliente_Id(id);
+                stripeHelper.deleteCustomerById(clientiHotel);
+
                 clienteRepository.deleteById(id);
                 return true;
             } catch (Exception e) {

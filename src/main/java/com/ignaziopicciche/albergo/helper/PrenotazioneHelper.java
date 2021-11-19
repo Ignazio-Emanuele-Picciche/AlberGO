@@ -9,17 +9,14 @@ import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.*;
 import com.ignaziopicciche.albergo.repository.*;
 import com.stripe.exception.StripeException;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,18 +30,20 @@ public class PrenotazioneHelper {
     private final ClienteRepository clienteRepository;
     private final StanzaRepository stanzaRepository;
     private final CategoriaRepository categoriaRepository;
+    private final ClienteHotelRepository clienteHotelRepository;
     private final StripeHelper stripeHelper;
 
     private static PrenotazioneEnum prenotazioneEnum;
     private static HotelEnum hotelEnum;
     private static StanzaEnum stanzaEnum;
 
-    public PrenotazioneHelper(PrenotazioneRepository prenotazioneRepository, HotelRepository hotelRepository, ClienteRepository clienteRepository, StanzaRepository stanzaRepository, CategoriaRepository categoriaRepository, StripeHelper stripeHelper) {
+    public PrenotazioneHelper(PrenotazioneRepository prenotazioneRepository, HotelRepository hotelRepository, ClienteRepository clienteRepository, StanzaRepository stanzaRepository, CategoriaRepository categoriaRepository, ClienteHotelRepository clienteHotelRepository, StripeHelper stripeHelper) {
         this.prenotazioneRepository = prenotazioneRepository;
         this.hotelRepository = hotelRepository;
         this.clienteRepository = clienteRepository;
         this.stanzaRepository = stanzaRepository;
         this.categoriaRepository = categoriaRepository;
+        this.clienteHotelRepository = clienteHotelRepository;
         this.stripeHelper = stripeHelper;
     }
 
@@ -77,7 +76,7 @@ public class PrenotazioneHelper {
 
 
             Cliente cliente = clienteRepository.findById(idCliente).get();
-            List<Prenotazione> prenotazioni = prenotazioneRepository.findPrenotazionesByCliente_EmbeddedId_Id(idCliente);
+            List<Prenotazione> prenotazioni = prenotazioneRepository.findPrenotazionesByCliente_Id(idCliente);
             List<FatturaDTO> fattureList = new ArrayList<>();
 
             for (Prenotazione p : prenotazioni) {
@@ -95,7 +94,7 @@ public class PrenotazioneHelper {
         throw new ApiRequestException(prenotazioneEnum.getMessage());
     }
 
-    //TODO testare
+
     public Boolean delete(Long idPrenotazione) throws StripeException {
         if (prenotazioneRepository.existsById(idPrenotazione)) {
 
@@ -125,10 +124,14 @@ public class PrenotazioneHelper {
                 }
                 price = price.replace(".", "");
 
+                Hotel hotel = prenotazione.getHotel();
+                ClienteHotel clienteHotel = clienteHotelRepository.findByCliente_IdAndHotel_Id(cliente.getId(), hotel.getId());
+
                 PaymentData paymentData = PaymentData.builder()
-                        .customerId(cliente.getEmbeddedId().getCustomerId())
+                        .customerId(clienteHotel.getCustomerId())
+                        .key(hotel.getPublicKey())
                         .price(price)
-                        .paymentMethod(cliente.getEmbeddedId().getPaymentMethodId())
+                        .paymentMethod(clienteHotel.getPaymentMethodId())
                         .description("Prenotazione eliminata "+cliente.getNome()+" "+cliente.getCognome()+" "+prenotazione.getDataInizio()+" "+prenotazione.getDataFine()).build();
                 stripeHelper.createPaymentIntent(paymentData);
 
@@ -181,10 +184,14 @@ public class PrenotazioneHelper {
             LocalDate dataInizioNuova = prenotazioneDTO.dataInizio.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             LocalDate dataFineNuova = prenotazioneDTO.dataFine.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
+            Hotel hotel = prenotazione.getHotel();
+            ClienteHotel clienteHotel = clienteHotelRepository.findByCliente_IdAndHotel_Id(cliente.getId(), hotel.getId());
+
             PaymentData paymentData = PaymentData.builder()
-                    .customerId(cliente.getEmbeddedId().getCustomerId())
+                    .customerId(clienteHotel.getCustomerId())
+                    .key(hotel.getPublicKey())
                     .price(price)
-                    .paymentMethod(cliente.getEmbeddedId().getPaymentMethodId())
+                    .paymentMethod(clienteHotel.getPaymentMethodId())
                     .description("Prenotazione creata "+cliente.getNome()+" "+cliente.getCognome()+" "+dataInizioNuova+"  "+dataFineNuova).build();
             stripeHelper.createPaymentIntent(paymentData);
 
@@ -197,7 +204,6 @@ public class PrenotazioneHelper {
         throw new ApiRequestException(prenotazioneEnum.getMessage());
     }
 
-
     public List<PrenotazioneDTO> findPrenotazionesByStanza_Id(Long idStanza) {
         if (stanzaRepository.existsById(idStanza)) {
             List<Prenotazione> prenotazioniLista = prenotazioneRepository.findPrenotazionesByStanza_Id(idStanza);
@@ -209,7 +215,6 @@ public class PrenotazioneHelper {
     }
 
 
-    //TODO gestire il prezzo per la modifica delle date
     public Long update(PrenotazioneDTO prenotazioneDTO) throws ParseException, StripeException {
 
         String data = LocalDate.now().toString();
@@ -249,10 +254,14 @@ public class PrenotazioneHelper {
                 }
                 price = price.replace(".", "");
 
+                Hotel hotel = prenotazione.getHotel();
+                ClienteHotel clienteHotel = clienteHotelRepository.findByCliente_IdAndHotel_Id(cliente.getId(), hotel.getId());
+
                 PaymentData paymentData = PaymentData.builder()
-                        .customerId(cliente.getEmbeddedId().getCustomerId())
+                        .customerId(clienteHotel.getCustomerId())
+                        .key(hotel.getPublicKey())
                         .price(price)
-                        .paymentMethod(cliente.getEmbeddedId().getPaymentMethodId())
+                        .paymentMethod(clienteHotel.getPaymentMethodId())
                         .description("Prenotazione aggiornata "+cliente.getNome()+" "+cliente.getCognome()+" "+dataInizioNuova+"  "+dataFineNuova).build();
                 stripeHelper.createPaymentIntent(paymentData);
             }

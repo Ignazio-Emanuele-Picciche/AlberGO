@@ -13,6 +13,7 @@ public class CardData {
     private String number;
     private String cvc;
     private Long idCliente;
+    private Long idHotel;
     private String exp_month;
     private String exp_year;
 }

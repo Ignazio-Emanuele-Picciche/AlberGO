@@ -15,8 +15,9 @@ import java.util.Set;
 @Builder
 public class Cliente {
 
-    @EmbeddedId
-    private ClienteCustomerPK embeddedId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String nome;
     private String cognome;
@@ -29,10 +30,8 @@ public class Cliente {
     private List<Prenotazione> prenotazioni;
 
 
-    @OneToMany(mappedBy = "id.cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Builder.Default
-    @ToString.Exclude
-    private Set<ClienteHotel> clienteHotels = new HashSet<>();
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<ClienteHotel> clientiHotel;
 
 
 }

@@ -27,19 +27,14 @@ public class StripeController {
     }
 
     @GetMapping("/listaPaymentMethod")
-    public List<PaymentMethodData> getPaymentMethod(@RequestParam("customerId") String customerId) throws StripeException {
-        return stripeService.getPaymentMethod(customerId);
+    public List<PaymentMethodData> getPaymentMethod(@RequestParam("idCliente") Long idCliente, @RequestParam("idHotel") Long idHotel) throws StripeException {
+        return stripeService.getPaymentMethod(idCliente, idHotel);
     }
 
     @DeleteMapping("/detachPaymentMethod")
-    public void detachPaymentMethod(@RequestParam("idCliente") Long idCliente) throws StripeException {
-        stripeService.detachPaymentMethod(idCliente);
+    public void detachPaymentMethod(@RequestParam("idCliente") Long idCliente, @RequestParam("idHotel") Long idHotel) throws StripeException {
+        stripeService.detachPaymentMethod(idCliente, idHotel);
     }
 
-    //Bisogna andare sul sito di stripe, creare un proprio account e prendere la chiave privata
-    @PutMapping("/insertKey")
-    public void insertKey(@RequestParam("key") String key, @RequestParam("idHotel") Long idHotel) throws StripeException {
-        stripeService.insertKey(key, idHotel);
-    }
 
 }

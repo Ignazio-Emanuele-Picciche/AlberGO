@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class Prenotazione {
 
     @Id
@@ -29,11 +30,7 @@ public class Prenotazione {
     private Date dataFine;
 
     @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "customerId", insertable = false, updatable = false),
-            @JoinColumn(name = "paymentMethodId", insertable = false, updatable = false),
-            @JoinColumn(name = "id", insertable = false, updatable = false)
-    })
+    @JoinColumn(name = "ID_PRENOTAZIONE_CLIENTE")
     private Cliente cliente;
 
     @ManyToOne

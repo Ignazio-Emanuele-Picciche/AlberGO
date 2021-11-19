@@ -32,24 +32,20 @@ public class StripeService {
         return stripeHelper.addPaymentMethod(cardData);
     }
 
-    public List<PaymentMethodData> getPaymentMethod(String customerId) throws StripeException{
-        Preconditions.checkArgument(!Objects.isNull(customerId));
-
-        return stripeHelper.getPaymentMethod(customerId);
-    }
-
-    public void detachPaymentMethod(Long idCliente) throws StripeException {
+    public List<PaymentMethodData> getPaymentMethod(Long idCliente, Long idHotel) throws StripeException{
         Preconditions.checkArgument(!Objects.isNull(idCliente));
-
-        stripeHelper.detachPaymentMethod(idCliente);
-    }
-
-    public void insertKey(String key, Long idHotel) throws StripeException {
-        Preconditions.checkArgument(!Objects.isNull(key));
         Preconditions.checkArgument(!Objects.isNull(idHotel));
 
-        stripeHelper.insertKey(key, idHotel);
+        return stripeHelper.getPaymentMethod(idCliente, idHotel);
     }
+
+    public void detachPaymentMethod(Long idCliente, Long idHotel) throws StripeException {
+        Preconditions.checkArgument(!Objects.isNull(idCliente));
+        Preconditions.checkArgument(!Objects.isNull(idHotel));
+
+        stripeHelper.detachPaymentMethod(idCliente, idHotel);
+    }
+
 
 
 }

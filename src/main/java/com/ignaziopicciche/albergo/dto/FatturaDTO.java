@@ -19,16 +19,13 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FatturaDTO {
-    
-    /*
-    Va cercato per cliente.idCliente
-    */
 
     public PrenotazioneDTO prenotazione;
     public HotelDTO hotel;
     public ClienteDTO cliente;
     public StanzaDTO stanza;
     public CategoriaDTO categoria;
+
 
 
     public FatturaDTO(Prenotazione prenotazione, Cliente cliente, Stanza stanza, Categoria categoria, Hotel hotel) {

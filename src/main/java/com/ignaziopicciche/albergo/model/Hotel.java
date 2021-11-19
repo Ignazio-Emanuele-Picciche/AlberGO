@@ -48,10 +48,8 @@ public class Hotel {
     private List<Servizio> servizi;
 
 
-    @OneToMany(mappedBy = "id.hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Builder.Default
-    @ToString.Exclude
-    private Set<ClienteHotel> clientiHotel = new HashSet<>();
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<ClienteHotel> hotelsCliente;
 
 
 

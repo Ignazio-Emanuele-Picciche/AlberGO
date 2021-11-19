@@ -42,8 +42,7 @@ public class PrenotazioneController {
         return prenotazioneService.findPrenotazionesByStanza_Id(idStanza);
     }
 
-    //TODO aggiornare api
-    //Nel momento della creazione della prenotazione va richiesto il metodo di pagamento
+
     @PostMapping("/create")
     public PrenotazioneDTO create(@RequestBody PrenotazioneDTO prenotazioneDTO) throws StripeException, ParseException {
         return prenotazioneService.create(prenotazioneDTO);

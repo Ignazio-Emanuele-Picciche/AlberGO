@@ -22,7 +22,7 @@ public class ClienteDTO {
     //public Long idHotel;
 
     public ClienteDTO(Cliente c) {
-        this.id = c.getEmbeddedId().getId();
+        this.id = c.getId();
         this.nome = c.getNome();
         this.cognome = c.getCognome();
         this.telefono = c.getTelefono();
