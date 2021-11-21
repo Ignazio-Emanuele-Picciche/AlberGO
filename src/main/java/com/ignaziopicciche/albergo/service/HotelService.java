@@ -20,12 +20,13 @@ public class HotelService {
     }
 
 
-    public HotelDTO create(HotelDTO hotelDTO) throws StripeException {
+    public HotelDTO create(HotelDTO hotelDTO) throws Exception {
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.nome));
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.indirizzo));
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.stelle));
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.descrizione));
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.telefono));
+        Preconditions.checkArgument(!Objects.isNull(hotelDTO.publicKey));
 
         return hotelHelper.create(hotelDTO);
     }
@@ -57,5 +58,4 @@ public class HotelService {
 
         return hotelHelper.findHotelByIndirizzo(indirizzoHotel);
     }
-
 }

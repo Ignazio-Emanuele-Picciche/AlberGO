@@ -18,6 +18,7 @@ public class HotelController {
         this.hotelService = hotelService;
     }
 
+    //TODO api lista tutti hotel
 
     @GetMapping("/dettaglio")
     public HotelDTO findById(@RequestParam(name = "idHotel") Long id){
@@ -25,7 +26,7 @@ public class HotelController {
     }
 
     @PostMapping("/create")
-    public HotelDTO create(@RequestBody HotelDTO hotelDTO) throws StripeException {
+    public HotelDTO create(@RequestBody HotelDTO hotelDTO) throws Exception {
         return hotelService.create(hotelDTO);
     }
 
@@ -47,5 +48,4 @@ public class HotelController {
     public List<HotelDTO> findHotelByIndirizzo(@RequestParam("indirizzoHotel") String indirizzoHotel){
         return hotelService.findHotelByIndirizzo(indirizzoHotel);
     }
-
 }

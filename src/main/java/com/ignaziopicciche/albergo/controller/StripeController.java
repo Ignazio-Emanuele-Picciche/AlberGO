@@ -21,20 +21,21 @@ public class StripeController {
     }
 
 
-    @PostMapping("/addPaymentMethod")
-    public PaymentMethod addPaymentMethod(@RequestBody CardData cardData) throws Exception {
-        return stripeService.addPaymentMethod(cardData);
+    //Quando creo un nuovo cliente lo aggiungo negli hotel (anche se non ha la carta)
+    //Quando creo una carta la aggiungo/sostituisco in tutti gli hotel
+    @PostMapping("/addCard")
+    public void addPaymentMethod(@RequestBody CardData cardData) throws Exception {
+        stripeService.addPaymentMethod(cardData);
     }
 
-    @GetMapping("/listaPaymentMethod")
-    public List<PaymentMethodData> getPaymentMethod(@RequestParam("idCliente") Long idCliente, @RequestParam("idHotel") Long idHotel) throws StripeException {
+    @GetMapping("/dettaglioCard")
+    public CardData getPaymentMethod(@RequestParam("idCliente") Long idCliente, @RequestParam("idHotel") Long idHotel) throws StripeException {
         return stripeService.getPaymentMethod(idCliente, idHotel);
     }
 
-    @DeleteMapping("/detachPaymentMethod")
+    //Quando faccio delete card la devo eliminare in tutti hotel
+    @DeleteMapping("/deleteCard")
     public void detachPaymentMethod(@RequestParam("idCliente") Long idCliente, @RequestParam("idHotel") Long idHotel) throws StripeException {
         stripeService.detachPaymentMethod(idCliente, idHotel);
     }
-
-
 }

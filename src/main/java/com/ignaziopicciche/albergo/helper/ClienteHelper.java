@@ -36,7 +36,7 @@ public class ClienteHelper {
         this.clienteHotelHelper = clienteHotelHelper;
     }
 
-    public Long create(ClienteDTO clienteDTO) throws StripeException {
+    public Long create(ClienteDTO clienteDTO) throws Exception {
 
         if (!clienteRepository.existsByDocumentoOrUsername(clienteDTO.documento, clienteDTO.username) &&
                 !clienteDTO.documento.equals("") && !clienteDTO.username.equals("")) {
@@ -53,9 +53,14 @@ public class ClienteHelper {
 
             List<Hotel> hotels = hotelRepository.findAll();
 
-            for(Hotel hotel: hotels){
-                String customerId = stripeHelper.createCustomer(cliente, hotel.getPublicKey());
-                clienteHotelHelper.createByCliente(cliente, customerId);
+            if(!hotels.isEmpty()){
+                for(Hotel hotel: hotels){
+                    String customerId = stripeHelper.createCustomer(cliente, hotel.getPublicKey());
+                    clienteHotelHelper.createByCliente(cliente, customerId, hotel);
+
+                    stripeHelper.addClienteHotelCarta(cliente);
+
+                }
             }
 
 
@@ -92,6 +97,7 @@ public class ClienteHelper {
             try {
                 List<ClienteHotel> clientiHotel = clienteHotelRepository.findByCliente_Id(id);
                 stripeHelper.deleteCustomerById(clientiHotel);
+                clienteHotelRepository.deleteAllByCliente_Id(id);
 
                 clienteRepository.deleteById(id);
                 return true;

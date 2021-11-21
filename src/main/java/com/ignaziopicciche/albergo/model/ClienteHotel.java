@@ -11,23 +11,27 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClienteHotel implements Serializable {
+public class ClienteHotel /*implements Serializable*/ {
 
-    @EmbeddedId
-    private ClienteHotelPK id;
+    //@EmbeddedId
+    //private ClienteHotelPK id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
-    @MapsId("cliente_id")
+    //@MapsId("cliente_id")
     @JoinColumn(name = "ID_CLIENTE")
     private Cliente cliente;
 
     @ManyToOne
-    @MapsId("hotel_id")
+    //@MapsId("hotel_id")
     @JoinColumn(name = "ID_HOTEL")
     private Hotel hotel;
 
     private String customerId;
     private String paymentMethodId;
+    private String cvc;
 
 
 }

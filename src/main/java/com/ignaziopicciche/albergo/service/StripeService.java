@@ -22,17 +22,17 @@ public class StripeService {
         this.stripeHelper = stripeHelper;
     }
 
-    public PaymentMethod addPaymentMethod(CardData cardData) throws Exception {
+    public void addPaymentMethod(CardData cardData) throws Exception {
         Preconditions.checkArgument(!Objects.isNull(cardData.getNumber()));
         Preconditions.checkArgument(!Objects.isNull(cardData.getCvc()));
         Preconditions.checkArgument(!Objects.isNull(cardData.getExp_year()));
         Preconditions.checkArgument(!Objects.isNull(cardData.getExp_month()));
         Preconditions.checkArgument(!Objects.isNull(cardData.getIdCliente()));
 
-        return stripeHelper.addPaymentMethod(cardData);
+        stripeHelper.addPaymentMethod(cardData);
     }
 
-    public List<PaymentMethodData> getPaymentMethod(Long idCliente, Long idHotel) throws StripeException{
+    public CardData getPaymentMethod(Long idCliente, Long idHotel) throws StripeException{
         Preconditions.checkArgument(!Objects.isNull(idCliente));
         Preconditions.checkArgument(!Objects.isNull(idHotel));
 

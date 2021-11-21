@@ -13,9 +13,6 @@ import java.io.Serializable;
 @Builder
 public class ClienteHotelPK implements Serializable {
 
-    @Column(name = "ID_CLIENTE")
     private Long cliente_id;
-
-    @Column(name = "ID_HOTEL")
     private Long hotel_id;
 }

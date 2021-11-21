@@ -20,17 +20,15 @@ public class ClienteHotelHelper {
         this.hotelRepository = hotelRepository;
     }
 
-    public void createByCliente(Cliente cliente, String customerId){
-        List<Hotel> hotels = hotelRepository.findAll();
+    public void createByCliente(Cliente cliente, String customerId, Hotel hotel) {
 
-        hotels.forEach(hotel ->{
-            ClienteHotel clienteHotel = ClienteHotel.builder()
-                    .customerId(customerId)
-                    .cliente(cliente)
-                    .hotel(hotel).build();
+        ClienteHotel clienteHotel = ClienteHotel.builder()
+                .customerId(customerId)
+                .cliente(cliente)
+                .hotel(hotel).build();
 
-            clienteHotelRepository.save(clienteHotel);
-        });
+        clienteHotelRepository.save(clienteHotel);
+
     }
 
 }

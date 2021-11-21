@@ -5,9 +5,9 @@ import com.ignaziopicciche.albergo.enums.HotelEnum;
 import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Cliente;
 import com.ignaziopicciche.albergo.model.Hotel;
+import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
-import com.stripe.exception.StripeException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,18 +20,20 @@ public class HotelHelper {
     private final ClienteRepository clienteRepository;
     private final StripeHelper stripeHelper;
     private final ClienteHotelHelper clienteHotelHelper;
+    private final ClienteHotelRepository clienteHotelRepository;
 
     private static HotelEnum hotelEnum;
 
-    public HotelHelper(HotelRepository hotelRepository, ClienteRepository clienteRepository, StripeHelper stripeHelper, ClienteHotelHelper clienteHotelHelper) {
+    public HotelHelper(HotelRepository hotelRepository, ClienteRepository clienteRepository, StripeHelper stripeHelper, ClienteHotelHelper clienteHotelHelper, ClienteHotelRepository clienteHotelRepository) {
         this.hotelRepository = hotelRepository;
         this.clienteRepository = clienteRepository;
         this.stripeHelper = stripeHelper;
         this.clienteHotelHelper = clienteHotelHelper;
+        this.clienteHotelRepository = clienteHotelRepository;
     }
 
 
-    public HotelDTO create(HotelDTO hotelDTO) throws StripeException {
+    public HotelDTO create(HotelDTO hotelDTO) throws Exception {
         if (!hotelRepository.existsByNome(hotelDTO.nome)) {
 
             Hotel hotel = new Hotel();
@@ -41,8 +43,21 @@ public class HotelHelper {
             hotel.setIndirizzo(hotelDTO.indirizzo);
             hotel.setStelle(hotelDTO.stelle);
             hotel.setTelefono(hotelDTO.telefono);
+            hotel.setPublicKey(hotelDTO.publicKey);
 
-            hotelRepository.save(hotel);
+            List<Cliente> clienti = clienteRepository.findAll();
+
+            hotel = hotelRepository.save(hotel);
+
+            if(!clienti.isEmpty()){
+                for(Cliente cliente: clienti){
+                    String customerId = stripeHelper.createCustomer(cliente, hotelDTO.publicKey);
+                    clienteHotelHelper.createByCliente(cliente, customerId, hotel);
+
+                    stripeHelper.addClienteHotelCarta(cliente);
+                }
+            }
+
             return new HotelDTO(hotel);
         }
 
@@ -50,26 +65,6 @@ public class HotelHelper {
         throw new ApiRequestException(hotelEnum.getMessage());
     }
 
-
-    //TODO implementare api
-    //Si deve creare il proprio hotel dal sito e inserire la chiave
-    public void insertKeyByHotelId(Long idHotel, String key) throws StripeException {
-        if(hotelRepository.existsById(idHotel)){
-            Hotel hotel = hotelRepository.findById(idHotel).get();
-            hotel.setPublicKey(key);;
-            hotelRepository.save(hotel);
-
-            List<Cliente> clienti = clienteRepository.findAll();
-
-            for(Cliente cliente: clienti){
-                String customerId = stripeHelper.createCustomer(cliente, key);
-                clienteHotelHelper.createByCliente(cliente, customerId);
-            }
-        }
-
-        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
-        throw new ApiRequestException(hotelEnum.getMessage());
-    }
 
     /*public HotelDTO update(HotelDTO hotelDTO) {
 

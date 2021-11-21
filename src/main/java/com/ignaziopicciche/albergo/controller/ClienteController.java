@@ -32,7 +32,7 @@ public class ClienteController {
     }
 
     @PostMapping("/create")
-    public Long create(@RequestBody ClienteDTO clienteDTO) throws StripeException {
+    public Long create(@RequestBody ClienteDTO clienteDTO) throws Exception {
         return clienteService.create(clienteDTO);
     }
 

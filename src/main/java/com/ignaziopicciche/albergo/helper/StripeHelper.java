@@ -1,5 +1,7 @@
 package com.ignaziopicciche.albergo.helper;
 
+import com.ignaziopicciche.albergo.enums.ClienteEnum;
+import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.*;
 import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
@@ -7,7 +9,7 @@ import com.ignaziopicciche.albergo.repository.HotelRepository;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.*;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ public class StripeHelper {
     private final HotelRepository hotelRepository;
     private final ClienteHotelRepository clienteHotelRepository;
 
+    private static ClienteEnum clienteEnum;
+
     public StripeHelper(ClienteRepository clienteRepository, HotelRepository hotelRepository, ClienteHotelRepository clienteHotelRepository) {
         this.clienteRepository = clienteRepository;
         this.hotelRepository = hotelRepository;
@@ -31,7 +35,6 @@ public class StripeHelper {
     //TODO implementare eccezioni per stripeHelper
 
 
-
     /**
      * Il metodo crea un customer stripe
      *
@@ -39,13 +42,13 @@ public class StripeHelper {
      * @return Cliente
      * @throws StripeException
      */
-    public String createCustomer(Cliente cliente, String key) throws StripeException {
+    public String createCustomer(Cliente cliente, String key) throws Exception {
         Stripe.apiKey = key;
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", cliente.getNome());
         params.put("phone", cliente.getTelefono());
-        params.put("email", cliente.getNome()+"."+cliente.getCognome()+"@gmail.com");
+        params.put("email", cliente.getNome() + "." + cliente.getCognome() + "@gmail.com");
         params.put("description", "Documento: " + cliente.getDocumento());
 
         Customer stripeCustomer = Customer.create(params);
@@ -53,9 +56,37 @@ public class StripeHelper {
         return stripeCustomer.getId();
     }
 
+    public void addClienteHotelCarta(Cliente cliente) throws Exception {
+        if(!clienteHotelRepository.findAll().isEmpty()){
+            List<ClienteHotel> clienti = clienteHotelRepository.findByCliente_Id(cliente.getId());
+            for(ClienteHotel clienteHotel: clienti){
+                if(StringUtils.isNotBlank(clienteHotel.getPaymentMethodId())){
+                    CardData card = getPaymentMethodByClienteHotel(clienteHotel);
+                    card.setIdCliente(cliente.getId());
+                    //card.setIdHotel(hotelRepository.findByPublicKey(key).getId());
+                    addPaymentMethod(card);
+                }
+            }
+        }
+    }
+
+    //
+    public CardData getPaymentMethodByClienteHotel(ClienteHotel clienteHotel) throws StripeException {
+        Stripe.apiKey = clienteHotel.getHotel().getPublicKey();
+
+        PaymentMethod paymentMethod = PaymentMethod.retrieve(clienteHotel.getPaymentMethodId());
+
+        CardData cardData = CardData.builder()
+                .number("4242424242424242")
+                .cvc(clienteHotel.getCvc())
+                .exp_month(paymentMethod.getCard().getExpMonth().toString())
+                .exp_year(paymentMethod.getCard().getExpYear().toString()).build();
+
+        return cardData;
+    }
 
     public void deleteCustomerById(List<ClienteHotel> clientiHotel) throws StripeException {
-        for(ClienteHotel ch: clientiHotel){
+        for (ClienteHotel ch : clientiHotel) {
             Stripe.apiKey = ch.getHotel().getPublicKey();
 
             Customer customer = Customer.retrieve(ch.getCustomerId());
@@ -69,57 +100,78 @@ public class StripeHelper {
      * @param cardData
      * @throws Exception
      */
-    public PaymentMethod addPaymentMethod(CardData cardData) throws Exception {
-        Hotel hotel = hotelRepository.findById(cardData.getIdHotel()).get();
-        Stripe.apiKey = hotel.getPublicKey();
+    public void addPaymentMethod(CardData cardData) throws Exception {
 
-        Map<String, Object> card = new HashMap<>();
-        card.put("number", cardData.getNumber());
-        card.put("exp_month", cardData.getExp_month());
-        card.put("exp_year", cardData.getExp_year());
-        card.put("cvc", cardData.getCvc());
-        //card.put("name", cliente.getNome()+" "+cliente.getCognome());
-        Map<String, Object> paramsPaymentMehod = new HashMap<>();
-        paramsPaymentMehod.put("type", "card");
-        paramsPaymentMehod.put("card", card);
+        if(clienteRepository.existsById(cardData.getIdCliente())){
+            List<Hotel> hotels = hotelRepository.findAll();
 
-        PaymentMethod paymentMethod =
-                PaymentMethod.create(paramsPaymentMehod);
+            if(!hotels.isEmpty()){
+                hotels.forEach(hotel ->{
 
-        ClienteHotel clienteHotel = clienteHotelRepository.findByCliente_IdAndHotel_Id(cardData.getIdCliente(), cardData.getIdHotel());
+                    Stripe.apiKey = hotel.getPublicKey();
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("customer", clienteHotel.getCustomerId());
+                    Map<String, Object> card = new HashMap<>();
+                    card.put("number", cardData.getNumber());
+                    card.put("exp_month", cardData.getExp_month());
+                    card.put("exp_year", cardData.getExp_year());
+                    card.put("cvc", cardData.getCvc());
+                    //card.put("name", cliente.getNome()+" "+cliente.getCognome());
+                    Map<String, Object> paramsPaymentMehod = new HashMap<>();
+                    paramsPaymentMehod.put("type", "card");
+                    paramsPaymentMehod.put("card", card);
 
-        PaymentMethod updatedPaymentMethod = paymentMethod.attach(params);
+                    PaymentMethod paymentMethod = null;
+                    try {
+                        paymentMethod = PaymentMethod.create(paramsPaymentMehod);
+                    } catch (StripeException e) {
+                        e.printStackTrace();
+                    }
 
-        //Assegno il paymentId al cliente
-        clienteHotel.setPaymentMethodId(updatedPaymentMethod.getId());
-        clienteHotelRepository.save(clienteHotel);
+                    ClienteHotel clienteHotel = clienteHotelRepository.findByCliente_IdAndHotel_Id(cardData.getIdCliente(), hotel.getId());
 
-        return updatedPaymentMethod;
+                    if(clienteHotel != null && StringUtils.isBlank(clienteHotel.getPaymentMethodId())){
+                        clienteHotel.setCvc(cardData.getCvc());
+
+                        Map<String, Object> params = new HashMap<>();
+                        params.put("customer", clienteHotel.getCustomerId());
+
+                        PaymentMethod updatedPaymentMethod = null;
+                        try {
+                            updatedPaymentMethod = paymentMethod.attach(params);
+                        } catch (StripeException e) {
+                            e.printStackTrace();
+                        }
+
+                        //Assegno il paymentId al cliente
+                        clienteHotel.setPaymentMethodId(updatedPaymentMethod.getId());
+                        clienteHotelRepository.save(clienteHotel);
+                    }
+                });
+            }
+        }else{
+            clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_IDNE");
+            throw new ApiRequestException(clienteEnum.getMessage());
+        }
+
     }
 
 
     //TODO Ritornare la CardData
-    public List<PaymentMethodData> getPaymentMethod(Long idCliente, Long idHotel) throws StripeException {
+    public CardData getPaymentMethod(Long idCliente, Long idHotel) throws StripeException {
         ClienteHotel clienteHotel = clienteHotelRepository.findByCliente_IdAndHotel_Id(idCliente, idHotel);
         Hotel hotel = hotelRepository.findById(idHotel).get();
         Stripe.apiKey = hotel.getPublicKey();
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("customer", clienteHotel.getCustomerId());
-        params.put("type", "card");
+        PaymentMethod paymentMethod = PaymentMethod.retrieve(clienteHotel.getPaymentMethodId());
 
-        PaymentMethodCollection paymentMethods =
-                PaymentMethod.list(params);
+        CardData cardData = CardData.builder()
+                .number("4242424242424242")
+                .cvc(clienteHotel.getCvc())
+                .exp_month(paymentMethod.getCard().getExpMonth().toString())
+                .exp_year(paymentMethod.getCard().getExpYear().toString()).build();
 
-        List<PaymentMethodData> paymentDataList = new ArrayList<>();
-        for (PaymentMethod paymentMethod : paymentMethods.getData()) {
-            paymentDataList.add(PaymentMethodData.builder().paymentMethodId(paymentMethod.getId()).last4(paymentMethod.getCard().getLast4()).build());
-        }
+        return cardData;
 
-        return paymentDataList;
     }
 
     public void detachPaymentMethod(Long idCliente, Long idHotel) throws StripeException {

@@ -17,7 +17,7 @@ public class ClienteService {
     @Autowired
     private ClienteHelper clienteHelper;
 
-    public Long create(ClienteDTO clienteDTO) throws StripeException {
+    public Long create(ClienteDTO clienteDTO) throws Exception {
         Preconditions.checkArgument(!Objects.isNull(clienteDTO.nome));
         Preconditions.checkArgument(!Objects.isNull(clienteDTO.cognome));
         Preconditions.checkArgument(!Objects.isNull(clienteDTO.documento));
