@@ -154,7 +154,6 @@ public class PrenotazioneHelper {
     }
 
 
-    //TODO testare
     public PrenotazioneDTO create(PrenotazioneDTO prenotazioneDTO) throws StripeException, ParseException {
 
         String date = LocalDate.now().toString();

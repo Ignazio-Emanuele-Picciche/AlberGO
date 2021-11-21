@@ -156,7 +156,6 @@ public class StripeHelper {
     }
 
 
-    //TODO Ritornare la CardData
     public CardData getPaymentMethod(Long idCliente, Long idHotel) throws StripeException {
         ClienteHotel clienteHotel = clienteHotelRepository.findByCliente_IdAndHotel_Id(idCliente, idHotel);
         Hotel hotel = hotelRepository.findById(idHotel).get();
