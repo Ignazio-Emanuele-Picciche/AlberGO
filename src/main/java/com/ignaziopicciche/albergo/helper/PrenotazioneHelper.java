@@ -172,6 +172,7 @@ public class PrenotazioneHelper {
 
             Cliente cliente = clienteRepository.findById(prenotazioneDTO.idCliente).get();
             long days = ChronoUnit.DAYS.between(prenotazione.getDataInizio().toInstant(), prenotazione.getDataFine().toInstant());
+            days++;
             String price = Double.toString(prenotazione.getStanza().getCategoria().getPrezzo() * days);
             if (price.indexOf(".") == price.length() - 2) {
                 StringBuilder priceS = new StringBuilder(price);
