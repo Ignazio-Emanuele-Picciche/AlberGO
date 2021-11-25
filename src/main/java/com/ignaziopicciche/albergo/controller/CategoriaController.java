@@ -47,9 +47,10 @@ public class CategoriaController {
         return categoriaService.delete(id);
     }
 
+    //TODO aggiornare api
     @GetMapping("/searchNome")
-    public List<CategoriaDTO> findAllByNome(@RequestParam("nome") String nome) {
-        return categoriaService.findAllByNome(nome);
+    public List<CategoriaDTO> findAllByNome(@RequestParam("nome") String nome, @RequestParam("idHotel") Long idHotel) {
+        return categoriaService.findAllByNome(nome, idHotel);
     }
 
 

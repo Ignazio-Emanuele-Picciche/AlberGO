@@ -116,8 +116,8 @@ public class CategoriaHelper {
     }
 
 
-    public List<CategoriaDTO> findAllByNome(String nome) {
-        List<Categoria> categorie = categoriaRepository.findCategoriasByNomeStartingWith(nome);
+    public List<CategoriaDTO> findAllByNome(String nome, Long idHotel) {
+        List<Categoria> categorie = categoriaRepository.findCategoriasByNomeStartingWithAndHotel_Id(nome, idHotel);
         return categorie.stream().map(categoria -> new CategoriaDTO(categoria)).collect(Collectors.toList());
     }
 }

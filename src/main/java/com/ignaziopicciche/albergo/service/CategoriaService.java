@@ -64,9 +64,10 @@ public class CategoriaService {
         return categoriaHelper.findAll(idHotel);
     }
 
-    public List<CategoriaDTO> findAllByNome(String nome) {
+    public List<CategoriaDTO> findAllByNome(String nome, Long idHotel) {
         Preconditions.checkArgument(!Objects.isNull(nome));
-        return categoriaHelper.findAllByNome(nome);
+        Preconditions.checkArgument(!Objects.isNull(idHotel));
+        return categoriaHelper.findAllByNome(nome, idHotel);
     }
 
 }

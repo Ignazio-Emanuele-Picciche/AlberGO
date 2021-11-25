@@ -42,6 +42,6 @@ public class Prenotazione {
     private Stanza stanza;
 
 
-    @ManyToMany(mappedBy = "prenotazioni")
+    @ManyToMany(mappedBy = "prenotazioni", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Servizio> servizi;
 }
