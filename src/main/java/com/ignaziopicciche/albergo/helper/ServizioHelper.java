@@ -113,7 +113,7 @@ public class ServizioHelper {
     }
 
 
-    public Long insertByPrentazioneAndHotel(Long idServizio, Long idPrenotazione, Long idHotel) {
+    public Long insertByPrentazioneAndHotel(Long idServizio, Long idPrenotazione, Long idHotel) throws StripeException {
         if (servizioRepository.existsServizioByIdAndHotel_Id(idServizio, idHotel)
                 && prenotazioneRepository.existsPrenotazioneByIdAndHotel_Id(idPrenotazione, idHotel)) {
 

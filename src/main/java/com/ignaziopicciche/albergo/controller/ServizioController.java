@@ -53,14 +53,11 @@ public class ServizioController {
     }
 
 
-    @PostMapping("/insertServizioPrenotazione")
-    public Long insertByPrentazioneAndHotel(@RequestParam("idServizio") Long idServizio, @RequestParam("idPrenotazione") Long idPrenotazione, @RequestParam("idHotel") Long idHotel){
-        return servizioService.insertByPrentazioneAndHotel(idServizio, idPrenotazione, idHotel);
-    }
-
     @DeleteMapping("/removeServizioPrenotazione")
     public Boolean removeServizioInPrenotazione(@RequestParam("idServizio") Long idServizio, @RequestParam("idPrenotazione") Long idPrenotazione) {
         return servizioService.removeServizioInPrenotazione(idServizio, idPrenotazione);
+    }
+
     @PostMapping("/insertServizioPrenotazione")
     public Long insertByPrentazioneAndHotel(@RequestParam("idServizio") Long idServzio, @RequestParam("idPrenotazione") Long idPrenotazione, @RequestParam("idHotel") Long idHotel) throws StripeException {
         return servizioService.insertByPrentazioneAndHotel(idServzio, idPrenotazione, idHotel);
