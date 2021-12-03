@@ -3,16 +3,20 @@ package com.ignaziopicciche.albergo.service;
 import com.google.common.base.Preconditions;
 import com.ignaziopicciche.albergo.dto.ClienteDTO;
 import com.ignaziopicciche.albergo.helper.ClienteHelper;
+import com.ignaziopicciche.albergo.security.models.AuthenticationRequest;
 import com.stripe.exception.StripeException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 
 @Service
-public class ClienteService {
+public class ClienteService /*implements UserDetailsService*/ {
 
     @Autowired
     private ClienteHelper clienteHelper;
@@ -60,6 +64,19 @@ public class ClienteService {
         cognome = StringUtils.isNotBlank(cognome) ? cognome : null;
         Preconditions.checkArgument(!Objects.isNull(idHotel));
         return clienteHelper.findAllByNomeCognome(nome, cognome, idHotel);
+    }
+
+    public ResponseEntity<?> createAuthenticationToken(AuthenticationRequest authenticationRequest) throws Exception {
+        Preconditions.checkArgument(!Objects.isNull(authenticationRequest.getUsername()));
+        Preconditions.checkArgument(!Objects.isNull(authenticationRequest.getUsername()));
+
+        return clienteHelper.createAuthenticationToken(authenticationRequest);
+    }
+
+    public UserDetails loadUserByUsername(String username) {
+        Preconditions.checkArgument(!Objects.isNull(username));
+
+        return clienteHelper.loadUserByUsername(username);
     }
 
 }

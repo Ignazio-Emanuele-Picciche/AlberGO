@@ -8,6 +8,7 @@ import com.ignaziopicciche.albergo.security.services.AmministratoreService;
 import com.ignaziopicciche.albergo.security.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,58 +19,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api/amministratore")
 public class AmministratoreController {
 
+    private final AmministratoreService amministratoreService; //UserService
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private AmministratoreService amministratoreService; //UserService
-
-    @Autowired
-    private JwtUtil jwtTokenUtil;
-
-
-    @RequestMapping("/hello")
-    public String hello() {
-        return "Hello world!";
+    public AmministratoreController(AmministratoreService amministratoreService) {
+        this.amministratoreService = amministratoreService;
     }
 
+
     //Endpoint di autenticazione che prende ID utente e password e poi ritorna a JWT
-    @PostMapping("/authenticate")
+    @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-
-        try { //gestisco l'eccezione in caso l'autenticazione fallisce
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
-            );
-        } catch (BadCredentialsException e) {
-            throw new Exception("Incorrect username or password", e);
-        }
-
-
-        final UserDetails userDetails = amministratoreService
-                .loadUserByUsername(authenticationRequest.getUsername());
-
-        final String jwt = jwtTokenUtil.generateToken(userDetails);  //prendo il token
-
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));  //mi resituisce il token associato all'utente
+        return amministratoreService.createAuthenticationToken(authenticationRequest);
     }
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> saveUser(@RequestBody AmministratoreDTO user) throws Exception{
-        return ResponseEntity.ok(amministratoreService.save(user));
+    public ResponseEntity<?> create(@RequestBody AmministratoreDTO amministratoreDTO) {
+        return ResponseEntity.ok(amministratoreService.create(amministratoreDTO));
     }
-
-
-
-
-
-
-
-
 
 
 }

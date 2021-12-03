@@ -19,9 +19,8 @@ public class Amministratore {
 
     private String nome;
     private String cognome;
+    //private Ruolo ruolo = Ruolo.ROLE_ADMIN;
     private String username;
-
-    //@JsonIgnore
     private String password;
 
     @ManyToOne

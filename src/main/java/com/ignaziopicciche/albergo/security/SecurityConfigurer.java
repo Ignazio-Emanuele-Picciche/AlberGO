@@ -2,7 +2,7 @@ package com.ignaziopicciche.albergo.security;
 
 import com.ignaziopicciche.albergo.security.filters.JwtRequestFilter;
 import com.ignaziopicciche.albergo.security.services.AmministratoreService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ignaziopicciche.albergo.service.ClienteService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -18,11 +18,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter  {
 
-    @Autowired
-    private AmministratoreService amministratoreService;
+    private final AmministratoreService amministratoreService;
+    private final JwtRequestFilter jwtRequestFilter;
 
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter;
+    public SecurityConfigurer(AmministratoreService amministratoreService, JwtRequestFilter jwtRequestFilter) {
+        this.amministratoreService = amministratoreService;
+        this.jwtRequestFilter = jwtRequestFilter;
+    }
 
 
     //Autentificazione dell'utente
@@ -39,11 +41,17 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter  {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .authorizeRequests().antMatchers("/authenticate", "/register").permitAll()
-                .anyRequest().authenticated()
-                .and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);  //Senza sessione
+        http.csrf().disable();
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.authorizeRequests()
+                .antMatchers("/api/amministratore/login").permitAll()
+                .antMatchers("/api/amministratore/register").permitAll()
+                .antMatchers("/api/cliente/login").permitAll()
+                .antMatchers("/api/cliente/register").permitAll()
+                .antMatchers("/api/stripe/addCard").permitAll()
+                .antMatchers("/api/hotel/create").permitAll()
+                .anyRequest().authenticated();
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }

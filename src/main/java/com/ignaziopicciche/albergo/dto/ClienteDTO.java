@@ -1,5 +1,7 @@
 package com.ignaziopicciche.albergo.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ignaziopicciche.albergo.model.Cliente;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,8 +21,6 @@ public class ClienteDTO {
     public String username;
     public String password;
 
-    //public Long idHotel;
-
     public ClienteDTO(Cliente c) {
         this.id = c.getId();
         this.nome = c.getNome();
@@ -29,7 +29,11 @@ public class ClienteDTO {
         this.documento = c.getDocumento();
         this.username = c.getUsername();
         this.password = c.getPassword();
+    }
 
-        //this.idHotel = c.getHotel().getId();
+    @JsonIgnore
+    @JsonProperty(value = "password")
+    public String getPassword() {
+        return password;
     }
 }

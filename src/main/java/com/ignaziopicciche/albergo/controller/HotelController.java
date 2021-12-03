@@ -4,6 +4,7 @@ import com.ignaziopicciche.albergo.dto.HotelDTO;
 import com.ignaziopicciche.albergo.service.HotelService;
 import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class HotelController {
 
 
     @GetMapping("/dettaglio")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public HotelDTO findById(@RequestParam(name = "idHotel") Long id){
         return hotelService.findById(id);
     }
@@ -39,18 +41,20 @@ public class HotelController {
 
     //Trova gli hotel con il nome che inizia per...
     @GetMapping("/searchNome")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public List<HotelDTO> findHotelByName(@RequestParam("nomeHotel") String nomeHotel){
         return hotelService.findHotelByName(nomeHotel);
     }
 
     //Trova gli hotel che iniziano con l'indirizzo
     @GetMapping("/searchIndirizzo")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public List<HotelDTO> findHotelByIndirizzo(@RequestParam("indirizzoHotel") String indirizzoHotel){
         return hotelService.findHotelByIndirizzo(indirizzoHotel);
     }
 
-
     @GetMapping("/allhotel")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public List<HotelDTO> getAllHotel(){
         return hotelService.getAllHotel();
     }
