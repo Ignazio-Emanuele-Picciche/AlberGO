@@ -31,8 +31,6 @@ public class StripeHelper {
         this.clienteHotelRepository = clienteHotelRepository;
     }
 
-    //TODO implementare eccezioni per stripeHelper
-
 
     /**
      * Il metodo crea un customer stripe

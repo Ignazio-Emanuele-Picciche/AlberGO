@@ -4,6 +4,7 @@ import com.ignaziopicciche.albergo.dto.HotelDTO;
 import com.ignaziopicciche.albergo.enums.HotelEnum;
 import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Cliente;
+import com.ignaziopicciche.albergo.model.ClienteHotel;
 import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
@@ -49,8 +50,8 @@ public class HotelHelper {
 
             hotel = hotelRepository.save(hotel);
 
-            if(!clienti.isEmpty()){
-                for(Cliente cliente: clienti){
+            if (!clienti.isEmpty()) {
+                for (Cliente cliente : clienti) {
                     String customerId = stripeHelper.createCustomer(cliente, hotelDTO.publicKey);
                     clienteHotelHelper.createByCliente(cliente, customerId, hotel);
 
@@ -102,9 +103,19 @@ public class HotelHelper {
 
     }
 
-    public List<HotelDTO> findHotelByIndirizzo(String indirizzoHotel){
+    public List<HotelDTO> findHotelByIndirizzo(String indirizzoHotel) {
         List<Hotel> hotels = hotelRepository.findHotelByIndirizzoStartingWith(indirizzoHotel);
         return hotels.stream().map(hotel -> new HotelDTO(hotel)).collect(Collectors.toList());
+    }
+
+    public List<HotelDTO> getAllHotel() {
+        List<Hotel> allHotel = hotelRepository.findAll();
+        return allHotel.stream().map(HotelDTO::new).collect(Collectors.toList());
+    }
+
+    public List<HotelDTO> findHotelByClienteId(Long idCliente){
+        List<ClienteHotel> clientiHotel = clienteHotelRepository.findByCliente_Id(idCliente);
+        return clientiHotel.stream().map(clienteHotel -> new HotelDTO(clienteHotel.getHotel())).collect(Collectors.toList());
     }
 
 }

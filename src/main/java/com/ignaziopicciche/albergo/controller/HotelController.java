@@ -18,7 +18,7 @@ public class HotelController {
         this.hotelService = hotelService;
     }
 
-    //TODO api lista tutti hotel
+
 
     @GetMapping("/dettaglio")
     public HotelDTO findById(@RequestParam(name = "idHotel") Long id){
@@ -48,4 +48,17 @@ public class HotelController {
     public List<HotelDTO> findHotelByIndirizzo(@RequestParam("indirizzoHotel") String indirizzoHotel){
         return hotelService.findHotelByIndirizzo(indirizzoHotel);
     }
+    
+
+    @GetMapping("/allhotel")
+    public List<HotelDTO> getAllHotel(){
+        return hotelService.getAllHotel();
+    }
+
+    @GetMapping("/hotelByCliente")
+    public List<HotelDTO> findHotelByClienteId(@RequestParam("idCliente") Long idCliente){
+        return hotelService.findHotelByClienteId(idCliente);
+    }
+
+
 }
