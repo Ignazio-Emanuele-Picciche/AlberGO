@@ -28,10 +28,10 @@ public class ClienteService {
         return clienteHelper.create(clienteDTO);
     }
 
-    public Boolean delete(Long id) {
-        Preconditions.checkArgument(!Objects.isNull(id));
+    public Boolean delete(Long idCliente) {
+        Preconditions.checkArgument(!Objects.isNull(idCliente));
 
-        return clienteHelper.delete(id);
+        return clienteHelper.delete(idCliente);
     }
 
     public ClienteDTO update(ClienteDTO clienteDTO) {

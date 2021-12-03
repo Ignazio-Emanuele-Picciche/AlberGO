@@ -13,6 +13,7 @@ import com.ignaziopicciche.albergo.repository.HotelRepository;
 import com.stripe.exception.StripeException;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,15 +92,16 @@ public class ClienteHelper {
     }
 
 
-    public Boolean delete(Long id) {
+    @Transactional
+    public Boolean delete(Long idCliente) {
 
-        if (clienteRepository.existsById(id)) {
+        if (clienteRepository.existsById(idCliente)) {
             try {
-                List<ClienteHotel> clientiHotel = clienteHotelRepository.findByCliente_Id(id);
+                List<ClienteHotel> clientiHotel = clienteHotelRepository.findByCliente_Id(idCliente);
                 stripeHelper.deleteCustomerById(clientiHotel);
-                clienteHotelRepository.deleteAllByCliente_Id(id);
+                clienteHotelRepository.deleteAllByCliente_Id(idCliente);
 
-                clienteRepository.deleteById(id);
+                clienteRepository.deleteById(idCliente);
                 return true;
             } catch (Exception e) {
                 clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_DLE");
