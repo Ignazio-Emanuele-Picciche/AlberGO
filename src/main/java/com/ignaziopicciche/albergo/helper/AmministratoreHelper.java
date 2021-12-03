@@ -1,26 +1,13 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.enums.AmministratoreEnum;
-import com.ignaziopicciche.albergo.enums.Ruolo;
 import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
 import com.ignaziopicciche.albergo.model.Amministratore;
 import com.ignaziopicciche.albergo.dto.AmministratoreDTO;
-import com.ignaziopicciche.albergo.security.AuthenticationRequest;
-import com.ignaziopicciche.albergo.security.AuthenticationResponse;
 import com.ignaziopicciche.albergo.repository.AmministratoreRepository;
-import com.ignaziopicciche.albergo.security.JwtUtil;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
 
 @Component
 public class AmministratoreHelper {

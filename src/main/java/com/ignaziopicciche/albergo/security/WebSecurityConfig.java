@@ -1,9 +1,8 @@
 package com.ignaziopicciche.albergo.security;
 
 
-import com.ignaziopicciche.albergo.helper.AutenticazioneHelper;
-import com.ignaziopicciche.albergo.service.AutenticazioneService;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,26 +14,27 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.Arrays;
 
+@Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled=true)
-public class SecurityConfigurer extends WebSecurityConfigurerAdapter  {
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter  {
 
-    private final AutenticazioneHelper autenticazioneHelper;
-    private final JwtRequestFilter jwtRequestFilter;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public SecurityConfigurer(JwtRequestFilter jwtRequestFilter, @Lazy AutenticazioneHelper autenticazioneHelper) {
-        this.jwtRequestFilter = jwtRequestFilter;
-        this.autenticazioneHelper = autenticazioneHelper;
+    public WebSecurityConfig(@Lazy JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
 
     //Autentificazione dell'utente
-    @Override
+    /*@Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception{
         auth.userDetailsService(autenticazioneHelper);
-    }
+    }*/
 
 
     /*
@@ -44,8 +44,13 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter  {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        // Disable CSRF (cross site request forgery)
         http.csrf().disable();
+
+        // No session will be created or used by spring security
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.cors().configurationSource(r->getCorsConfiguration());
 
         http.authorizeRequests()
                 .antMatchers("/api/amministratore/login").permitAll()
@@ -56,7 +61,8 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter  {
                 .antMatchers("/api/hotel/create").permitAll()
                 .anyRequest().authenticated();
 
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        // Apply JWT
+        http.apply(new JwtTokenFilterConfigurer(jwtTokenProvider));
     }
 
 
@@ -71,5 +77,15 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter  {
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    private CorsConfiguration getCorsConfiguration(){
+        CorsConfiguration corsConfiguration =new CorsConfiguration();
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowedOrigins(Arrays.asList("*"));
+        corsConfiguration.setAllowedHeaders(Arrays.asList("Origin","Access-Control-Allow-Origin","Content-Type","Accept","Authorization","Origin, Accept","X-Requesed-With","Access-Control-Request-Method","Access-Control-Request-Headers"));
+        corsConfiguration.setExposedHeaders(Arrays.asList("Origin","Content-Type","Accept","Authorization","Access-Control-Allow-Origin","Access-Control-Allow-Origin","Access-Control-Allow-Credentials"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
+        return corsConfiguration;
     }
 }

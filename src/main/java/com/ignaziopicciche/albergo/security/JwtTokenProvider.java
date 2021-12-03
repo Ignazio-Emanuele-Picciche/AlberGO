@@ -1,24 +1,25 @@
 package com.ignaziopicciche.albergo.security;
 
 import com.ignaziopicciche.albergo.enums.Ruolo;
+import com.ignaziopicciche.albergo.helper.AutenticazioneHelper;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
-public class JwtUtil {
+public class JwtTokenProvider {
 
     /**
      * THIS IS NOT A SECURE PRACTICE! For simplicity, we are storing a static key here. Ideally, in a
@@ -27,6 +28,13 @@ public class JwtUtil {
     private String SECRET_KEY = "secret";
 
     private long validityInMilliseconds = 3600000; // 1h
+
+    private final AutenticazioneHelper autenticazioneHelper;
+
+    public JwtTokenProvider(AutenticazioneHelper autenticazioneHelper) {
+        this.autenticazioneHelper = autenticazioneHelper;
+    }
+
 
     //Usa il metodo extraxtClaim per estrarre informazioni dal token
     //In questo caso estrae lo username associato al token
@@ -59,9 +67,9 @@ public class JwtUtil {
 
 
     //Prende il tuo nome utente e assegna un token associato a te
-    public String generateToken(UserDetails userDetails, Ruolo ruolo) {
+    public String generateToken(UserDetails userDetails, List<Ruolo> roles) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("auth", new SimpleGrantedAuthority(ruolo.getAuthority()));
+        claims.put("auth", roles.stream().map(s -> new SimpleGrantedAuthority(s.getAuthority())).filter(Objects::nonNull).collect(Collectors.toList()));
         return createToken(claims, userDetails.getUsername());
     }
 
@@ -79,10 +87,31 @@ public class JwtUtil {
     }
 
 
-    //Verifica sia il nome utente associato al token e verifica anche se il token non è scauduto
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public Authentication getAuthentication(String token) {
+        UserDetails userDetails = autenticazioneHelper.loadUserByUsername(getUsername(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    public String getUsername(String token) {
+        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public String resolveToken(HttpServletRequest req) {
+        String bearerToken = req.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new IllegalArgumentException(e);
+            //throw new CustomException("Expired or invalid JWT token", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 

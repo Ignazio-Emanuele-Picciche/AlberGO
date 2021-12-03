@@ -8,7 +8,8 @@ import com.ignaziopicciche.albergo.repository.AmministratoreRepository;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.ignaziopicciche.albergo.security.AuthenticationRequest;
 import com.ignaziopicciche.albergo.security.AuthenticationResponse;
-import com.ignaziopicciche.albergo.security.JwtUtil;
+import com.ignaziopicciche.albergo.security.JwtTokenProvider;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -19,19 +20,20 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 @Component
 public class AutenticazioneHelper implements UserDetailsService {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtTokenUtil;
+    private final JwtTokenProvider jwtTokenProvider;
 
     private final AmministratoreRepository amministratoreRepository;
     private final ClienteRepository clienteRepository;
 
-    public AutenticazioneHelper(AuthenticationManager authenticationManager, JwtUtil jwtTokenUtil, AmministratoreRepository amministratoreRepository, ClienteRepository clienteRepository) {
+    public AutenticazioneHelper(AuthenticationManager authenticationManager, @Lazy JwtTokenProvider jwtTokenUtil, AmministratoreRepository amministratoreRepository, ClienteRepository clienteRepository) {
         this.authenticationManager = authenticationManager;
-        this.jwtTokenUtil = jwtTokenUtil;
+        this.jwtTokenProvider = jwtTokenUtil;
         this.amministratoreRepository = amministratoreRepository;
         this.clienteRepository = clienteRepository;
     }
@@ -66,7 +68,7 @@ public class AutenticazioneHelper implements UserDetailsService {
         }
 
         final UserDetails userDetails = loadUserByUsername(authenticationRequest.getUsername());
-        final String jwt = jwtTokenUtil.generateToken(userDetails, ruolo);  //prendo il token
+        final String jwt = jwtTokenProvider.generateToken(userDetails, Collections.singletonList(ruolo));  //prendo il token
         return ResponseEntity.ok(new AuthenticationResponse(jwt));  //mi resituisce il token associato all'utente
     }
 }
