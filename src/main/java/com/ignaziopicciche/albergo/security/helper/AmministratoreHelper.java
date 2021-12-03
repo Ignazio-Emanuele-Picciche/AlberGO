@@ -1,6 +1,8 @@
 package com.ignaziopicciche.albergo.security.helper;
 
-import com.ignaziopicciche.albergo.exception.AmministratoreException;
+import com.ignaziopicciche.albergo.enums.AmministratoreEnum;
+import com.ignaziopicciche.albergo.enums.CategoriaEnum;
+import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
 import com.ignaziopicciche.albergo.security.models.Amministratore;
 import com.ignaziopicciche.albergo.security.models.AmministratoreDTO;
@@ -17,17 +19,20 @@ import java.util.ArrayList;
 @Component
 public class AmministratoreHelper implements UserDetailsService {
 
-    @Autowired
-    private AmministratoreRepository amministratoreRepository;
+    private final AmministratoreRepository amministratoreRepository;
+    private final HotelRepository hotelRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private HotelRepository hotelRepository;
+    private static AmministratoreEnum amministratoreEnum;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AmministratoreHelper(AmministratoreRepository amministratoreRepository, HotelRepository hotelRepository, PasswordEncoder passwordEncoder) {
+        this.amministratoreRepository = amministratoreRepository;
+        this.hotelRepository = hotelRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
 
-    //Da gestire l'unicità dello username
+    //TODO Da gestire l'unicità dello username
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
@@ -57,8 +62,8 @@ public class AmministratoreHelper implements UserDetailsService {
             return new AmministratoreDTO(newUser);
         }
 
-        throw new AmministratoreException(AmministratoreException.AmministratoreExceptionCode.AMMINISTRATORE_ALREADY_EXISTS);
-
+        amministratoreEnum = AmministratoreEnum.getAmministratoreEnumByMessageCode("AMM_AE");
+        throw new ApiRequestException(amministratoreEnum.getMessage());
     }
 
 }

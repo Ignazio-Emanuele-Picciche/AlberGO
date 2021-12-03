@@ -62,9 +62,4 @@ public class HotelService {
     public List<HotelDTO> getAllHotel(){
         return hotelHelper.getAllHotel();
     }
-
-    public List<HotelDTO> findHotelByClienteId(Long idCliente){
-        Preconditions.checkArgument(!Objects.isNull(idCliente));
-        return hotelHelper.findHotelByClienteId(idCliente);
-    }
 }

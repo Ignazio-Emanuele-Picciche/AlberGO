@@ -61,8 +61,8 @@ public class PrenotazioneController {
 
 
     @GetMapping("/listaFatture")
-    public List<FatturaDTO> findAllFatture(@RequestParam(name = "idCliente") Long idClinete) {
-        return prenotazioneService.findAllFatture(idClinete);
+    public List<FatturaDTO> findAllFatture(@RequestParam(name = "idCliente") Long idCliente) {
+        return prenotazioneService.findAllFatture(idCliente);
     }
 
 
