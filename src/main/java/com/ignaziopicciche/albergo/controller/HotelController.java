@@ -48,7 +48,7 @@ public class HotelController {
     public List<HotelDTO> findHotelByIndirizzo(@RequestParam("indirizzoHotel") String indirizzoHotel){
         return hotelService.findHotelByIndirizzo(indirizzoHotel);
     }
-    
+
 
     @GetMapping("/allhotel")
     public List<HotelDTO> getAllHotel(){
