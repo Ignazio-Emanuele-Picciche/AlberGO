@@ -1,6 +1,7 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.enums.ClienteEnum;
+import com.ignaziopicciche.albergo.enums.ClienteHotelEnum;
 import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.*;
 import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
@@ -12,10 +13,7 @@ import com.stripe.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class StripeHelper {
@@ -25,6 +23,7 @@ public class StripeHelper {
     private final ClienteHotelRepository clienteHotelRepository;
 
     private static ClienteEnum clienteEnum;
+    private static ClienteHotelEnum clienteHotelEnum;
 
     public StripeHelper(ClienteRepository clienteRepository, HotelRepository hotelRepository, ClienteHotelRepository clienteHotelRepository) {
         this.clienteRepository = clienteRepository;
@@ -57,10 +56,10 @@ public class StripeHelper {
     }
 
     public void addClienteHotelCarta(Cliente cliente) throws Exception {
-        if(!clienteHotelRepository.findAll().isEmpty()){
+        if (!clienteHotelRepository.findAll().isEmpty()) {
             List<ClienteHotel> clienti = clienteHotelRepository.findByCliente_Id(cliente.getId());
-            for(ClienteHotel clienteHotel: clienti){
-                if(StringUtils.isNotBlank(clienteHotel.getPaymentMethodId())){
+            for (ClienteHotel clienteHotel : clienti) {
+                if (StringUtils.isNotBlank(clienteHotel.getPaymentMethodId())) {
                     CardData card = getPaymentMethodByClienteHotel(clienteHotel);
                     card.setIdCliente(cliente.getId());
                     //card.setIdHotel(hotelRepository.findByPublicKey(key).getId());
@@ -76,13 +75,11 @@ public class StripeHelper {
 
         PaymentMethod paymentMethod = PaymentMethod.retrieve(clienteHotel.getPaymentMethodId());
 
-        CardData cardData = CardData.builder()
+        return CardData.builder()
                 .number("4242424242424242")
                 .cvc(clienteHotel.getCvc())
                 .exp_month(paymentMethod.getCard().getExpMonth().toString())
                 .exp_year(paymentMethod.getCard().getExpYear().toString()).build();
-
-        return cardData;
     }
 
     public void deleteCustomerById(List<ClienteHotel> clientiHotel) throws StripeException {
@@ -102,11 +99,11 @@ public class StripeHelper {
      */
     public void addPaymentMethod(CardData cardData) throws Exception {
 
-        if(clienteRepository.existsById(cardData.getIdCliente())){
+        if (clienteRepository.existsById(cardData.getIdCliente())) {
             List<Hotel> hotels = hotelRepository.findAll();
 
-            if(!hotels.isEmpty()){
-                hotels.forEach(hotel ->{
+            if (!hotels.isEmpty()) {
+                hotels.forEach(hotel -> {
 
                     Stripe.apiKey = hotel.getPublicKey();
 
@@ -115,7 +112,6 @@ public class StripeHelper {
                     card.put("exp_month", cardData.getExp_month());
                     card.put("exp_year", cardData.getExp_year());
                     card.put("cvc", cardData.getCvc());
-                    //card.put("name", cliente.getNome()+" "+cliente.getCognome());
                     Map<String, Object> paramsPaymentMehod = new HashMap<>();
                     paramsPaymentMehod.put("type", "card");
                     paramsPaymentMehod.put("card", card);
@@ -124,31 +120,45 @@ public class StripeHelper {
                     try {
                         paymentMethod = PaymentMethod.create(paramsPaymentMehod);
                     } catch (StripeException e) {
-                        e.printStackTrace();
+                        clienteHotelEnum = ClienteHotelEnum.getClienteHotelEnumByMessageCode("CREATE_PM");
+                        throw new ApiRequestException(clienteHotelEnum.getMessage());
                     }
 
                     ClienteHotel clienteHotel = clienteHotelRepository.findByCliente_IdAndHotel_Id(cardData.getIdCliente(), hotel.getId());
 
-                    if(clienteHotel != null && StringUtils.isBlank(clienteHotel.getPaymentMethodId())){
+                    if (clienteHotel != null && StringUtils.isBlank(clienteHotel.getPaymentMethodId())) {
                         clienteHotel.setCvc(cardData.getCvc());
 
                         Map<String, Object> params = new HashMap<>();
                         params.put("customer", clienteHotel.getCustomerId());
 
                         PaymentMethod updatedPaymentMethod = null;
+
                         try {
-                            updatedPaymentMethod = paymentMethod.attach(params);
+                            if (paymentMethod != null) {
+                                updatedPaymentMethod = paymentMethod.attach(params);
+                            } else {
+                                clienteHotelEnum = ClienteHotelEnum.getClienteHotelEnumByMessageCode("PM_NF");
+                                throw new ApiRequestException(clienteHotelEnum.getMessage());
+                            }
                         } catch (StripeException e) {
-                            e.printStackTrace();
+                            clienteHotelEnum = ClienteHotelEnum.getClienteHotelEnumByMessageCode("ATTCARD");
+                            throw new ApiRequestException(clienteHotelEnum.getMessage());
                         }
 
                         //Assegno il paymentId al cliente
-                        clienteHotel.setPaymentMethodId(updatedPaymentMethod.getId());
-                        clienteHotelRepository.save(clienteHotel);
+                        if (updatedPaymentMethod != null) {
+                            clienteHotel.setPaymentMethodId(updatedPaymentMethod.getId());
+                            clienteHotelRepository.save(clienteHotel);
+                        } else {
+                            clienteHotelEnum = ClienteHotelEnum.getClienteHotelEnumByMessageCode("ATTCARD");
+                            throw new ApiRequestException(clienteHotelEnum.getMessage());
+                        }
+
                     }
                 });
             }
-        }else{
+        } else {
             clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_IDNE");
             throw new ApiRequestException(clienteEnum.getMessage());
         }
@@ -156,35 +166,53 @@ public class StripeHelper {
     }
 
 
-    public CardData getPaymentMethod(Long idCliente, Long idHotel) throws StripeException {
-        ClienteHotel clienteHotel = clienteHotelRepository.findByCliente_IdAndHotel_Id(idCliente, idHotel);
-        Hotel hotel = hotelRepository.findById(idHotel).get();
-        Stripe.apiKey = hotel.getPublicKey();
+    public CardData getPaymentMethod(Long idCliente) throws StripeException {
+        List<ClienteHotel> clientiHotel = clienteHotelRepository.findByCliente_Id(idCliente);
 
+        ClienteHotel clienteHotel = clientiHotel.stream().filter(clienteHotelApp -> StringUtils.isNotBlank(clienteHotelApp.getPaymentMethodId())).findFirst().orElseThrow(/*TODO eccezione*/);
+        //Se clienteHotel == null deve scoppiare
+        Stripe.apiKey = clienteHotel.getHotel().getPublicKey();
         PaymentMethod paymentMethod = PaymentMethod.retrieve(clienteHotel.getPaymentMethodId());
 
-        CardData cardData = CardData.builder()
+        return CardData.builder()
                 .number("4242424242424242")
                 .cvc(clienteHotel.getCvc())
                 .exp_month(paymentMethod.getCard().getExpMonth().toString())
                 .exp_year(paymentMethod.getCard().getExpYear().toString()).build();
-
-        return cardData;
-
     }
 
-    public void detachPaymentMethod(Long idCliente, Long idHotel) throws StripeException {
-        ClienteHotel clienteHotel = clienteHotelRepository.findByCliente_IdAndHotel_Id(idCliente, idHotel);
-        Hotel hotel = hotelRepository.findById(idHotel).get();
-        Stripe.apiKey = hotel.getPublicKey();
+    public void detachPaymentMethod(Long idCliente) throws StripeException {
+        List<ClienteHotel> clientiHotel = clienteHotelRepository.findByCliente_Id(idCliente);
 
-        PaymentMethod paymentMethod =
-                PaymentMethod.retrieve(clienteHotel.getPaymentMethodId());
+        clientiHotel.forEach(clienteHotel -> {
+            Stripe.apiKey = clienteHotel.getHotel().getPublicKey();
 
-        PaymentMethod updatedPaymentMethod = paymentMethod.detach();
+            PaymentMethod paymentMethod = null;
+            try {
+                paymentMethod = PaymentMethod.retrieve(clienteHotel.getPaymentMethodId());
+            } catch (StripeException e) {
+                clienteHotelEnum = ClienteHotelEnum.getClienteHotelEnumByMessageCode("DELETE_PM");
+                throw new ApiRequestException(clienteHotelEnum.getMessage());
+            }
 
-        clienteHotel.setPaymentMethodId(null);
-        clienteHotelRepository.save(clienteHotel);
+            try {
+                if (paymentMethod != null) {
+                    PaymentMethod updatedPaymentMethod = paymentMethod.detach();
+                } else {
+                    clienteHotelEnum = ClienteHotelEnum.getClienteHotelEnumByMessageCode("PM_NF");
+                    throw new ApiRequestException(clienteHotelEnum.getMessage());
+                }
+            } catch (StripeException e) {
+                clienteHotelEnum = ClienteHotelEnum.getClienteHotelEnumByMessageCode("DELETE_PM");
+                throw new ApiRequestException(clienteHotelEnum.getMessage());
+            }
+
+            clienteHotel.setPaymentMethodId(null);
+            clienteHotelRepository.save(clienteHotel);
+
+        });
+
+
     }
 
 
@@ -208,7 +236,7 @@ public class StripeHelper {
         params.put("confirm", true);
         params.put("payment_method_types", paymentMethodTypes);
 
-        PaymentIntent paymentIntent = PaymentIntent.create(params);
+        PaymentIntent.create(params);
     }
 
 }

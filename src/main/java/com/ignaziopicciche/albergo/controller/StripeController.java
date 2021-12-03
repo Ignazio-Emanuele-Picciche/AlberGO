@@ -29,13 +29,13 @@ public class StripeController {
     }
 
     @GetMapping("/dettaglioCard")
-    public CardData getPaymentMethod(@RequestParam("idCliente") Long idCliente, @RequestParam("idHotel") Long idHotel) throws StripeException {
-        return stripeService.getPaymentMethod(idCliente, idHotel);
+    public CardData getPaymentMethod(@RequestParam("idCliente") Long idCliente) throws StripeException {
+        return stripeService.getPaymentMethod(idCliente);
     }
 
     //Quando faccio delete card la devo eliminare in tutti hotel
     @DeleteMapping("/deleteCard")
-    public void detachPaymentMethod(@RequestParam("idCliente") Long idCliente, @RequestParam("idHotel") Long idHotel) throws StripeException {
-        stripeService.detachPaymentMethod(idCliente, idHotel);
+    public void detachPaymentMethod(@RequestParam("idCliente") Long idCliente) throws StripeException {
+        stripeService.detachPaymentMethod(idCliente);
     }
 }
