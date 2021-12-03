@@ -8,8 +8,10 @@ import java.util.List;
 
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
-    Boolean existsCategoriaByNomeAndHotel(String name, Hotel hotel);
+    Boolean existsCategoriaByNomeAndHotel_Id(String name, Long idHotel);
 
     List<Categoria> findCategoriasByHotel_Id(Long idHotel);
+
+    List<Categoria> findCategoriasByNomeStartingWithAndHotel_Id(String nome, Long idHotel);
 
 }

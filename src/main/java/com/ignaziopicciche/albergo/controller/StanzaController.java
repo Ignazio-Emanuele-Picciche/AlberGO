@@ -2,6 +2,7 @@ package com.ignaziopicciche.albergo.controller;
 
 import com.ignaziopicciche.albergo.dto.StanzaDTO;
 import com.ignaziopicciche.albergo.service.StanzaService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,20 +15,11 @@ import java.util.List;
 @RequestMapping("/api/stanza")
 public class StanzaController {
 
-    @Autowired
-    private StanzaService stanzaService;
+    private final StanzaService stanzaService;
 
-    //Durante la creazione serve per filtrare le stanze in base alla categoria e DataInizio e Fine
-    //FindStanzasByCategoria_IdAndHotel_IdAndDataInizioAndDataFine
-
-    //Per Grafico Stanze
-    //FindStanzasOccupateByDataInizioAndDataFineAAndHotel_Id
-    //FindStanzasFuoriServizioByDataInizioAndDataFineAAndHotel_Id
-    //FindStanzasLibereByDataInizioAndDataFineAAndHotel_Id
-
-
-    //findTotStanzeByCategoria_Id -> ritorno idCat, nomeCat, numTot
-
+    public StanzaController(StanzaService stanzaService) {
+        this.stanzaService = stanzaService;
+    }
 
 
     @GetMapping("/dettaglio")
@@ -60,39 +52,38 @@ public class StanzaController {
     }
 
 
-    //Nuove API
 
     @GetMapping("/stanzeCategoria")
     @ResponseBody
     public List<StanzaDTO> findStanzasByCategoria_IdAndDates(@RequestParam("idCategoria") Long idCategoria, @RequestParam("idHotel") Long idHotel, @RequestParam("dataInizio") String dInizio, @RequestParam("dataFine") String dFine) throws ParseException {
-        Date dataInizio =new SimpleDateFormat("yyyy-MM-dd").parse(dInizio);
-        Date dataFine=new SimpleDateFormat("yyyy-MM-dd").parse(dFine);
+        Date dataInizio = StringUtils.isNotBlank(dInizio) ? new SimpleDateFormat("yyyy-MM-dd").parse(dInizio) : null;
+        Date dataFine = StringUtils.isNotBlank(dFine) ? new SimpleDateFormat("yyyy-MM-dd").parse(dFine) : null;
         return stanzaService.findStanzasByCategoria_IdAndDates(idCategoria, dataInizio, dataFine);
     }
 
     @GetMapping("/fuoriServizio")
-    public int findCountStanzasFuoriServizioByHotel_Id(@RequestParam(name = "idHotel") Long idHotel){
+    public int findCountStanzasFuoriServizioByHotel_Id(@RequestParam(name = "idHotel") Long idHotel) {
         return stanzaService.findCountStanzasFuoriServizioByHotel_Id(idHotel);
     }
 
     @GetMapping("/libere")
     @ResponseBody
     public List<StanzaDTO> findStanzasLibereByHotel_IdAndDates(@RequestParam(name = "idHotel") Long idHotel, @RequestParam("dataInizio") String dInizio, @RequestParam("dataFine") String dFine) throws ParseException {
-        Date dataInizio =new SimpleDateFormat("yyyy-MM-dd").parse(dInizio);
-        Date dataFine=new SimpleDateFormat("yyyy-MM-dd").parse(dFine);
+        Date dataInizio = StringUtils.isNotBlank(dInizio) ? new SimpleDateFormat("yyyy-MM-dd").parse(dInizio) : null;
+        Date dataFine = StringUtils.isNotBlank(dFine) ? new SimpleDateFormat("yyyy-MM-dd").parse(dFine) : null;
         return stanzaService.findStanzasLibereByHotel_IdAndDates(idHotel, dataInizio, dataFine);
     }
 
     @GetMapping("/occupate")
     @ResponseBody
     public List<StanzaDTO> findStanzasOccupateByHotel_IdAndDates(@RequestParam(name = "idHotel") Long idHotel, @RequestParam("dataInizio") String dInizio, @RequestParam("dataFine") String dFine) throws ParseException {
-        Date dataInizio =new SimpleDateFormat("yyyy-MM-dd").parse(dInizio);
-        Date dataFine=new SimpleDateFormat("yyyy-MM-dd").parse(dFine);
+        Date dataInizio = StringUtils.isNotBlank(dInizio) ? new SimpleDateFormat("yyyy-MM-dd").parse(dInizio) : null;
+        Date dataFine = StringUtils.isNotBlank(dFine) ? new SimpleDateFormat("yyyy-MM-dd").parse(dFine) : null;
         return stanzaService.findStanzasOccupateByHotel_IdAndDates(idHotel, dataInizio, dataFine);
     }
 
     @GetMapping("/categoriaId")
-    public int findCountStanzeByCategoria_Id(@RequestParam(name = "idCategoria") Long idCategoria){
+    public int findCountStanzeByCategoria_Id(@RequestParam(name = "idCategoria") Long idCategoria) {
         return stanzaService.findCountStanzeByCategoria_Id(idCategoria);
     }
 

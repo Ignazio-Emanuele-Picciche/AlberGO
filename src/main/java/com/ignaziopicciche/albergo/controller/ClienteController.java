@@ -2,7 +2,6 @@ package com.ignaziopicciche.albergo.controller;
 
 import com.ignaziopicciche.albergo.dto.ClienteDTO;
 import com.ignaziopicciche.albergo.service.ClienteService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,8 +10,11 @@ import java.util.List;
 @RequestMapping("/api/cliente")
 public class ClienteController {
 
-    @Autowired
-    private ClienteService clienteService;
+    private final ClienteService clienteService;
+
+    public ClienteController(ClienteService clienteService) {
+        this.clienteService = clienteService;
+    }
 
     @GetMapping("/dettaglio")
     @ResponseBody
@@ -27,8 +29,7 @@ public class ClienteController {
     }
 
     @PostMapping("/create")
-    @ResponseBody
-    public ClienteDTO create(@RequestBody ClienteDTO clienteDTO){
+    public Long create(@RequestBody ClienteDTO clienteDTO) throws Exception {
         return clienteService.create(clienteDTO);
     }
 
@@ -39,8 +40,16 @@ public class ClienteController {
     }
 
     @DeleteMapping("/delete")
-    public Boolean delete(@RequestParam(name = "idCliente") Long id){
-        return clienteService.delete(id);
+    public Boolean delete(@RequestParam(name = "idCliente") Long idCliente){
+        return clienteService.delete(idCliente);
     }
+
+
+    //find all Cienti startWith nome or cognome
+    @GetMapping("/searchNomeCognome")
+    public List<ClienteDTO> findAllByNomeCognome(@RequestParam("nome") String nome, @RequestParam("cognome") String cognome, @RequestParam("idHotel") Long idHotel){
+        return clienteService.findAllByNomeCognome(nome, cognome, idHotel);
+    }
+
 
 }

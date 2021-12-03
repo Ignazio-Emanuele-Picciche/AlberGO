@@ -1,12 +1,11 @@
 package com.ignaziopicciche.albergo.helper;
 
-import com.ignaziopicciche.albergo.dto.CategoriaDTO;
 import com.ignaziopicciche.albergo.dto.StanzaDTO;
-import com.ignaziopicciche.albergo.exception.CategoriaException;
-import com.ignaziopicciche.albergo.exception.HotelException;
-import com.ignaziopicciche.albergo.exception.PrenotazioneException;
-import com.ignaziopicciche.albergo.exception.StanzaException;
-import com.ignaziopicciche.albergo.model.Prenotazione;
+import com.ignaziopicciche.albergo.enums.CategoriaEnum;
+import com.ignaziopicciche.albergo.enums.HotelEnum;
+import com.ignaziopicciche.albergo.enums.PrenotazioneEnum;
+import com.ignaziopicciche.albergo.enums.StanzaEnum;
+import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Stanza;
 import com.ignaziopicciche.albergo.repository.CategoriaRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
@@ -22,17 +21,25 @@ import java.util.stream.Collectors;
 @Component
 public class StanzaHelper {
 
-    @Autowired
-    private StanzaRepository stanzaRepository;
+    private final StanzaRepository stanzaRepository;
 
-    @Autowired
-    private HotelRepository hotelRepository;
+    private final HotelRepository hotelRepository;
 
-    @Autowired
-    private CategoriaRepository categoriaRepository;
+    private final CategoriaRepository categoriaRepository;
 
-    @Autowired
-    private PrenotazioneRepository prenotazioneRepository;
+    private final PrenotazioneRepository prenotazioneRepository;
+
+    private static StanzaEnum stanzaEnum;
+    private static CategoriaEnum categoriaEnum;
+    private static PrenotazioneEnum prenotazioneEnum;
+    private static HotelEnum hotelEnum;
+
+    public StanzaHelper(StanzaRepository stanzaRepository, HotelRepository hotelRepository, CategoriaRepository categoriaRepository, PrenotazioneRepository prenotazioneRepository) {
+        this.stanzaRepository = stanzaRepository;
+        this.hotelRepository = hotelRepository;
+        this.categoriaRepository = categoriaRepository;
+        this.prenotazioneRepository = prenotazioneRepository;
+    }
 
 
     public StanzaDTO create(StanzaDTO stanzaDTO) {
@@ -53,7 +60,8 @@ public class StanzaHelper {
             return new StanzaDTO(stanza);
         }
 
-        throw new StanzaException(StanzaException.StanzaExceptionCode.STANZA_ALREADY_EXISTS);
+        stanzaEnum = StanzaEnum.getStanzaEnumByMessageCode("STA_AE");
+        throw new ApiRequestException(stanzaEnum.getMessage());
     }
 
     public Boolean delete(Long id) {
@@ -62,11 +70,13 @@ public class StanzaHelper {
                 stanzaRepository.deleteById(id);
                 return true;
             } catch (Exception e) {
-                throw new StanzaException(StanzaException.StanzaExceptionCode.STANZA_DELETE_ERROR);
+                stanzaEnum = StanzaEnum.getStanzaEnumByMessageCode("STA_DLE");
+                throw new ApiRequestException(stanzaEnum.getMessage());
             }
         }
 
-        throw new StanzaException(StanzaException.StanzaExceptionCode.STANZA_ID_NOT_EXIST);
+        stanzaEnum = StanzaEnum.getStanzaEnumByMessageCode("STA_IDNE");
+        throw new ApiRequestException(stanzaEnum.getMessage());
     }
 
 
@@ -87,7 +97,8 @@ public class StanzaHelper {
             return new StanzaDTO(stanza);
         }
 
-        throw new StanzaException(StanzaException.StanzaExceptionCode.STANZA_ID_NOT_EXIST);
+        stanzaEnum = StanzaEnum.getStanzaEnumByMessageCode("STA_IDNE");
+        throw new ApiRequestException(stanzaEnum.getMessage());
     }
 
 
@@ -95,7 +106,9 @@ public class StanzaHelper {
         if (stanzaRepository.existsById(id)) {
             return new StanzaDTO(stanzaRepository.findById(id).get());
         }
-        throw new StanzaException(StanzaException.StanzaExceptionCode.STANZA_NOT_FOUND);
+
+        stanzaEnum = StanzaEnum.getStanzaEnumByMessageCode("STA_NF");
+        throw new ApiRequestException(stanzaEnum.getMessage());
     }
 
 
@@ -104,7 +117,8 @@ public class StanzaHelper {
             return stanzaRepository.findStanzasByHotel_Id(idHotel).stream().map(x -> new StanzaDTO(x)).collect(Collectors.toList());
         }
 
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
+        throw new ApiRequestException(hotelEnum.getMessage());
     }
 
 
@@ -116,10 +130,12 @@ public class StanzaHelper {
                 return stanzeCategoria.stream().map(x -> new StanzaDTO(x)).collect(Collectors.toList());
             }
 
-            throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.DATE_ERROR);
+            prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_DE");
+            throw new ApiRequestException(prenotazioneEnum.getMessage());
         }
 
-        throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ID_NOT_EXIST);
+        categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_IDNE");
+        throw new ApiRequestException(categoriaEnum.getMessage());
     }
 
 
@@ -128,7 +144,8 @@ public class StanzaHelper {
             return stanzaRepository.findCountStanzasFuoriServizioByHotel_Id(idHotel);
         }
 
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
+        throw new ApiRequestException(hotelEnum.getMessage());
     }
 
     public List<StanzaDTO> findStanzasLibereByHotel_IdAndDates(Long idHotel, Date dataInizio, Date dataFine){
@@ -138,10 +155,12 @@ public class StanzaHelper {
                 return stanzeLibere.stream().map(x -> new StanzaDTO(x)).collect(Collectors.toList());
             }
 
-            throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.DATE_ERROR);
+            prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_DE");
+            throw new ApiRequestException(prenotazioneEnum.getMessage());
         }
 
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
+        throw new ApiRequestException(hotelEnum.getMessage());
     }
 
     public List<StanzaDTO> findStanzasOccupateByHotel_IdAndDates(Long idHotel, Date dataInizio, Date dataFine){
@@ -151,11 +170,12 @@ public class StanzaHelper {
                 return stanzeOccupate.stream().map(x -> new StanzaDTO(x)).collect(Collectors.toList());
             }
 
-            throw new PrenotazioneException(PrenotazioneException.PrenotazioneExceptionCode.DATE_ERROR);
-
+            prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_DE");
+            throw new ApiRequestException(prenotazioneEnum.getMessage());
         }
 
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
+        throw new ApiRequestException(hotelEnum.getMessage());
     }
 
 
@@ -164,7 +184,8 @@ public class StanzaHelper {
             return stanzaRepository.findCountStanzeByCategoria_Id(idCategoria);
         }
 
-        throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ID_NOT_EXIST);
+        categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_IDNE");
+        throw new ApiRequestException(categoriaEnum.getMessage());
     }
 
 }

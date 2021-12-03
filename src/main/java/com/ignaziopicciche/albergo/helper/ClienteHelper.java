@@ -1,54 +1,81 @@
 package com.ignaziopicciche.albergo.helper;
 
-import com.ignaziopicciche.albergo.dto.CategoriaDTO;
 import com.ignaziopicciche.albergo.dto.ClienteDTO;
-import com.ignaziopicciche.albergo.exception.ClienteException;
-import com.ignaziopicciche.albergo.exception.HotelException;
+import com.ignaziopicciche.albergo.enums.ClienteEnum;
+import com.ignaziopicciche.albergo.enums.HotelEnum;
+import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Cliente;
+import com.ignaziopicciche.albergo.model.ClienteHotel;
+import com.ignaziopicciche.albergo.model.Hotel;
+import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import com.stripe.exception.StripeException;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class ClienteHelper {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final ClienteRepository clienteRepository;
+    private final HotelRepository hotelRepository;
+    private final ClienteHotelRepository clienteHotelRepository;
+    private final StripeHelper stripeHelper;
+    private final ClienteHotelHelper clienteHotelHelper;
 
-    @Autowired
-    private HotelRepository hotelRepository;
+    private static ClienteEnum clienteEnum;
+    private static HotelEnum hotelEnum;
+
+    public ClienteHelper(ClienteRepository clienteRepository, HotelRepository hotelRepository, StripeHelper stripeHelper, ClienteHotelRepository clienteHotelRepository, ClienteHotelHelper clienteHotelHelper) {
+        this.clienteRepository = clienteRepository;
+        this.hotelRepository = hotelRepository;
+        this.stripeHelper = stripeHelper;
+        this.clienteHotelRepository = clienteHotelRepository;
+        this.clienteHotelHelper = clienteHotelHelper;
+    }
+
+    public Long create(ClienteDTO clienteDTO) throws Exception {
+
+        if (!clienteRepository.existsByDocumentoOrUsername(clienteDTO.documento, clienteDTO.username) &&
+                !clienteDTO.documento.equals("") && !clienteDTO.username.equals("")) {
+
+            Cliente cliente = Cliente.builder()
+                    .nome(clienteDTO.nome)
+                    .cognome(clienteDTO.cognome)
+                    .documento(clienteDTO.documento)
+                    .telefono(clienteDTO.telefono)
+                    .username(clienteDTO.username)
+                    .password(clienteDTO.password).build();
+
+            cliente = clienteRepository.save(cliente);
+
+            List<Hotel> hotels = hotelRepository.findAll();
+
+            if(!hotels.isEmpty()){
+                for(Hotel hotel: hotels){
+                    String customerId = stripeHelper.createCustomer(cliente, hotel.getPublicKey());
+                    clienteHotelHelper.createByCliente(cliente, customerId, hotel);
+
+                    stripeHelper.addClienteHotelCarta(cliente);
+
+                }
+            }
 
 
-    public ClienteDTO create(ClienteDTO clienteDTO){
-
-        if(!clienteRepository.existsByDocumentoAndHotel_Id(clienteDTO.documento, clienteDTO.idHotel) &&
-                !clienteDTO.documento.equals("")){
-
-            Cliente cliente = new Cliente();
-
-            cliente.setNome(clienteDTO.nome);
-            cliente.setCognome(clienteDTO.cognome);
-            cliente.setDocumento(clienteDTO.documento);
-            cliente.setTelefono(clienteDTO.telefono);
-            cliente.setHotel(hotelRepository.findById(clienteDTO.idHotel).get());
-
-            clienteRepository.save(cliente);
-            return new ClienteDTO(cliente);
+            return cliente.getId();
         }
 
-        throw new ClienteException(ClienteException.ClienteExcpetionCode.CLIENTE_ALREADY_EXISTS);
+        clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_AE");
+        throw new ApiRequestException(clienteEnum.getMessage());
     }
 
 
+    public ClienteDTO update(ClienteDTO clienteDTO) {
 
-    public ClienteDTO update(ClienteDTO clienteDTO){
-
-        if(clienteRepository.existsById(clienteDTO.id)){
+        if (clienteRepository.existsById(clienteDTO.id)) {
 
             Cliente cliente = clienteRepository.findById(clienteDTO.id).get();
 
@@ -60,38 +87,65 @@ public class ClienteHelper {
             return new ClienteDTO(cliente);
         }
 
-        throw new ClienteException(ClienteException.ClienteExcpetionCode.CLIENTE_NOT_FOUND);
+        clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_NF");
+        throw new ApiRequestException(clienteEnum.getMessage());
     }
 
 
-    public Boolean delete(Long id){
+    @Transactional
+    public Boolean delete(Long idCliente) {
 
-        if(clienteRepository.existsById(id)){
-            try{
-                clienteRepository.deleteById(id);
+        if (clienteRepository.existsById(idCliente)) {
+            try {
+                List<ClienteHotel> clientiHotel = clienteHotelRepository.findByCliente_Id(idCliente);
+                stripeHelper.deleteCustomerById(clientiHotel);
+                clienteHotelRepository.deleteAllByCliente_Id(idCliente);
+
+                clienteRepository.deleteById(idCliente);
                 return true;
-            }catch (Exception e){
-                throw new ClienteException(ClienteException.ClienteExcpetionCode.CLIENTE_DELETE_ERROR);
+            } catch (Exception e) {
+                clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_DLE");
+                throw new ApiRequestException(clienteEnum.getMessage());
             }
         }
 
-        throw new ClienteException(ClienteException.ClienteExcpetionCode.CLIENTE_ID_NOT_EXIST);
+        clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_IDNE");
+        throw new ApiRequestException(clienteEnum.getMessage());
     }
 
 
-    public ClienteDTO findById(Long id){
-        if(clienteRepository.existsById(id)){
+    public ClienteDTO findById(Long id) {
+        if (clienteRepository.existsById(id)) {
             return new ClienteDTO(clienteRepository.findById(id).get());
         }
 
-        throw new ClienteException(ClienteException.ClienteExcpetionCode.CLIENTE_ID_NOT_EXIST);
+        clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_IDNE");
+        throw new ApiRequestException(clienteEnum.getMessage());
     }
 
-    public List<ClienteDTO> findAll(Long idHotel){
-        if(hotelRepository.existsById(idHotel)){
-            return clienteRepository.findClientesByHotel_Id(idHotel).stream().map(x -> new ClienteDTO(x)).collect(Collectors.toList());
+
+    public List<ClienteDTO> findAll(Long idHotel) {
+        if (hotelRepository.existsById(idHotel)) {
+            return clienteRepository.findClientiByHotel_Id(idHotel).stream().map(x -> new ClienteDTO(x)).collect(Collectors.toList());
         }
 
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
+        throw new ApiRequestException(hotelEnum.getMessage());
     }
+
+    public List<ClienteDTO> findAllByNomeCognome(String nome, String cognome, Long idHotel) {
+        List<Cliente> clienti;
+
+        if (cognome == null && nome != null) {
+            clienti = clienteRepository.findClientesByNomeStartingWith(nome, idHotel);
+            return clienti.stream().map(cliente -> new ClienteDTO(cliente)).collect(Collectors.toList());
+        }else if(nome == null && cognome != null){
+            clienti = clienteRepository.findClientesByCognomeStartingWith(cognome, idHotel);
+            return clienti.stream().map(cliente -> new ClienteDTO(cliente)).collect(Collectors.toList());
+        }
+
+        clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_NF");
+        throw new ApiRequestException(clienteEnum.getMessage());
+    }
+
 }

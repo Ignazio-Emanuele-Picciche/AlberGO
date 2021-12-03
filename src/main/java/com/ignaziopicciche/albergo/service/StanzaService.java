@@ -14,8 +14,11 @@ import java.util.Objects;
 @Service
 public class StanzaService {
 
-    @Autowired
-    private StanzaHelper stanzaHelper;
+    private final StanzaHelper stanzaHelper;
+
+    public StanzaService(StanzaHelper stanzaHelper) {
+        this.stanzaHelper = stanzaHelper;
+    }
 
     public StanzaDTO create(StanzaDTO stanzaDTO) {
         Preconditions.checkArgument(!Objects.isNull(stanzaDTO.numeroStanza));

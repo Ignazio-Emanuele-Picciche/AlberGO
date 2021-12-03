@@ -1,20 +1,20 @@
 package com.ignaziopicciche.albergo.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class Prenotazione {
 
     @Id
@@ -41,4 +41,7 @@ public class Prenotazione {
     @JoinColumn(name = "ID_PRENOTAZIONE_STANZA")
     private Stanza stanza;
 
+
+    @ManyToMany(mappedBy = "prenotazioni", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Servizio> servizi;
 }

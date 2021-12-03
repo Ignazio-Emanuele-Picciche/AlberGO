@@ -1,16 +1,16 @@
 package com.ignaziopicciche.albergo.model;
 
 import com.ignaziopicciche.albergo.security.models.Amministratore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,6 +25,8 @@ public class Hotel {
     private Integer stelle;
     private String descrizione;
     private String telefono;
+
+    private String publicKey;
 
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -41,6 +43,14 @@ public class Hotel {
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Categoria> categorie;
+
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Servizio> servizi;
+
+
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<ClienteHotel> hotelsCliente;
+
 
 
 }

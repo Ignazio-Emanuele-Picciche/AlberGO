@@ -1,13 +1,14 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.CategoriaDTO;
-import com.ignaziopicciche.albergo.exception.CategoriaException;
-import com.ignaziopicciche.albergo.exception.HotelException;
+import com.ignaziopicciche.albergo.dto.ClienteDTO;
+import com.ignaziopicciche.albergo.enums.CategoriaEnum;
+import com.ignaziopicciche.albergo.enums.HotelEnum;
+import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Categoria;
 import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.CategoriaRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,48 +18,61 @@ import java.util.stream.Collectors;
 @Component
 public class CategoriaHelper {
 
-    @Autowired
-    private CategoriaRepository categoriaRepository;
+    private final CategoriaRepository categoriaRepository;
 
-    @Autowired
-    private HotelRepository hotelRepository;
+    private final HotelRepository hotelRepository;
 
-    public CategoriaDTO create(CategoriaDTO categoriaDTO) {
+    private static CategoriaEnum categoriaEnum;
+    private static HotelEnum hotelEnum;
 
-        Optional<Hotel> hotel = hotelRepository.findById(categoriaDTO.idHotel);
+    public CategoriaHelper(CategoriaRepository categoriaRepository, HotelRepository hotelRepository) {
+        this.categoriaRepository = categoriaRepository;
+        this.hotelRepository = hotelRepository;
+    }
 
-        if (!categoriaRepository.existsCategoriaByNomeAndHotel(categoriaDTO.nome, hotel.get()) &&
+    public Long create(CategoriaDTO categoriaDTO) {
+
+        Hotel hotel = hotelRepository.findById(categoriaDTO.idHotel).get();
+
+        if (!categoriaRepository.existsCategoriaByNomeAndHotel_Id(categoriaDTO.nome, hotel.getId()) &&
                 !categoriaDTO.nome.equals("") && !categoriaDTO.descrizione.equals("")) {
 
-            Categoria categoria = new Categoria();
+            Categoria categoria = Categoria.builder()
+                    .nome(categoriaDTO.nome)
+                    .descrizione(categoriaDTO.descrizione)
+                    .prezzo(categoriaDTO.prezzo)
+                    .giorniPenale(categoriaDTO.giorniPenale)
+                    .qtaPenale(categoriaDTO.qtaPenale)
+                    .giorniBlocco(categoriaDTO.giorniBlocco)
+                    .hotel(hotel).build();
 
-            categoria.setNome(categoriaDTO.nome);
-            categoria.setDescrizione(categoriaDTO.descrizione);
-            categoria.setPrezzo(categoriaDTO.prezzo);
-            categoria.setHotel(hotel.get());
 
-            categoriaRepository.save(categoria);
-            return new CategoriaDTO(categoria);
+            categoria = categoriaRepository.save(categoria);
+            return categoria.getId();
         }
 
-        throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ALREADY_EXISTS);
+        categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_AE");
+        throw new ApiRequestException(categoriaEnum.getMessage());
 
     }
 
-    public CategoriaDTO update(CategoriaDTO categoriaDTO) {
+    public Long update(CategoriaDTO categoriaDTO) {
 
         if (categoriaRepository.existsById(categoriaDTO.id)) {
             Categoria categoria = categoriaRepository.findById(categoriaDTO.id).get();
 
             categoria.setDescrizione(categoriaDTO.descrizione);
             categoria.setPrezzo(categoriaDTO.prezzo);
-            categoria.setHotel(hotelRepository.findById(categoriaDTO.idHotel).get());
+            categoria.setGiorniPenale(categoriaDTO.giorniPenale);
+            categoria.setGiorniBlocco(categoriaDTO.giorniBlocco);
+            categoria.setQtaPenale(categoriaDTO.qtaPenale);
 
-            categoriaRepository.save(categoria);
-            return new CategoriaDTO(categoria);
+            categoria = categoriaRepository.save(categoria);
+            return categoria.getId();
         }
 
-        throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ID_NOT_EXIST);
+        categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_IDNE");
+        throw new ApiRequestException(categoriaEnum.getMessage());
 
     }
 
@@ -69,11 +83,14 @@ public class CategoriaHelper {
                 categoriaRepository.deleteById(id);
                 return true;
             } catch (Exception e) {
-                throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_DELETE_ERROR);
+                categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_DLE");
+                throw new ApiRequestException(categoriaEnum.getMessage());
             }
         }
 
-        throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_ID_NOT_EXIST);
+
+        categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_IDNE");
+        throw new ApiRequestException(categoriaEnum.getMessage());
     }
 
 
@@ -82,7 +99,8 @@ public class CategoriaHelper {
             return new CategoriaDTO(categoriaRepository.findById(id).get());
         }
 
-        throw new CategoriaException(CategoriaException.CategoriaExcpetionCode.CATEGORIA_NOT_FOUND);
+        categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_NF");
+        throw new ApiRequestException(categoriaEnum.getMessage());
     }
 
 
@@ -93,8 +111,13 @@ public class CategoriaHelper {
             return listCategorie.stream().map(x -> new CategoriaDTO(x)).collect(Collectors.toList());
         }
 
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
-
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
+        throw new ApiRequestException(hotelEnum.getMessage());
     }
 
+
+    public List<CategoriaDTO> findAllByNome(String nome, Long idHotel) {
+        List<Categoria> categorie = categoriaRepository.findCategoriasByNomeStartingWithAndHotel_Id(nome, idHotel);
+        return categorie.stream().map(categoria -> new CategoriaDTO(categoria)).collect(Collectors.toList());
+    }
 }

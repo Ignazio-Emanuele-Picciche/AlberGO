@@ -1,21 +1,42 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.HotelDTO;
-import com.ignaziopicciche.albergo.exception.HotelException;
+import com.ignaziopicciche.albergo.enums.HotelEnum;
+import com.ignaziopicciche.albergo.handler.ApiRequestException;
+import com.ignaziopicciche.albergo.model.Cliente;
+import com.ignaziopicciche.albergo.model.ClienteHotel;
 import com.ignaziopicciche.albergo.model.Hotel;
+import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
+import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class HotelHelper {
 
-    @Autowired
-    private HotelRepository hotelRepository;
+    private final HotelRepository hotelRepository;
+    private final ClienteRepository clienteRepository;
+    private final StripeHelper stripeHelper;
+    private final ClienteHotelHelper clienteHotelHelper;
+    private final ClienteHotelRepository clienteHotelRepository;
+
+    private static HotelEnum hotelEnum;
+
+    public HotelHelper(HotelRepository hotelRepository, ClienteRepository clienteRepository, StripeHelper stripeHelper, ClienteHotelHelper clienteHotelHelper, ClienteHotelRepository clienteHotelRepository) {
+        this.hotelRepository = hotelRepository;
+        this.clienteRepository = clienteRepository;
+        this.stripeHelper = stripeHelper;
+        this.clienteHotelHelper = clienteHotelHelper;
+        this.clienteHotelRepository = clienteHotelRepository;
+    }
 
 
-    public HotelDTO create(HotelDTO hotelDTO) {
+    public HotelDTO create(HotelDTO hotelDTO) throws Exception {
         if (!hotelRepository.existsByNome(hotelDTO.nome)) {
+
             Hotel hotel = new Hotel();
 
             hotel.setNome(hotelDTO.nome);
@@ -23,16 +44,30 @@ public class HotelHelper {
             hotel.setIndirizzo(hotelDTO.indirizzo);
             hotel.setStelle(hotelDTO.stelle);
             hotel.setTelefono(hotelDTO.telefono);
+            hotel.setPublicKey(hotelDTO.publicKey);
 
-            hotelRepository.save(hotel);
+            List<Cliente> clienti = clienteRepository.findAll();
+
+            hotel = hotelRepository.save(hotel);
+
+            if (!clienti.isEmpty()) {
+                for (Cliente cliente : clienti) {
+                    String customerId = stripeHelper.createCustomer(cliente, hotelDTO.publicKey);
+                    clienteHotelHelper.createByCliente(cliente, customerId, hotel);
+
+                    stripeHelper.addClienteHotelCarta(cliente);
+                }
+            }
+
             return new HotelDTO(hotel);
         }
 
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ALREADY_EXISTS);
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_AE");
+        throw new ApiRequestException(hotelEnum.getMessage());
     }
 
 
-    public HotelDTO update(HotelDTO hotelDTO) {
+    /*public HotelDTO update(HotelDTO hotelDTO) {
 
         if (hotelRepository.existsById(hotelDTO.id)) {
             Hotel hotel = hotelRepository.findById(hotelDTO.id).get();
@@ -45,8 +80,9 @@ public class HotelHelper {
             return new HotelDTO(hotel);
         }
 
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_NOT_FOUND);
-    }
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_NF");
+        throw new ApiRequestException(hotelEnum.getMessage());
+    }*/
 
 
     public HotelDTO findById(Long id) {
@@ -54,7 +90,32 @@ public class HotelHelper {
         if (hotelRepository.existsById(id)) {
             return new HotelDTO(hotelRepository.findById(id).get());
         }
-        throw new HotelException(HotelException.HotelExceptionCode.HOTEL_ID_NOT_EXIST);
+
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
+        throw new ApiRequestException(hotelEnum.getMessage());
+    }
+
+
+    public List<HotelDTO> findHotelByName(String nomeHotel) {
+        List<Hotel> hotels = hotelRepository.findHotelByNomeStartingWith(nomeHotel);
+
+        return hotels.stream().map(hotel -> new HotelDTO(hotel)).collect(Collectors.toList());
+
+    }
+
+    public List<HotelDTO> findHotelByIndirizzo(String indirizzoHotel) {
+        List<Hotel> hotels = hotelRepository.findHotelByIndirizzoStartingWith(indirizzoHotel);
+        return hotels.stream().map(hotel -> new HotelDTO(hotel)).collect(Collectors.toList());
+    }
+
+    public List<HotelDTO> getAllHotel() {
+        List<Hotel> allHotel = hotelRepository.findAll();
+        return allHotel.stream().map(HotelDTO::new).collect(Collectors.toList());
+    }
+
+    public List<HotelDTO> findHotelByClienteId(Long idCliente){
+        List<ClienteHotel> clientiHotel = clienteHotelRepository.findByCliente_Id(idCliente);
+        return clientiHotel.stream().map(clienteHotel -> new HotelDTO(clienteHotel.getHotel())).collect(Collectors.toList());
     }
 
 }

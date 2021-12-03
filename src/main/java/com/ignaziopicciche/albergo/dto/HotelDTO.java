@@ -17,6 +17,7 @@ public class HotelDTO {
     public Integer stelle;
     public String descrizione;
     public String telefono;
+    public String publicKey;
 
     public HotelDTO(Hotel h) {
         this.id = h.getId();
