@@ -54,11 +54,4 @@ public class HotelController {
     public List<HotelDTO> getAllHotel(){
         return hotelService.getAllHotel();
     }
-
-    @GetMapping("/hotelByCliente")
-    public List<HotelDTO> findHotelByClienteId(@RequestParam("idCliente") Long idCliente){
-        return hotelService.findHotelByClienteId(idCliente);
-    }
-
-
 }

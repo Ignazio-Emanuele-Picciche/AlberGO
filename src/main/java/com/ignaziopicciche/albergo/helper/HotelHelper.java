@@ -113,9 +113,4 @@ public class HotelHelper {
         return allHotel.stream().map(HotelDTO::new).collect(Collectors.toList());
     }
 
-    public List<HotelDTO> findHotelByClienteId(Long idCliente){
-        List<ClienteHotel> clientiHotel = clienteHotelRepository.findByCliente_Id(idCliente);
-        return clientiHotel.stream().map(clienteHotel -> new HotelDTO(clienteHotel.getHotel())).collect(Collectors.toList());
-    }
-
 }
