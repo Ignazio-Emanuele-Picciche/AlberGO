@@ -1,6 +1,6 @@
 package com.ignaziopicciche.albergo.service;
 
-import com.google.common.base.Preconditions;
+import com.cookingfox.guava_preconditions.Preconditions;
 import com.ignaziopicciche.albergo.helper.StripeHelper;
 import com.ignaziopicciche.albergo.model.CardData;
 import com.ignaziopicciche.albergo.model.PaymentMethodData;

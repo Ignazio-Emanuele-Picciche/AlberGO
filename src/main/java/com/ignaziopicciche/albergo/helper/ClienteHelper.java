@@ -11,10 +11,9 @@ import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
-import com.ignaziopicciche.albergo.security.models.Amministratore;
-import com.ignaziopicciche.albergo.security.models.AuthenticationRequest;
-import com.ignaziopicciche.albergo.security.models.AuthenticationResponse;
-import com.ignaziopicciche.albergo.security.util.JwtUtil;
+import com.ignaziopicciche.albergo.security.AuthenticationRequest;
+import com.ignaziopicciche.albergo.security.AuthenticationResponse;
+import com.ignaziopicciche.albergo.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,7 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class ClienteHelper implements UserDetailsService {
+public class ClienteHelper{
 
     private final ClienteRepository clienteRepository;
     private final HotelRepository hotelRepository;
@@ -40,21 +39,17 @@ public class ClienteHelper implements UserDetailsService {
     private final ClienteHotelHelper clienteHotelHelper;
 
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtTokenUtil;
 
     private static ClienteEnum clienteEnum;
     private static HotelEnum hotelEnum;
 
-    public ClienteHelper(ClienteRepository clienteRepository, HotelRepository hotelRepository, StripeHelper stripeHelper, ClienteHotelRepository clienteHotelRepository, ClienteHotelHelper clienteHotelHelper, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtil jwtTokenUtil) {
+    public ClienteHelper(ClienteRepository clienteRepository, HotelRepository hotelRepository, StripeHelper stripeHelper, ClienteHotelRepository clienteHotelRepository, ClienteHotelHelper clienteHotelHelper, PasswordEncoder passwordEncoder) {
         this.clienteRepository = clienteRepository;
         this.hotelRepository = hotelRepository;
         this.stripeHelper = stripeHelper;
         this.clienteHotelRepository = clienteHotelRepository;
         this.clienteHotelHelper = clienteHotelHelper;
         this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenUtil = jwtTokenUtil;
     }
 
     public Long create(ClienteDTO clienteDTO) throws Exception {
@@ -165,34 +160,4 @@ public class ClienteHelper implements UserDetailsService {
         clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_NF");
         throw new ApiRequestException(clienteEnum.getMessage());
     }
-
-
-    public ResponseEntity<?> createAuthenticationToken(AuthenticationRequest authenticationRequest) throws Exception {
-        try { //gestisco l'eccezione in caso l'autenticazione fallisce
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
-            );
-        } catch (BadCredentialsException e) {
-            throw new Exception("Incorrect username or password", e);
-        }
-
-        final UserDetails userDetails = loadUserByUsername(authenticationRequest.getUsername());
-        final String jwt = jwtTokenUtil.generateToken(userDetails, Ruolo.ROLE_CLIENT);  //prendo il token
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));  //mi resituisce il token associato all'utente
-    }
-
-
-    //TODO Da gestire l'unicità dello username
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        Cliente user = clienteRepository.findClienteByUsername(username);
-
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found with username: " + username);
-        }
-
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());  //ho creato un semplice utente con username e password "foo"
-    }
-
 }

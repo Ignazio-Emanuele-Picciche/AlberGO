@@ -1,4 +1,4 @@
-package com.ignaziopicciche.albergo.security.models;
+package com.ignaziopicciche.albergo.model;
 
 import com.ignaziopicciche.albergo.model.Hotel;
 import lombok.*;

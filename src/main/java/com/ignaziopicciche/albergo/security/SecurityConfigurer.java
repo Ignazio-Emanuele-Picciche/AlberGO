@@ -1,9 +1,10 @@
 package com.ignaziopicciche.albergo.security;
 
-import com.ignaziopicciche.albergo.security.filters.JwtRequestFilter;
-import com.ignaziopicciche.albergo.security.services.AmministratoreService;
-import com.ignaziopicciche.albergo.service.ClienteService;
+
+import com.ignaziopicciche.albergo.helper.AutenticazioneHelper;
+import com.ignaziopicciche.albergo.service.AutenticazioneService;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,19 +19,19 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter  {
 
-    private final AmministratoreService amministratoreService;
+    private final AutenticazioneHelper autenticazioneHelper;
     private final JwtRequestFilter jwtRequestFilter;
 
-    public SecurityConfigurer(AmministratoreService amministratoreService, JwtRequestFilter jwtRequestFilter) {
-        this.amministratoreService = amministratoreService;
+    public SecurityConfigurer(JwtRequestFilter jwtRequestFilter, @Lazy AutenticazioneHelper autenticazioneHelper) {
         this.jwtRequestFilter = jwtRequestFilter;
+        this.autenticazioneHelper = autenticazioneHelper;
     }
 
 
     //Autentificazione dell'utente
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception{
-        auth.userDetailsService(amministratoreService);
+        auth.userDetailsService(autenticazioneHelper);
     }
 
 

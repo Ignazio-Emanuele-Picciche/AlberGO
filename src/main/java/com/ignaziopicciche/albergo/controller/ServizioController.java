@@ -61,19 +61,19 @@ public class ServizioController {
 
 
     @DeleteMapping("/removeServizioPrenotazione")
-    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public Boolean removeServizioInPrenotazione(@RequestParam("idServizio") Long idServizio, @RequestParam("idPrenotazione") Long idPrenotazione) {
         return servizioService.removeServizioInPrenotazione(idServizio, idPrenotazione);
     }
 
     @PostMapping("/insertServizioPrenotazione")
-    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public Long insertByPrentazioneAndHotel(@RequestParam("idServizio") Long idServzio, @RequestParam("idPrenotazione") Long idPrenotazione, @RequestParam("idHotel") Long idHotel) throws StripeException {
         return servizioService.insertByPrentazioneAndHotel(idServzio, idPrenotazione, idHotel);
     }
 
     @GetMapping("/listaServiziPrenotazione")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public List<ServizioDTO> findServiziInPrenotazione(@RequestParam("idPrenotazione") Long idPrenotazione) {
         return servizioService.findServiziInPrenotazione(idPrenotazione);
     }

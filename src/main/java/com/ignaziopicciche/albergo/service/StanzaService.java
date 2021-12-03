@@ -1,6 +1,7 @@
 package com.ignaziopicciche.albergo.service;
 
-import com.google.common.base.Preconditions;
+
+import com.cookingfox.guava_preconditions.Preconditions;
 import com.ignaziopicciche.albergo.dto.StanzaDTO;
 import com.ignaziopicciche.albergo.helper.StanzaHelper;
 import lombok.AllArgsConstructor;

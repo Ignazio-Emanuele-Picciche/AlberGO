@@ -1,8 +1,8 @@
-package com.ignaziopicciche.albergo.security.filters;
+package com.ignaziopicciche.albergo.security;
 
-import com.ignaziopicciche.albergo.security.services.AmministratoreService;
-import com.ignaziopicciche.albergo.security.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ignaziopicciche.albergo.helper.AutenticazioneHelper;
+import com.ignaziopicciche.albergo.service.AutenticazioneService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,11 +20,13 @@ import java.io.IOException;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private AmministratoreService amministratoreService;
+    private final AutenticazioneHelper autenticazioneHelper;
+    private final JwtUtil jwtUtil;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    public JwtRequestFilter(JwtUtil jwtUtil, @Lazy AutenticazioneHelper autenticazioneHelper) {
+        this.jwtUtil = jwtUtil;
+        this.autenticazioneHelper = autenticazioneHelper;
+    }
 
 
     @Override
@@ -41,7 +43,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            UserDetails userDetails = this.amministratoreService.loadUserByUsername(username);
+            UserDetails userDetails = this.autenticazioneHelper.loadUserByUsername(username);
 
             if(jwtUtil.validateToken(jwt, userDetails)){
 

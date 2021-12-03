@@ -23,7 +23,7 @@ public class CategoriaController {
 
 
     @GetMapping("/dettaglio")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public CategoriaDTO findById(@RequestParam(name = "idCategoria") Long id) {
         return categoriaService.findById(id);
     }
@@ -53,7 +53,7 @@ public class CategoriaController {
     }
 
     @GetMapping("/searchNome")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<CategoriaDTO> findAllByNome(@RequestParam("nome") String nome, @RequestParam("idHotel") Long idHotel) {
         return categoriaService.findAllByNome(nome, idHotel);
     }

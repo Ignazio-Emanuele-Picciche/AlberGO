@@ -1,10 +1,8 @@
 package com.ignaziopicciche.albergo.model;
 
-import com.ignaziopicciche.albergo.security.models.Amministratore;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 

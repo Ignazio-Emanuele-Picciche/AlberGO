@@ -21,11 +21,6 @@ public class StripeController {
         this.stripeService = stripeService;
     }
 
-    //IMPORTANTE
-    //@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
-    //@PreAuthorize("hasRole('ROLE_CLIENT')")
-
     //Quando creo un nuovo cliente lo aggiungo negli hotel (anche se non ha la carta)
     //Quando creo una carta la aggiungo/sostituisco in tutti gli hotel
     @PostMapping("/addCard")

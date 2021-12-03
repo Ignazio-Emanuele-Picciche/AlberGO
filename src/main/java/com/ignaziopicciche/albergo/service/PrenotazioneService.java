@@ -1,6 +1,6 @@
 package com.ignaziopicciche.albergo.service;
 
-import com.google.common.base.Preconditions;
+import com.cookingfox.guava_preconditions.Preconditions;
 import com.ignaziopicciche.albergo.dto.FatturaDTO;
 import com.ignaziopicciche.albergo.dto.PrenotazioneDTO;
 import com.ignaziopicciche.albergo.helper.PrenotazioneHelper;

@@ -1,4 +1,4 @@
-package com.ignaziopicciche.albergo.security.util;
+package com.ignaziopicciche.albergo.security;
 
 import com.ignaziopicciche.albergo.enums.Ruolo;
 import io.jsonwebtoken.Claims;

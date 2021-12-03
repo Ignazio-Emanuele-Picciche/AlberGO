@@ -1,4 +1,4 @@
-package com.ignaziopicciche.albergo.security.models;
+package com.ignaziopicciche.albergo.security;
 
 import lombok.Data;
 

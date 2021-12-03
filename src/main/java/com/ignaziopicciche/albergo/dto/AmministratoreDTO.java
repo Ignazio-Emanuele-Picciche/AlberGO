@@ -1,12 +1,11 @@
-package com.ignaziopicciche.albergo.security.models;
+package com.ignaziopicciche.albergo.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ignaziopicciche.albergo.model.Amministratore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 

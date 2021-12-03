@@ -1,6 +1,6 @@
-package com.ignaziopicciche.albergo.security.repositories;
+package com.ignaziopicciche.albergo.repository;
 
-import com.ignaziopicciche.albergo.security.models.Amministratore;
+import com.ignaziopicciche.albergo.model.Amministratore;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

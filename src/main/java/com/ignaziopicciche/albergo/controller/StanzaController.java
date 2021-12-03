@@ -30,7 +30,7 @@ public class StanzaController {
     }
 
     @GetMapping("/lista")
-    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public List<StanzaDTO> findAll(@RequestParam(name = "idHotel") Long idHotel) {
         return stanzaService.findAll(idHotel);
     }
@@ -70,7 +70,7 @@ public class StanzaController {
     }
 
     @GetMapping("/libere")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public List<StanzaDTO> findStanzasLibereByHotel_IdAndDates(@RequestParam(name = "idHotel") Long idHotel, @RequestParam("dataInizio") String dInizio, @RequestParam("dataFine") String dFine) throws ParseException {
         Date dataInizio = StringUtils.isNotBlank(dInizio) ? new SimpleDateFormat("yyyy-MM-dd").parse(dInizio) : null;
         Date dataFine = StringUtils.isNotBlank(dFine) ? new SimpleDateFormat("yyyy-MM-dd").parse(dFine) : null;
