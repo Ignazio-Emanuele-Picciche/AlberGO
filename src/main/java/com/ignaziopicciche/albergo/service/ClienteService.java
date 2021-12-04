@@ -61,4 +61,10 @@ public class ClienteService {
         return clienteHelper.findAllByNomeCognome(nome, cognome, idHotel);
     }
 
+    public ClienteDTO findClienteByUsername(String username){
+        Preconditions.checkArgument(!Objects.isNull(username));
+
+        return clienteHelper.findClienteByUsername(username);
+    }
+
 }

@@ -38,6 +38,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+        // /api/login univoca per tutti
+        // ignorare /**
         http.authorizeRequests().antMatchers("/api/login/**").permitAll();
         http.authorizeRequests().antMatchers(POST,"/api/amministratore/register/**").permitAll();
         http.authorizeRequests().antMatchers(POST,"/api/cliente/register/**").permitAll();
@@ -45,8 +47,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(POST,"/api/hotel/create/**").permitAll();
 
 
+        //AMMINISTRATORE
+        http.authorizeRequests().antMatchers(GET,"/api/amministratore/dettaglio/username/**").hasAnyAuthority("ROLE_ADMIN");
+
         //CLIENTE
         http.authorizeRequests().antMatchers(GET,"/api/cliente/dettaglio/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER");
+        http.authorizeRequests().antMatchers(GET,"/api/cliente/dettaglio/username/**").hasAnyAuthority("ROLE_USER");
         http.authorizeRequests().antMatchers(GET,"/api/cliente/lista/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers(PUT,"/api/cliente/update/**").hasAnyAuthority("ROLE_USER");
         http.authorizeRequests().antMatchers(DELETE,"/api/cliente/delete/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER");

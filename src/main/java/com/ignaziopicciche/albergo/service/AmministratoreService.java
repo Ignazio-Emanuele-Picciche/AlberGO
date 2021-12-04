@@ -29,5 +29,10 @@ public class AmministratoreService {
         return amministratoreHelper.create(amministratoreDTO);
     }
 
+    public AmministratoreDTO findAmministratoreByUsername(String username){
+        Preconditions.checkArgument(!Objects.isNull(username));
+        return amministratoreHelper.findAmministratoreByUsername(username);
+    }
+
 
 }

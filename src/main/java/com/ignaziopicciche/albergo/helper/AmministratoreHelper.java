@@ -45,4 +45,15 @@ public class AmministratoreHelper {
         throw new ApiRequestException(amministratoreEnum.getMessage());
     }
 
+
+    public AmministratoreDTO findAmministratoreByUsername(String username){
+        if(amministratoreRepository.existsByUsername(username)){
+            Amministratore amministratore = amministratoreRepository.findByUsername(username);
+            return new AmministratoreDTO(amministratore);
+        }
+
+        amministratoreEnum = AmministratoreEnum.getAmministratoreEnumByMessageCode("AMM_NF");
+        throw new ApiRequestException(amministratoreEnum.getMessage());
+    }
+
 }

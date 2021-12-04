@@ -149,4 +149,15 @@ public class ClienteHelper{
         clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_NF");
         throw new ApiRequestException(clienteEnum.getMessage());
     }
+
+    public ClienteDTO findClienteByUsername(String username){
+        if(clienteRepository.existsByUsername(username)){
+            Cliente cliente = clienteRepository.findByUsername(username);
+            return new ClienteDTO(cliente);
+        }
+
+        clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_NF");
+        throw new ApiRequestException(clienteEnum.getMessage());
+    }
+
 }

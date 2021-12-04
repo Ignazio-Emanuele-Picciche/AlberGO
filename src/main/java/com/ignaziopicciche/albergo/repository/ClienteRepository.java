@@ -22,4 +22,5 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     List<Cliente> findClientesByCognomeStartingWith(@Param("cognome") String cognome, @Param("idHotel") Long idHotel);
 
     Cliente findByUsername(String username);
+    Boolean existsByUsername(String username);
 }

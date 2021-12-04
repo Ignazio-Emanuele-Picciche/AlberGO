@@ -5,10 +5,7 @@ import com.ignaziopicciche.albergo.dto.AmministratoreDTO;
 import com.ignaziopicciche.albergo.service.AmministratoreService;
 import com.ignaziopicciche.albergo.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/amministratore")
@@ -24,6 +21,13 @@ public class AmministratoreController {
     @PostMapping("/register")
     public ResponseEntity<?> create(@RequestBody AmministratoreDTO amministratoreDTO) {
         return ResponseEntity.ok(amministratoreService.create(amministratoreDTO));
+    }
+
+    //ROLE_ADMIN
+    //findAmministratoreByUsername
+    @GetMapping("/dettaglio/username")
+    public AmministratoreDTO findAmministratoreByUsername(@RequestParam("username") String username){
+        return amministratoreService.findAmministratoreByUsername(username);
     }
 
 
