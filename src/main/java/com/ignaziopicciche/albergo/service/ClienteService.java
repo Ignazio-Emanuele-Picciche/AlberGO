@@ -3,11 +3,8 @@ package com.ignaziopicciche.albergo.service;
 import com.cookingfox.guava_preconditions.Preconditions;
 import com.ignaziopicciche.albergo.dto.ClienteDTO;
 import com.ignaziopicciche.albergo.helper.ClienteHelper;
-import com.ignaziopicciche.albergo.security.AuthenticationRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

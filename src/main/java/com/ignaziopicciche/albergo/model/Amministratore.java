@@ -4,6 +4,10 @@ import com.ignaziopicciche.albergo.model.Hotel;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,9 +23,9 @@ public class Amministratore {
 
     private String nome;
     private String cognome;
-    //private Ruolo ruolo = Ruolo.ROLE_ADMIN;
     private String username;
     private String password;
+    private String ruolo;
 
     @ManyToOne
     @JoinColumn(name = "ID_AMMINISTRATORE_HOTEL")

@@ -1,12 +1,9 @@
 package com.ignaziopicciche.albergo.model;
 
-import com.ignaziopicciche.albergo.enums.Ruolo;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -24,9 +21,9 @@ public class Cliente {
     private String cognome;
     private String telefono;
     private String documento;
-    //private Ruolo ruolo = Ruolo.ROLE_CLIENT;
     private String username;
     private String password;
+    private String ruolo;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Prenotazione> prenotazioni;

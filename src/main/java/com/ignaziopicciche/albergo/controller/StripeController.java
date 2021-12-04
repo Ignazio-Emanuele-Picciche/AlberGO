@@ -29,14 +29,12 @@ public class StripeController {
     }
 
     @GetMapping("/dettaglioCard")
-    @PreAuthorize("hasRole('ROLE_CLIENT')")
     public CardData getPaymentMethod(@RequestParam("idCliente") Long idCliente) throws StripeException {
         return stripeService.getPaymentMethod(idCliente);
     }
 
     //Quando faccio delete card la devo eliminare in tutti hotel
     @DeleteMapping("/deleteCard")
-    @PreAuthorize("hasRole('ROLE_CLIENT')")
     public void detachPaymentMethod(@RequestParam("idCliente") Long idCliente) throws StripeException {
         stripeService.detachPaymentMethod(idCliente);
     }

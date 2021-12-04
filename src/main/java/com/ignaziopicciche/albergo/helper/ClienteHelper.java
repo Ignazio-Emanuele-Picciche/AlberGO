@@ -51,7 +51,8 @@ public class ClienteHelper{
                     .documento(clienteDTO.documento)
                     .telefono(clienteDTO.telefono)
                     .username(clienteDTO.username)
-                    .password(passwordEncoder.encode(clienteDTO.password)).build();
+                    .password(passwordEncoder.encode(clienteDTO.password))
+                    .ruolo("ROLE_USER").build();
 
             cliente = clienteRepository.save(cliente);
 

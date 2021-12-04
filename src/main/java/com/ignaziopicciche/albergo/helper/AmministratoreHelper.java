@@ -14,9 +14,7 @@ public class AmministratoreHelper {
 
     private final AmministratoreRepository amministratoreRepository;
     private final HotelRepository hotelRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private static AmministratoreEnum amministratoreEnum;
 
     public AmministratoreHelper(AmministratoreRepository amministratoreRepository, HotelRepository hotelRepository, PasswordEncoder passwordEncoder) {
@@ -36,6 +34,7 @@ public class AmministratoreHelper {
             amministratore.setNome(amministratoreDTO.nome);
             amministratore.setCognome(amministratoreDTO.cognome);
             amministratore.setHotel(hotelRepository.findById(amministratoreDTO.idHotel).get());
+            amministratore.setRuolo("ROLE_ADMIN");
 
             amministratore = amministratoreRepository.save(amministratore);
 

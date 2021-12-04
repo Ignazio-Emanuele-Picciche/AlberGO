@@ -167,8 +167,11 @@ public class StripeHelper {
     public CardData getPaymentMethod(Long idCliente) throws StripeException {
         List<ClienteHotel> clientiHotel = clienteHotelRepository.findByCliente_Id(idCliente);
 
-        ClienteHotel clienteHotel = clientiHotel.stream().filter(clienteHotelApp -> StringUtils.isNotBlank(clienteHotelApp.getPaymentMethodId())).findFirst().orElseThrow(/*TODO eccezione*/);
-        //Se clienteHotel == null deve scoppiare
+        ClienteHotel clienteHotel = clientiHotel.stream().filter(clienteHotelApp -> clienteHotelApp.getPaymentMethodId() != null).findFirst().orElse(null);
+        if(clienteHotel == null){
+            return new CardData();
+        }
+
         Stripe.apiKey = clienteHotel.getHotel().getPublicKey();
         PaymentMethod paymentMethod = PaymentMethod.retrieve(clienteHotel.getPaymentMethodId());
 

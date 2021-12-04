@@ -22,7 +22,6 @@ public class HotelController {
 
 
     @GetMapping("/dettaglio")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public HotelDTO findById(@RequestParam(name = "idHotel") Long id){
         return hotelService.findById(id);
     }
@@ -41,20 +40,17 @@ public class HotelController {
 
     //Trova gli hotel con il nome che inizia per...
     @GetMapping("/searchNome")
-    @PreAuthorize("hasRole('ROLE_CLIENT')")
     public List<HotelDTO> findHotelByName(@RequestParam("nomeHotel") String nomeHotel){
         return hotelService.findHotelByName(nomeHotel);
     }
 
     //Trova gli hotel che iniziano con l'indirizzo
     @GetMapping("/searchIndirizzo")
-    @PreAuthorize("hasRole('ROLE_CLIENT')")
     public List<HotelDTO> findHotelByIndirizzo(@RequestParam("indirizzoHotel") String indirizzoHotel){
         return hotelService.findHotelByIndirizzo(indirizzoHotel);
     }
 
     @GetMapping("/allhotel")
-    @PreAuthorize("hasRole('ROLE_CLIENT')")
     public List<HotelDTO> getAllHotel(){
         return hotelService.getAllHotel();
     }

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AmministratoreRepository extends JpaRepository<Amministratore, Long>{
 
-    Amministratore findAmministratoreByUsername(String username);
+    Amministratore findByUsername(String username);
 
     Boolean existsByUsername(String username);
 }
