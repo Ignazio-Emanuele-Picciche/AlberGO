@@ -176,6 +176,8 @@ public class StripeHelper {
         PaymentMethod paymentMethod = PaymentMethod.retrieve(clienteHotel.getPaymentMethodId());
 
         return CardData.builder()
+                .paymentMethodId(paymentMethod.getId())
+                .idCliente(idCliente)
                 .number("4242424242424242")
                 .cvc(clienteHotel.getCvc())
                 .exp_month(paymentMethod.getCard().getExpMonth().toString())
