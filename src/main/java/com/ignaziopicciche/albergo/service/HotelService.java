@@ -27,6 +27,7 @@ public class HotelService {
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.descrizione));
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.telefono));
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.publicKey));
+        Preconditions.checkArgument(!Objects.isNull(hotelDTO.codiceHotel));
 
         return hotelHelper.create(hotelDTO);
     }

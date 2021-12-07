@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface HotelRepository extends JpaRepository<Hotel, Long> {
 
-    Boolean existsByNome(String nome);
+    Boolean existsByNomeOrCodiceHotel(String nome, String codiceHotel);
     List<Hotel> findHotelByNomeStartingWith(String nomeHotel);
     List<Hotel> findHotelByIndirizzoStartingWith(String indirizzoHotel);
     Hotel findByPublicKey(String key);

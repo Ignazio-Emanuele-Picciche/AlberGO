@@ -26,13 +26,7 @@ public class AmministratoreDTO {
         this.nome = a.getNome();
         this.cognome = a.getCognome();
         this.username = a.getUsername();
-        this.password = a.getPassword();
+        //this.password = a.getPassword();
         this.idHotel = a.getHotel().getId();
-    }
-
-    @JsonIgnore
-    @JsonProperty(value = "password")
-    public String getPassword() {
-        return password;
     }
 }

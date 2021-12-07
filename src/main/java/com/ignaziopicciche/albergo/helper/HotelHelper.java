@@ -35,7 +35,7 @@ public class HotelHelper {
 
 
     public HotelDTO create(HotelDTO hotelDTO) throws Exception {
-        if (!hotelRepository.existsByNome(hotelDTO.nome)) {
+        if (!hotelRepository.existsByNomeOrCodiceHotel(hotelDTO.nome, hotelDTO.codiceHotel)) {
 
             Hotel hotel = new Hotel();
 
@@ -44,6 +44,7 @@ public class HotelHelper {
             hotel.setIndirizzo(hotelDTO.indirizzo);
             hotel.setStelle(hotelDTO.stelle);
             hotel.setTelefono(hotelDTO.telefono);
+            hotel.setCodiceHotel(hotelDTO.codiceHotel);
             hotel.setPublicKey(hotelDTO.publicKey);
 
             List<Cliente> clienti = clienteRepository.findAll();

@@ -23,6 +23,7 @@ public class Hotel {
     private Integer stelle;
     private String descrizione;
     private String telefono;
+    private String codiceHotel;
 
     private String publicKey;
 

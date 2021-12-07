@@ -28,12 +28,6 @@ public class ClienteDTO {
         this.telefono = c.getTelefono();
         this.documento = c.getDocumento();
         this.username = c.getUsername();
-        this.password = c.getPassword();
-    }
-
-    @JsonIgnore
-    @JsonProperty(value = "password")
-    public String getPassword() {
-        return password;
+        //this.password = c.getPassword();
     }
 }
