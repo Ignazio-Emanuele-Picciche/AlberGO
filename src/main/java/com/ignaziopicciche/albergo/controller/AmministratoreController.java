@@ -17,14 +17,11 @@ public class AmministratoreController {
         this.amministratoreService = amministratoreService;
     }
 
-
     @PostMapping("/register")
     public ResponseEntity<?> create(@RequestBody AmministratoreDTO amministratoreDTO) {
         return ResponseEntity.ok(amministratoreService.create(amministratoreDTO));
     }
 
-    //ROLE_ADMIN
-    //findAmministratoreByUsername
     @GetMapping("/dettaglio/username")
     public AmministratoreDTO findAmministratoreByUsername(@RequestParam("username") String username){
         return amministratoreService.findAmministratoreByUsername(username);

@@ -2,6 +2,8 @@ package com.ignaziopicciche.albergo.service;
 
 import com.cookingfox.guava_preconditions.Preconditions;
 import com.ignaziopicciche.albergo.dto.ClienteDTO;
+import com.ignaziopicciche.albergo.enums.ClienteEnum;
+import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.helper.ClienteHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,18 +15,27 @@ import java.util.Objects;
 @Service
 public class ClienteService {
 
-    @Autowired
-    private ClienteHelper clienteHelper;
+    private final ClienteHelper clienteHelper;
+
+    private static ClienteEnum clienteEnum;
+
+    public ClienteService(ClienteHelper clienteHelper) {
+        this.clienteHelper = clienteHelper;
+    }
 
     public Long create(ClienteDTO clienteDTO) throws Exception {
-        Preconditions.checkArgument(!Objects.isNull(clienteDTO.nome));
-        Preconditions.checkArgument(!Objects.isNull(clienteDTO.cognome));
-        Preconditions.checkArgument(!Objects.isNull(clienteDTO.documento));
-        Preconditions.checkArgument(!Objects.isNull(clienteDTO.telefono));
-        Preconditions.checkArgument(!Objects.isNull(clienteDTO.username));
-        Preconditions.checkArgument(!Objects.isNull(clienteDTO.password));
 
-        return clienteHelper.create(clienteDTO);
+        if (StringUtils.isNotBlank(clienteDTO.nome) &&
+                StringUtils.isNotBlank(clienteDTO.cognome) &&
+                StringUtils.isNotBlank(clienteDTO.documento) &&
+                StringUtils.isNotBlank(clienteDTO.telefono) &&
+                StringUtils.isNotBlank(clienteDTO.username) &&
+                StringUtils.isNotBlank(clienteDTO.password)) {
+            return clienteHelper.create(clienteDTO);
+        }
+
+        clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_EF");
+        throw new ApiRequestException(clienteEnum.getMessage());
     }
 
     public Boolean delete(Long idCliente) {
@@ -61,7 +72,7 @@ public class ClienteService {
         return clienteHelper.findAllByNomeCognome(nome, cognome, idHotel);
     }
 
-    public ClienteDTO findClienteByUsername(String username){
+    public ClienteDTO findClienteByUsername(String username) {
         Preconditions.checkArgument(!Objects.isNull(username));
 
         return clienteHelper.findClienteByUsername(username);

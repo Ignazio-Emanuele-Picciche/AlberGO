@@ -7,6 +7,7 @@ import com.ignaziopicciche.albergo.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Cliente;
 import com.ignaziopicciche.albergo.model.ClienteHotel;
 import com.ignaziopicciche.albergo.model.Hotel;
+import com.ignaziopicciche.albergo.repository.AmministratoreRepository;
 import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
@@ -23,6 +24,7 @@ public class ClienteHelper{
     private final ClienteRepository clienteRepository;
     private final HotelRepository hotelRepository;
     private final ClienteHotelRepository clienteHotelRepository;
+    private final AmministratoreRepository amministratoreRepository;
     private final StripeHelper stripeHelper;
     private final ClienteHotelHelper clienteHotelHelper;
 
@@ -31,19 +33,20 @@ public class ClienteHelper{
     private static ClienteEnum clienteEnum;
     private static HotelEnum hotelEnum;
 
-    public ClienteHelper(ClienteRepository clienteRepository, HotelRepository hotelRepository, StripeHelper stripeHelper, ClienteHotelRepository clienteHotelRepository, ClienteHotelHelper clienteHotelHelper, PasswordEncoder passwordEncoder) {
+    public ClienteHelper(ClienteRepository clienteRepository, HotelRepository hotelRepository, StripeHelper stripeHelper, ClienteHotelRepository clienteHotelRepository, ClienteHotelHelper clienteHotelHelper, AmministratoreRepository amministratoreRepository, PasswordEncoder passwordEncoder) {
         this.clienteRepository = clienteRepository;
         this.hotelRepository = hotelRepository;
         this.stripeHelper = stripeHelper;
         this.clienteHotelRepository = clienteHotelRepository;
         this.clienteHotelHelper = clienteHotelHelper;
+        this.amministratoreRepository = amministratoreRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     public Long create(ClienteDTO clienteDTO) throws Exception {
 
         if (!clienteRepository.existsByDocumentoOrUsername(clienteDTO.documento, clienteDTO.username) &&
-                !clienteDTO.documento.equals("") && !clienteDTO.username.equals("")) {
+                !amministratoreRepository.existsByUsername(clienteDTO.username)) {
 
             Cliente cliente = Cliente.builder()
                     .nome(clienteDTO.nome)

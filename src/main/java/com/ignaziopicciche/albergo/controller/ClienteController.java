@@ -53,9 +53,6 @@ public class ClienteController {
         return ResponseEntity.ok(clienteService.create(clienteDTO));
     }
 
-
-    //ROLE_USER
-    //findClienteByUsername
     @GetMapping("/dettaglio/username")
     public ClienteDTO findClienteByUsername(@RequestParam("username") String username){
         return clienteService.findClienteByUsername(username);

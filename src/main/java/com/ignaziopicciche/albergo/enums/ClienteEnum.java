@@ -6,7 +6,8 @@ public enum ClienteEnum {
     CLIENTE_NOT_FOUND("CLI_NF", "Il cliente che stai cercando non è stato trovato"),
     CLIENTE_ALREADY_EXISTS("CLI_AE", "Il cliente che vuoi inserire è già presente nel sistema"),
     CLIENTE_DELETE_ERROR("CLI_DLE", "Errore durante l'eliminazione del cliente"),
-    CLIENTE_ID_NOT_EXIST("CLI_IDNE", "Il cliente che stai cercando non esiste");
+    CLIENTE_ID_NOT_EXIST("CLI_IDNE", "Il cliente che stai cercando non esiste"),
+    CLIENTE_EMPTY_FIELD("CLI_EF", "Alcuni campi sono vuoti");
 
     private final String messageCode;
     private final String message;
