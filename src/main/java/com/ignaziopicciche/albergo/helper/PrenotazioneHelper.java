@@ -230,11 +230,12 @@ public class PrenotazioneHelper {
 
 
             Prenotazione prenotazione = prenotazioneRepository.findById(prenotazioneDTO.id).get();
+            Categoria categoria = prenotazione.getStanza().getCategoria();
             Cliente cliente = prenotazione.getCliente();
 
-            LocalDate dataInizio = LocalDate.parse(prenotazione.getDataInizio().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            LocalDate dataFine = LocalDate.parse(prenotazione.getDataFine().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            long durataVecchia = ChronoUnit.DAYS.between(dataInizio, dataFine);
+            LocalDate dataInizioVecchia = LocalDate.parse(prenotazione.getDataInizio().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            LocalDate dataFineVecchia = LocalDate.parse(prenotazione.getDataFine().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            long durataVecchia = ChronoUnit.DAYS.between(dataInizioVecchia, dataFineVecchia);
 
             prenotazione.setDataInizio(prenotazioneDTO.dataInizio);
             prenotazione.setDataFine(prenotazioneDTO.dataFine);
@@ -242,33 +243,39 @@ public class PrenotazioneHelper {
             /*dataInizio = LocalDate.parse(dataInizioString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             dataFine = LocalDate.parse(dataFineString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));*/
             long durataNuova = ChronoUnit.DAYS.between(dataInizioNuova, dataFineNuova);
+            long diffDataInizioPrenotazione = ChronoUnit.DAYS.between(LocalDate.now(), dataInizioVecchia);
 
-            if(durataNuova > durataVecchia){
-                long restoDaPagare = durataNuova-durataVecchia;
 
-                String price = Double.toString(prenotazione.getStanza().getCategoria().getPrezzo() * restoDaPagare);
-                if (price.indexOf(".") == price.length() - 2) {
-                    StringBuilder priceS = new StringBuilder(price);
-                    priceS.append("0");
-                    price = priceS.toString();
+            if (diffDataInizioPrenotazione > categoria.getGiorniPenale()) {
+                if (durataNuova > durataVecchia) {
+                    long restoDaPagare = durataNuova - durataVecchia;
+
+                    String price = Double.toString(prenotazione.getStanza().getCategoria().getPrezzo() * restoDaPagare);
+                    if (price.indexOf(".") == price.length() - 2) {
+                        StringBuilder priceS = new StringBuilder(price);
+                        priceS.append("0");
+                        price = priceS.toString();
+                    }
+                    price = price.replace(".", "");
+
+                    Hotel hotel = prenotazione.getHotel();
+                    ClienteHotel clienteHotel = clienteHotelRepository.findByCliente_IdAndHotel_Id(cliente.getId(), hotel.getId());
+
+                    PaymentData paymentData = PaymentData.builder()
+                            .customerId(clienteHotel.getCustomerId())
+                            .key(hotel.getPublicKey())
+                            .price(price)
+                            .paymentMethod(clienteHotel.getPaymentMethodId())
+                            .description("Prenotazione aggiornata " + cliente.getNome() + " " + cliente.getCognome() + " " + dataInizioNuova + "  " + dataFineNuova).build();
+                    stripeHelper.createPaymentIntent(paymentData);
                 }
-                price = price.replace(".", "");
 
-                Hotel hotel = prenotazione.getHotel();
-                ClienteHotel clienteHotel = clienteHotelRepository.findByCliente_IdAndHotel_Id(cliente.getId(), hotel.getId());
 
-                PaymentData paymentData = PaymentData.builder()
-                        .customerId(clienteHotel.getCustomerId())
-                        .key(hotel.getPublicKey())
-                        .price(price)
-                        .paymentMethod(clienteHotel.getPaymentMethodId())
-                        .description("Prenotazione aggiornata "+cliente.getNome()+" "+cliente.getCognome()+" "+dataInizioNuova+"  "+dataFineNuova).build();
-                stripeHelper.createPaymentIntent(paymentData);
+                prenotazioneRepository.save(prenotazione);
+                return prenotazione.getId();
+            }else if (diffDataInizioPrenotazione > categoria.getGiorniBlocco() && diffDataInizioPrenotazione <= categoria.getGiorniPenale()) {
+
             }
-
-
-            prenotazioneRepository.save(prenotazione);
-            return prenotazione.getId();
 
         }
 
