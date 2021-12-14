@@ -106,7 +106,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //SERVIZIO
         http.authorizeRequests().antMatchers(GET,"/api/servizio/dettaglio/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
         http.authorizeRequests().antMatchers(GET,"/api/servizio/lista/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
-        http.authorizeRequests().antMatchers(GET,"/api/servizio/listaNotInPrenotazione/**").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(GET,"/api/servizio/listaNotInPrenotazione/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER");
         http.authorizeRequests().antMatchers(POST,"/api/servizio/create/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers(PUT,"/api/servizio/update/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers(DELETE,"/api/servizio/delete/**").hasAnyAuthority("ROLE_ADMIN");
