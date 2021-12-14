@@ -60,6 +60,12 @@ public class HotelService {
         return hotelHelper.findHotelByIndirizzo(indirizzoHotel);
     }
 
+    public HotelDTO findHotelByCodiceHotel (String publicKey) {
+        Preconditions.checkArgument(!Objects.isNull(publicKey));
+
+        return hotelHelper.findHotelByCodiceHotel(publicKey);
+    }
+
     public List<HotelDTO> getAllHotel(){
         return hotelHelper.getAllHotel();
     }

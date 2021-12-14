@@ -50,6 +50,11 @@ public class HotelController {
         return hotelService.findHotelByIndirizzo(indirizzoHotel);
     }
 
+    @GetMapping("/searchCodiceHotel")
+    public HotelDTO findHotelByCodiceHotel(@RequestParam("codiceHotel") String codiceHotel){
+        return hotelService.findHotelByCodiceHotel(codiceHotel);
+    }
+
     @GetMapping("/allhotel")
     public List<HotelDTO> getAllHotel(){
         return hotelService.getAllHotel();
