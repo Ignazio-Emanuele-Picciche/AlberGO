@@ -109,6 +109,15 @@ public class HotelHelper {
         return hotels.stream().map(hotel -> new HotelDTO(hotel)).collect(Collectors.toList());
     }
 
+    public HotelDTO findHotelByCodiceHotel (String codiceHotel) {
+        if(hotelRepository.existsByCodiceHotel(codiceHotel)) {
+            return new HotelDTO(hotelRepository.findByCodiceHotel(codiceHotel));
+        }
+
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_CHNE");
+        throw new ApiRequestException(hotelEnum.getMessage());
+    }
+
     public List<HotelDTO> getAllHotel() {
         List<Hotel> allHotel = hotelRepository.findAll();
         return allHotel.stream().map(HotelDTO::new).collect(Collectors.toList());

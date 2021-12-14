@@ -12,5 +12,6 @@ public interface HotelRepository extends JpaRepository<Hotel, Long> {
     Boolean existsByNomeOrCodiceHotel(String nome, String codiceHotel);
     List<Hotel> findHotelByNomeStartingWith(String nomeHotel);
     List<Hotel> findHotelByIndirizzoStartingWith(String indirizzoHotel);
-    Hotel findByPublicKey(String key);
+    Hotel findByCodiceHotel(String codiceHotel);
+    Boolean existsByCodiceHotel(String codiceHotel);
 }

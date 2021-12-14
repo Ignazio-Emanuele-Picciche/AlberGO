@@ -49,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(POST,"/api/cliente/register/**").permitAll();
         http.authorizeRequests().antMatchers(POST,"/api/stripe/addCard/**").permitAll();
         http.authorizeRequests().antMatchers(POST,"/api/hotel/create/**").permitAll();
-
+        http.authorizeRequests().antMatchers(GET,"/api/hotel/searchCodiceHotel/**").permitAll();
 
         //AMMINISTRATORE
         http.authorizeRequests().antMatchers(GET,"/api/amministratore/dettaglio/username/**").hasAnyAuthority("ROLE_ADMIN");
