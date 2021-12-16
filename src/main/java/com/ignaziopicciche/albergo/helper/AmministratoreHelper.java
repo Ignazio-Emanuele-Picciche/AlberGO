@@ -1,7 +1,7 @@
 package com.ignaziopicciche.albergo.helper;
 
-import com.ignaziopicciche.albergo.enums.AmministratoreEnum;
-import com.ignaziopicciche.albergo.handler.ApiRequestException;
+import com.ignaziopicciche.albergo.exception.enums.AmministratoreEnum;
+import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
 import com.ignaziopicciche.albergo.model.Amministratore;

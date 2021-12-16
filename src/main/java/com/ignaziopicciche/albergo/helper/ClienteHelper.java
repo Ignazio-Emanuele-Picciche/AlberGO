@@ -1,9 +1,9 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.ClienteDTO;
-import com.ignaziopicciche.albergo.enums.ClienteEnum;
-import com.ignaziopicciche.albergo.enums.HotelEnum;
-import com.ignaziopicciche.albergo.handler.ApiRequestException;
+import com.ignaziopicciche.albergo.exception.enums.ClienteEnum;
+import com.ignaziopicciche.albergo.exception.enums.HotelEnum;
+import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Cliente;
 import com.ignaziopicciche.albergo.model.ClienteHotel;
 import com.ignaziopicciche.albergo.model.Hotel;

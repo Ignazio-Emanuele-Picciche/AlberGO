@@ -2,11 +2,10 @@ package com.ignaziopicciche.albergo.service;
 
 import com.cookingfox.guava_preconditions.Preconditions;
 import com.ignaziopicciche.albergo.dto.ClienteDTO;
-import com.ignaziopicciche.albergo.enums.ClienteEnum;
-import com.ignaziopicciche.albergo.handler.ApiRequestException;
+import com.ignaziopicciche.albergo.exception.enums.ClienteEnum;
+import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.helper.ClienteHelper;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

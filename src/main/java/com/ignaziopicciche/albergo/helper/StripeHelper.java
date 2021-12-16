@@ -1,8 +1,8 @@
 package com.ignaziopicciche.albergo.helper;
 
-import com.ignaziopicciche.albergo.enums.ClienteEnum;
-import com.ignaziopicciche.albergo.enums.ClienteHotelEnum;
-import com.ignaziopicciche.albergo.handler.ApiRequestException;
+import com.ignaziopicciche.albergo.exception.enums.ClienteEnum;
+import com.ignaziopicciche.albergo.exception.enums.ClienteHotelEnum;
+import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.*;
 import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
