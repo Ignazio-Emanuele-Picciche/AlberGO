@@ -3,7 +3,6 @@ package com.ignaziopicciche.albergo.controller;
 
 import com.ignaziopicciche.albergo.dto.AmministratoreDTO;
 import com.ignaziopicciche.albergo.service.AmministratoreService;
-import com.ignaziopicciche.albergo.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,10 +1,8 @@
 package com.ignaziopicciche.albergo.controller;
 
 import com.ignaziopicciche.albergo.dto.ClienteDTO;
-import com.ignaziopicciche.albergo.service.UserService;
 import com.ignaziopicciche.albergo.service.ClienteService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,6 +40,7 @@ public class ClienteController {
     }
 
     //find all Cienti startWith nome or cognome
+    //TODO idHOtel non ha senso visto che i clienti si troano in tutti gli hotel
     @GetMapping("/searchNomeCognome")
     public List<ClienteDTO> findAllByNomeCognome(@RequestParam("nome") String nome, @RequestParam("cognome") String cognome, @RequestParam("idHotel") Long idHotel) {
         return clienteService.findAllByNomeCognome(nome, cognome, idHotel);

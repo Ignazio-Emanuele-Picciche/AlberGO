@@ -49,10 +49,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = (User) authentication.getPrincipal();
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-        Date token_expiration = new Date(System.currentTimeMillis() + 10 * 60 * 1000);
+        Date token_expiration = new Date(System.currentTimeMillis() + 100 * 120 * 1000);
         String access_token = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(token_expiration) //durata del token (+10 minuti)
+                .withExpiresAt(token_expiration) //durata del token (3 ore e 30 minuti circa)
                 .withIssuer(request.getRequestURL().toString())
                 .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(algorithm);
