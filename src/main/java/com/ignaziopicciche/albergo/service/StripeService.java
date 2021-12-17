@@ -3,14 +3,9 @@ package com.ignaziopicciche.albergo.service;
 import com.cookingfox.guava_preconditions.Preconditions;
 import com.ignaziopicciche.albergo.helper.StripeHelper;
 import com.ignaziopicciche.albergo.model.CardData;
-import com.ignaziopicciche.albergo.model.PaymentMethodData;
 import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentMethod;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service

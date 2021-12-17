@@ -1,15 +1,9 @@
 package com.ignaziopicciche.albergo.controller;
 
 import com.ignaziopicciche.albergo.model.CardData;
-import com.ignaziopicciche.albergo.model.PaymentMethodData;
 import com.ignaziopicciche.albergo.service.StripeService;
 import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentMethod;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/stripe")
