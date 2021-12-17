@@ -1,17 +1,16 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.StanzaDTO;
-import com.ignaziopicciche.albergo.enums.CategoriaEnum;
-import com.ignaziopicciche.albergo.enums.HotelEnum;
-import com.ignaziopicciche.albergo.enums.PrenotazioneEnum;
-import com.ignaziopicciche.albergo.enums.StanzaEnum;
-import com.ignaziopicciche.albergo.handler.ApiRequestException;
+import com.ignaziopicciche.albergo.exception.enums.CategoriaEnum;
+import com.ignaziopicciche.albergo.exception.enums.HotelEnum;
+import com.ignaziopicciche.albergo.exception.enums.PrenotazioneEnum;
+import com.ignaziopicciche.albergo.exception.enums.StanzaEnum;
+import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Stanza;
 import com.ignaziopicciche.albergo.repository.CategoriaRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
 import com.ignaziopicciche.albergo.repository.PrenotazioneRepository;
 import com.ignaziopicciche.albergo.repository.StanzaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;

@@ -1,4 +1,4 @@
-package com.ignaziopicciche.albergo.handler;
+package com.ignaziopicciche.albergo.exception.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

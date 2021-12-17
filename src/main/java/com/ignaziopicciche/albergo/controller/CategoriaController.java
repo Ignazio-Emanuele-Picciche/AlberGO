@@ -4,6 +4,7 @@ import com.ignaziopicciche.albergo.dto.CategoriaDTO;
 import com.ignaziopicciche.albergo.model.Categoria;
 import com.ignaziopicciche.albergo.service.CategoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.html.Option;
@@ -22,7 +23,6 @@ public class CategoriaController {
 
 
     @GetMapping("/dettaglio")
-    @ResponseBody
     public CategoriaDTO findById(@RequestParam(name = "idCategoria") Long id) {
         return categoriaService.findById(id);
     }
@@ -47,7 +47,6 @@ public class CategoriaController {
         return categoriaService.delete(id);
     }
 
-    //TODO aggiornare api
     @GetMapping("/searchNome")
     public List<CategoriaDTO> findAllByNome(@RequestParam("nome") String nome, @RequestParam("idHotel") Long idHotel) {
         return categoriaService.findAllByNome(nome, idHotel);

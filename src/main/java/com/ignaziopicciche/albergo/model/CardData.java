@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 public class CardData {
 
-    private String cardId;
+    private String paymentMethodId;
     private String number;
     private String cvc;
     private Long idCliente;

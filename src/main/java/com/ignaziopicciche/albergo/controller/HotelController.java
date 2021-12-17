@@ -4,6 +4,7 @@ import com.ignaziopicciche.albergo.dto.HotelDTO;
 import com.ignaziopicciche.albergo.service.HotelService;
 import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,9 +50,14 @@ public class HotelController {
         return hotelService.findHotelByIndirizzo(indirizzoHotel);
     }
 
+    @GetMapping("/searchCodiceHotel")
+    public HotelDTO findHotelByCodiceHotel(@RequestParam("codiceHotel") String codiceHotel){
+        return hotelService.findHotelByCodiceHotel(codiceHotel);
+    }
 
     @GetMapping("/allhotel")
     public List<HotelDTO> getAllHotel(){
         return hotelService.getAllHotel();
     }
+
 }

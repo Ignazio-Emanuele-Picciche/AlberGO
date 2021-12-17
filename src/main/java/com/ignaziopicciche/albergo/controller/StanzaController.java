@@ -4,6 +4,7 @@ import com.ignaziopicciche.albergo.dto.StanzaDTO;
 import com.ignaziopicciche.albergo.service.StanzaService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -23,25 +24,21 @@ public class StanzaController {
 
 
     @GetMapping("/dettaglio")
-    @ResponseBody
     public StanzaDTO findById(@RequestParam(name = "idStanza") Long id) {
         return stanzaService.findById(id);
     }
 
     @GetMapping("/lista")
-    @ResponseBody
     public List<StanzaDTO> findAll(@RequestParam(name = "idHotel") Long idHotel) {
         return stanzaService.findAll(idHotel);
     }
 
     @PostMapping("/create")
-    @ResponseBody
     public StanzaDTO create(@RequestBody StanzaDTO stanzaDTO) {
         return stanzaService.create(stanzaDTO);
     }
 
     @PutMapping("/update")
-    @ResponseBody
     public StanzaDTO update(@RequestBody StanzaDTO stanzaDTO) {
         return stanzaService.update(stanzaDTO);
     }
@@ -54,7 +51,6 @@ public class StanzaController {
 
 
     @GetMapping("/stanzeCategoria")
-    @ResponseBody
     public List<StanzaDTO> findStanzasByCategoria_IdAndDates(@RequestParam("idCategoria") Long idCategoria, @RequestParam("idHotel") Long idHotel, @RequestParam("dataInizio") String dInizio, @RequestParam("dataFine") String dFine) throws ParseException {
         Date dataInizio = StringUtils.isNotBlank(dInizio) ? new SimpleDateFormat("yyyy-MM-dd").parse(dInizio) : null;
         Date dataFine = StringUtils.isNotBlank(dFine) ? new SimpleDateFormat("yyyy-MM-dd").parse(dFine) : null;
@@ -67,7 +63,6 @@ public class StanzaController {
     }
 
     @GetMapping("/libere")
-    @ResponseBody
     public List<StanzaDTO> findStanzasLibereByHotel_IdAndDates(@RequestParam(name = "idHotel") Long idHotel, @RequestParam("dataInizio") String dInizio, @RequestParam("dataFine") String dFine) throws ParseException {
         Date dataInizio = StringUtils.isNotBlank(dInizio) ? new SimpleDateFormat("yyyy-MM-dd").parse(dInizio) : null;
         Date dataFine = StringUtils.isNotBlank(dFine) ? new SimpleDateFormat("yyyy-MM-dd").parse(dFine) : null;
@@ -75,7 +70,6 @@ public class StanzaController {
     }
 
     @GetMapping("/occupate")
-    @ResponseBody
     public List<StanzaDTO> findStanzasOccupateByHotel_IdAndDates(@RequestParam(name = "idHotel") Long idHotel, @RequestParam("dataInizio") String dInizio, @RequestParam("dataFine") String dFine) throws ParseException {
         Date dataInizio = StringUtils.isNotBlank(dInizio) ? new SimpleDateFormat("yyyy-MM-dd").parse(dInizio) : null;
         Date dataFine = StringUtils.isNotBlank(dFine) ? new SimpleDateFormat("yyyy-MM-dd").parse(dFine) : null;

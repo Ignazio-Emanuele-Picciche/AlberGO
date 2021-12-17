@@ -4,6 +4,7 @@ import com.ignaziopicciche.albergo.dto.ServizioDTO;
 import com.ignaziopicciche.albergo.service.ServizioService;
 import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,12 +26,12 @@ public class ServizioController {
     }
 
     @GetMapping("/lista")
-    public List<ServizioDTO> findAll(@RequestParam(name = "idHotel") Long idHotel){
+    public List<ServizioDTO> findAll(@RequestParam(name = "idHotel") Long idHotel) {
         return servizioService.findAll(idHotel);
     }
 
     @GetMapping("/listaNotInPrenotazione")
-    public List<ServizioDTO> findNotInByPrenotazione(@RequestParam("idPrenotazione") Long idPrenotazione){
+    public List<ServizioDTO> findNotInByPrenotazione(@RequestParam("idPrenotazione") Long idPrenotazione) {
         return servizioService.findNotInByPrenotazione(idPrenotazione);
     }
 
@@ -67,10 +68,6 @@ public class ServizioController {
     public List<ServizioDTO> findServiziInPrenotazione(@RequestParam("idPrenotazione") Long idPrenotazione) {
         return servizioService.findServiziInPrenotazione(idPrenotazione);
     }
-
-
-
-
 
 
 }

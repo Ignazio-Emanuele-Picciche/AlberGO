@@ -1,8 +1,8 @@
 package com.ignaziopicciche.albergo.helper;
 
-import com.ignaziopicciche.albergo.enums.ClienteEnum;
-import com.ignaziopicciche.albergo.enums.ClienteHotelEnum;
-import com.ignaziopicciche.albergo.handler.ApiRequestException;
+import com.ignaziopicciche.albergo.exception.enums.ClienteEnum;
+import com.ignaziopicciche.albergo.exception.enums.ClienteHotelEnum;
+import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.*;
 import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
@@ -167,12 +167,17 @@ public class StripeHelper {
     public CardData getPaymentMethod(Long idCliente) throws StripeException {
         List<ClienteHotel> clientiHotel = clienteHotelRepository.findByCliente_Id(idCliente);
 
-        ClienteHotel clienteHotel = clientiHotel.stream().filter(clienteHotelApp -> StringUtils.isNotBlank(clienteHotelApp.getPaymentMethodId())).findFirst().orElseThrow(/*TODO eccezione*/);
-        //Se clienteHotel == null deve scoppiare
+        ClienteHotel clienteHotel = clientiHotel.stream().filter(clienteHotelApp -> clienteHotelApp.getPaymentMethodId() != null).findFirst().orElse(null);
+        if(clienteHotel == null){
+            return new CardData();
+        }
+
         Stripe.apiKey = clienteHotel.getHotel().getPublicKey();
         PaymentMethod paymentMethod = PaymentMethod.retrieve(clienteHotel.getPaymentMethodId());
 
         return CardData.builder()
+                .paymentMethodId(paymentMethod.getId())
+                .idCliente(idCliente)
                 .number("4242424242424242")
                 .cvc(clienteHotel.getCvc())
                 .exp_month(paymentMethod.getCard().getExpMonth().toString())

@@ -1,10 +1,9 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.CategoriaDTO;
-import com.ignaziopicciche.albergo.dto.ClienteDTO;
-import com.ignaziopicciche.albergo.enums.CategoriaEnum;
-import com.ignaziopicciche.albergo.enums.HotelEnum;
-import com.ignaziopicciche.albergo.handler.ApiRequestException;
+import com.ignaziopicciche.albergo.exception.enums.CategoriaEnum;
+import com.ignaziopicciche.albergo.exception.enums.HotelEnum;
+import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Categoria;
 import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.CategoriaRepository;
@@ -12,7 +11,6 @@ import com.ignaziopicciche.albergo.repository.HotelRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component

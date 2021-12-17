@@ -1,10 +1,9 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.HotelDTO;
-import com.ignaziopicciche.albergo.enums.HotelEnum;
-import com.ignaziopicciche.albergo.handler.ApiRequestException;
+import com.ignaziopicciche.albergo.exception.enums.HotelEnum;
+import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Cliente;
-import com.ignaziopicciche.albergo.model.ClienteHotel;
 import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
@@ -35,7 +34,7 @@ public class HotelHelper {
 
 
     public HotelDTO create(HotelDTO hotelDTO) throws Exception {
-        if (!hotelRepository.existsByNome(hotelDTO.nome)) {
+        if (!hotelRepository.existsByNomeOrCodiceHotel(hotelDTO.nome, hotelDTO.codiceHotel)) {
 
             Hotel hotel = new Hotel();
 
@@ -44,6 +43,7 @@ public class HotelHelper {
             hotel.setIndirizzo(hotelDTO.indirizzo);
             hotel.setStelle(hotelDTO.stelle);
             hotel.setTelefono(hotelDTO.telefono);
+            hotel.setCodiceHotel(hotelDTO.codiceHotel);
             hotel.setPublicKey(hotelDTO.publicKey);
 
             List<Cliente> clienti = clienteRepository.findAll();
@@ -106,6 +106,15 @@ public class HotelHelper {
     public List<HotelDTO> findHotelByIndirizzo(String indirizzoHotel) {
         List<Hotel> hotels = hotelRepository.findHotelByIndirizzoStartingWith(indirizzoHotel);
         return hotels.stream().map(hotel -> new HotelDTO(hotel)).collect(Collectors.toList());
+    }
+
+    public HotelDTO findHotelByCodiceHotel (String codiceHotel) {
+        if(hotelRepository.existsByCodiceHotel(codiceHotel)) {
+            return new HotelDTO(hotelRepository.findByCodiceHotel(codiceHotel));
+        }
+
+        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_CHNE");
+        throw new ApiRequestException(hotelEnum.getMessage());
     }
 
     public List<HotelDTO> getAllHotel() {

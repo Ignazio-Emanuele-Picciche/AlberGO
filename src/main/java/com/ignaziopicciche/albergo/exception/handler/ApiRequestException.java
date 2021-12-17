@@ -1,4 +1,4 @@
-package com.ignaziopicciche.albergo.handler;
+package com.ignaziopicciche.albergo.exception.handler;
 
 public class ApiRequestException extends RuntimeException{
 

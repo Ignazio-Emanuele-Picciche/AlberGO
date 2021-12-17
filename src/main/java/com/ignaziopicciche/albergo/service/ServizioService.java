@@ -1,6 +1,6 @@
 package com.ignaziopicciche.albergo.service;
 
-import com.google.common.base.Preconditions;
+import com.cookingfox.guava_preconditions.Preconditions;
 import com.ignaziopicciche.albergo.dto.ServizioDTO;
 import com.ignaziopicciche.albergo.helper.ServizioHelper;
 import com.stripe.exception.StripeException;

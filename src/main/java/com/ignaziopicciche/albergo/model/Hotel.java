@@ -1,12 +1,8 @@
 package com.ignaziopicciche.albergo.model;
 
 import lombok.*;
-import org.hibernate.annotations.JoinColumnOrFormula;
-import org.hibernate.annotations.JoinColumnsOrFormulas;
-import org.hibernate.annotations.JoinFormula;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -27,6 +23,7 @@ public class Hotel {
     private Integer stelle;
     private String descrizione;
     private String telefono;
+    private String codiceHotel;
 
     private String publicKey;
 
@@ -34,6 +31,8 @@ public class Hotel {
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Amministratore> amministratori;
 
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Cliente> clienti;
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Prenotazione> prenotazioni;

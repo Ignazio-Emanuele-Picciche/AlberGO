@@ -1,6 +1,6 @@
 package com.ignaziopicciche.albergo.service;
 
-import com.google.common.base.Preconditions;
+import com.cookingfox.guava_preconditions.Preconditions;
 import com.ignaziopicciche.albergo.dto.HotelDTO;
 import com.ignaziopicciche.albergo.helper.HotelHelper;
 import com.stripe.exception.StripeException;
@@ -27,6 +27,7 @@ public class HotelService {
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.descrizione));
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.telefono));
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.publicKey));
+        Preconditions.checkArgument(!Objects.isNull(hotelDTO.codiceHotel));
 
         return hotelHelper.create(hotelDTO);
     }
@@ -57,6 +58,12 @@ public class HotelService {
         Preconditions.checkArgument(!Objects.isNull(indirizzoHotel));
 
         return hotelHelper.findHotelByIndirizzo(indirizzoHotel);
+    }
+
+    public HotelDTO findHotelByCodiceHotel (String publicKey) {
+        Preconditions.checkArgument(!Objects.isNull(publicKey));
+
+        return hotelHelper.findHotelByCodiceHotel(publicKey);
     }
 
     public List<HotelDTO> getAllHotel(){

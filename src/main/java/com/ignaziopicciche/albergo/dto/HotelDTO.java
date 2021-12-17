@@ -17,6 +17,7 @@ public class HotelDTO {
     public Integer stelle;
     public String descrizione;
     public String telefono;
+    public String codiceHotel;
     public String publicKey;
 
     public HotelDTO(Hotel h) {
@@ -26,5 +27,6 @@ public class HotelDTO {
         this.stelle = h.getStelle();
         this.descrizione = h.getDescrizione();
         this.telefono = h.getTelefono();
+        this.codiceHotel = h.getCodiceHotel();
     }
 }

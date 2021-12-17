@@ -1,16 +1,17 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.ClienteDTO;
-import com.ignaziopicciche.albergo.enums.ClienteEnum;
-import com.ignaziopicciche.albergo.enums.HotelEnum;
-import com.ignaziopicciche.albergo.handler.ApiRequestException;
+import com.ignaziopicciche.albergo.exception.enums.ClienteEnum;
+import com.ignaziopicciche.albergo.exception.enums.HotelEnum;
+import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Cliente;
 import com.ignaziopicciche.albergo.model.ClienteHotel;
 import com.ignaziopicciche.albergo.model.Hotel;
+import com.ignaziopicciche.albergo.repository.AmministratoreRepository;
 import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
-import com.stripe.exception.StripeException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
@@ -18,29 +19,34 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class ClienteHelper {
+public class ClienteHelper{
 
     private final ClienteRepository clienteRepository;
     private final HotelRepository hotelRepository;
     private final ClienteHotelRepository clienteHotelRepository;
+    private final AmministratoreRepository amministratoreRepository;
     private final StripeHelper stripeHelper;
     private final ClienteHotelHelper clienteHotelHelper;
+
+    private final PasswordEncoder passwordEncoder;
 
     private static ClienteEnum clienteEnum;
     private static HotelEnum hotelEnum;
 
-    public ClienteHelper(ClienteRepository clienteRepository, HotelRepository hotelRepository, StripeHelper stripeHelper, ClienteHotelRepository clienteHotelRepository, ClienteHotelHelper clienteHotelHelper) {
+    public ClienteHelper(ClienteRepository clienteRepository, HotelRepository hotelRepository, StripeHelper stripeHelper, ClienteHotelRepository clienteHotelRepository, ClienteHotelHelper clienteHotelHelper, AmministratoreRepository amministratoreRepository, PasswordEncoder passwordEncoder) {
         this.clienteRepository = clienteRepository;
         this.hotelRepository = hotelRepository;
         this.stripeHelper = stripeHelper;
         this.clienteHotelRepository = clienteHotelRepository;
         this.clienteHotelHelper = clienteHotelHelper;
+        this.amministratoreRepository = amministratoreRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Long create(ClienteDTO clienteDTO) throws Exception {
 
         if (!clienteRepository.existsByDocumentoOrUsername(clienteDTO.documento, clienteDTO.username) &&
-                !clienteDTO.documento.equals("") && !clienteDTO.username.equals("")) {
+                !amministratoreRepository.existsByUsername(clienteDTO.username)) {
 
             Cliente cliente = Cliente.builder()
                     .nome(clienteDTO.nome)
@@ -48,22 +54,21 @@ public class ClienteHelper {
                     .documento(clienteDTO.documento)
                     .telefono(clienteDTO.telefono)
                     .username(clienteDTO.username)
-                    .password(clienteDTO.password).build();
+                    .password(passwordEncoder.encode(clienteDTO.password))
+                    .ruolo("ROLE_USER").build();
 
             cliente = clienteRepository.save(cliente);
 
             List<Hotel> hotels = hotelRepository.findAll();
 
-            if(!hotels.isEmpty()){
-                for(Hotel hotel: hotels){
+            if (!hotels.isEmpty()) {
+                for (Hotel hotel : hotels) {
                     String customerId = stripeHelper.createCustomer(cliente, hotel.getPublicKey());
                     clienteHotelHelper.createByCliente(cliente, customerId, hotel);
 
                     stripeHelper.addClienteHotelCarta(cliente);
-
                 }
             }
-
 
             return cliente.getId();
         }
@@ -126,7 +131,7 @@ public class ClienteHelper {
 
     public List<ClienteDTO> findAll(Long idHotel) {
         if (hotelRepository.existsById(idHotel)) {
-            return clienteRepository.findClientiByHotel_Id(idHotel).stream().map(x -> new ClienteDTO(x)).collect(Collectors.toList());
+            return clienteRepository.findClientiByHotel_Id(idHotel).stream().map(ClienteDTO::new).collect(Collectors.toList());
         }
 
         hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
@@ -138,10 +143,20 @@ public class ClienteHelper {
 
         if (cognome == null && nome != null) {
             clienti = clienteRepository.findClientesByNomeStartingWith(nome, idHotel);
-            return clienti.stream().map(cliente -> new ClienteDTO(cliente)).collect(Collectors.toList());
-        }else if(nome == null && cognome != null){
+            return clienti.stream().map(ClienteDTO::new).collect(Collectors.toList());
+        } else if (nome == null && cognome != null) {
             clienti = clienteRepository.findClientesByCognomeStartingWith(cognome, idHotel);
-            return clienti.stream().map(cliente -> new ClienteDTO(cliente)).collect(Collectors.toList());
+            return clienti.stream().map(ClienteDTO::new).collect(Collectors.toList());
+        }
+
+        clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_NF");
+        throw new ApiRequestException(clienteEnum.getMessage());
+    }
+
+    public ClienteDTO findClienteByUsername(String username){
+        if(clienteRepository.existsByUsername(username)){
+            Cliente cliente = clienteRepository.findByUsername(username);
+            return new ClienteDTO(cliente);
         }
 
         clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_NF");

@@ -1,4 +1,4 @@
-package com.ignaziopicciche.albergo.enums;
+package com.ignaziopicciche.albergo.exception.enums;
 
 public enum PrenotazioneEnum {
 
@@ -8,7 +8,8 @@ public enum PrenotazioneEnum {
     PRENOTAZIONE_DELETE_ERROR("PREN_DLE", "Errore durante l'eliminazione della prenotazione"),
     PRENOTAZIONE_ID_NOT_EXIST("PREN_IDNE", "La prenotazione che stai cercando non esiste"),
     PRENOTAZIONE_DATE_NOT_COMPATIBLE("PREN_DNC", "Le date della prenotazioni non sono compatibili"),
-    DATE_ERROR("PREN_DE", "Date inserite non corrette");
+    DATE_ERROR("PREN_DE", "Date inserite non corrette"),
+    PRENOTAZIONE_LIMITE_UPDATE("PREN_LUP", "Impossibile modificare la prenotazione per i limiti");
 
     private final String messageCode;
     private final String message;

@@ -1,4 +1,4 @@
-package com.ignaziopicciche.albergo.enums;
+package com.ignaziopicciche.albergo.exception.enums;
 
 public enum AmministratoreEnum {
 
