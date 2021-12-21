@@ -5,6 +5,7 @@ import com.ignaziopicciche.albergo.dto.ClienteDTO;
 import com.ignaziopicciche.albergo.exception.enums.ClienteEnum;
 import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.helper.ClienteHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@Slf4j
 public class ClienteService {
 
     private final ClienteHelper clienteHelper;
@@ -33,6 +35,7 @@ public class ClienteService {
             return clienteHelper.create(clienteDTO);
         }
 
+        log.error("Non sono stati compilati dei campi obbligatori");
         clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_EF");
         throw new ApiRequestException(clienteEnum.getMessage());
     }
