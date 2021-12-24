@@ -9,6 +9,7 @@ import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.*;
 import com.ignaziopicciche.albergo.repository.*;
 import com.stripe.exception.StripeException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
@@ -28,14 +29,15 @@ import java.util.stream.Collectors;
  * provengono dal livello "service" nel quale è stato controllato che i campi obbligatori sono stati inseriti correttamente
  * nel front-end.
  * Per "logiche e funzionalita" si intende:
- *  -comunicazioni con il livello "repository" che si occuperà delle operazioni CRUD e non solo:
- *      -es. controllare che una prenotazione è gia presente nel sistema;
- *      -es. aggiungere, eliminare, cercare una prenotazione.
- *  -varie operazioni di logica (calcoli, operazioni, controlli generici)
- *  -restituire, al front-end, le eccezioni custom in caso di errore (es. La prenotazione che vuoi inserire è già presente nel sistema)
- *  -in caso di operazioni andate a buon fine, verranno restituiti al livello service i dati che dovranno essere inviati al front-end.
+ * -comunicazioni con il livello "repository" che si occuperà delle operazioni CRUD e non solo:
+ * -es. controllare che una prenotazione è gia presente nel sistema;
+ * -es. aggiungere, eliminare, cercare una prenotazione.
+ * -varie operazioni di logica (calcoli, operazioni, controlli generici)
+ * -restituire, al front-end, le eccezioni custom in caso di errore (es. La prenotazione che vuoi inserire è già presente nel sistema)
+ * -in caso di operazioni andate a buon fine, verranno restituiti al livello service i dati che dovranno essere inviati al front-end.
  */
 
+@Slf4j
 @Component
 public class PrenotazioneHelper {
 
@@ -65,6 +67,7 @@ public class PrenotazioneHelper {
      * Metodo che controlla se la prenotazione che si vuole cercare è presente nel sistema.
      * In caso positivo restituisce la prenotazione associata all'id
      * In caso negativo restituisce un'eccezione custom (La prenotazione che stai cercando non esiste)
+     *
      * @param id
      * @return PrenotazioneDTO
      */
@@ -81,6 +84,7 @@ public class PrenotazioneHelper {
      * Metodo che controllare se l'hotel, per il quale si vogliono ritornare tutte le fatture delle prenotazioni associate, esiste
      * In caso positivo restituisce tutte le fatture cercate con la logica poco fa citata
      * In caso negativo restituisce un'eccezione custom
+     *
      * @param idHotel
      * @return List<FatturaDTO>
      */
@@ -100,6 +104,7 @@ public class PrenotazioneHelper {
 
     /**
      * Metodo che, dopo aver controllato che il cliente è presente nel sistema, ritorna tutte le fattura associate a quel cliente
+     *
      * @param idCliente
      * @return List<FatturaDTO>
      */
@@ -131,6 +136,7 @@ public class PrenotazioneHelper {
      * Inoltre viene controllato tutto il sistema delle penali. Ovvero se si rientra nei "giorni penale" (es 10 giorni prima del check-in)
      * si può cancellare la prenotazione ma c'è una penale da pagare. Oppure se si rientra nei "giorni blocco"
      * (es. 3 giorni prima del check-in) non si può piu cancellare la prenotazione.
+     *
      * @param idPrenotazione
      * @return Boolean
      * @throws StripeException
@@ -172,7 +178,7 @@ public class PrenotazioneHelper {
                         .key(hotel.getPublicKey())
                         .price(price)
                         .paymentMethod(clienteHotel.getPaymentMethodId())
-                        .description("Prenotazione eliminata "+cliente.getNome()+" "+cliente.getCognome()+" "+prenotazione.getDataInizio()+" "+prenotazione.getDataFine()).build();
+                        .description("Penale cancellazione prenotazione " + cliente.getNome() + " " + cliente.getCognome() + " " + prenotazione.getDataInizio() + " " + prenotazione.getDataFine()).build();
                 stripeHelper.createPaymentIntent(paymentData);
 
                 try {
@@ -196,9 +202,10 @@ public class PrenotazioneHelper {
     /**
      * Prenotazione che, dovo aver controllato che la prenotazione passata non essiste nel sistema, aggiunge la nuova prenotazione.
      * Per "prenotazione che esiste nel sistema" si intende che:
-     *  -La stanza che si vuole prenotare in un intervallo di date non sia già stata prenotata da un altro cliente;
-     *  -La stanza che si vuole prenotare non sia fuori servizio;
+     * -La stanza che si vuole prenotare in un intervallo di date non sia già stata prenotata da un altro cliente;
+     * -La stanza che si vuole prenotare non sia fuori servizio;
      * Se tutto è andato a buon fine viene addebitato il costo della prenotazione al cliente
+     *
      * @param prenotazioneDTO
      * @return PrenotazioneDTO
      * @throws StripeException
@@ -242,7 +249,7 @@ public class PrenotazioneHelper {
                     .key(hotel.getPublicKey())
                     .price(price)
                     .paymentMethod(clienteHotel.getPaymentMethodId())
-                    .description("Prenotazione creata "+cliente.getNome()+" "+cliente.getCognome()+" "+dataInizioNuova+"  "+dataFineNuova).build();
+                    .description("Prenotazione creata " + cliente.getNome() + " " + cliente.getCognome() + " " + dataInizioNuova + "  " + dataFineNuova).build();
             stripeHelper.createPaymentIntent(paymentData);
 
             prenotazioneRepository.save(prenotazione);
@@ -257,6 +264,7 @@ public class PrenotazioneHelper {
     /**
      * Metodo che, dopo aver controllato che esiste la stanza associata all'idStanza passato, restituisce tutte le
      * prenotazioni effettuate per quella stanza
+     *
      * @param idStanza
      * @return List<PrenotazioneDTO>
      */
@@ -277,6 +285,7 @@ public class PrenotazioneHelper {
      * Inoltre viene controllato tutto il sistema delle penali. Ovvero se si rientra nei "giorni penale" (es 10 giorni prima del check-in)
      * si può modificare la prenotazione ma c'è una penale da pagare. Oppure se si rientra nei "giorni blocco"
      * (es. 3 giorni prima del check-in) non si possono fare modifiche alla prenotazione
+     *
      * @param prenotazioneDTO
      * @return idPrenotazione
      * @throws ParseException
@@ -298,45 +307,80 @@ public class PrenotazioneHelper {
 
             Prenotazione prenotazione = prenotazioneRepository.findById(prenotazioneDTO.id).get();
             Cliente cliente = prenotazione.getCliente();
+            Categoria categoria = prenotazione.getStanza().getCategoria();
 
             LocalDate dataInizio = LocalDate.parse(prenotazione.getDataInizio().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             LocalDate dataFine = LocalDate.parse(prenotazione.getDataFine().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             long durataVecchia = ChronoUnit.DAYS.between(dataInizio, dataFine);
 
-            prenotazione.setDataInizio(prenotazioneDTO.dataInizio);
-            prenotazione.setDataFine(prenotazioneDTO.dataFine);
+            long diffDataInizioPrenotazione = ChronoUnit.DAYS.between(LocalDate.now(), dataInizio);
 
-            /*dataInizio = LocalDate.parse(dataInizioString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            dataFine = LocalDate.parse(dataFineString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));*/
-            long durataNuova = ChronoUnit.DAYS.between(dataInizioNuova, dataFineNuova);
+            if (diffDataInizioPrenotazione > categoria.getGiorniPenale()) {
+                prenotazione.setDataInizio(prenotazioneDTO.dataInizio);
+                prenotazione.setDataFine(prenotazioneDTO.dataFine);
 
-            if(durataNuova > durataVecchia){
-                long restoDaPagare = durataNuova-durataVecchia;
+                long durataNuova = ChronoUnit.DAYS.between(dataInizioNuova, dataFineNuova);
 
-                String price = Double.toString(prenotazione.getStanza().getCategoria().getPrezzo() * restoDaPagare);
-                if (price.indexOf(".") == price.length() - 2) {
-                    StringBuilder priceS = new StringBuilder(price);
-                    priceS.append("0");
-                    price = priceS.toString();
+                if (durataNuova > durataVecchia) {
+                    long restoDaPagare = durataNuova - durataVecchia;
+
+                    String price = Double.toString(prenotazione.getStanza().getCategoria().getPrezzo() * restoDaPagare);
+                    if (price.indexOf(".") == price.length() - 2) {
+                        StringBuilder priceS = new StringBuilder(price);
+                        priceS.append("0");
+                        price = priceS.toString();
+                    }
+                    price = price.replace(".", "");
+
+                    Hotel hotel = prenotazione.getHotel();
+                    ClienteHotel clienteHotel = clienteHotelRepository.findByCliente_IdAndHotel_Id(cliente.getId(), hotel.getId());
+
+                    PaymentData paymentData = PaymentData.builder()
+                            .customerId(clienteHotel.getCustomerId())
+                            .key(hotel.getPublicKey())
+                            .price(price)
+                            .paymentMethod(clienteHotel.getPaymentMethodId())
+                            .description("Prenotazione aggiornata " + cliente.getNome() + " " + cliente.getCognome() + " " + dataInizioNuova + "  " + dataFineNuova).build();
+                    stripeHelper.createPaymentIntent(paymentData);
                 }
-                price = price.replace(".", "");
 
-                Hotel hotel = prenotazione.getHotel();
-                ClienteHotel clienteHotel = clienteHotelRepository.findByCliente_IdAndHotel_Id(cliente.getId(), hotel.getId());
+                prenotazioneRepository.save(prenotazione);
+            } else if (diffDataInizioPrenotazione > categoria.getGiorniBlocco() && diffDataInizioPrenotazione <= categoria.getGiorniPenale()) {
+                prenotazione.setDataInizio(prenotazioneDTO.dataInizio);
+                prenotazione.setDataFine(prenotazioneDTO.dataFine);
 
-                PaymentData paymentData = PaymentData.builder()
-                        .customerId(clienteHotel.getCustomerId())
-                        .key(hotel.getPublicKey())
-                        .price(price)
-                        .paymentMethod(clienteHotel.getPaymentMethodId())
-                        .description("Prenotazione aggiornata "+cliente.getNome()+" "+cliente.getCognome()+" "+dataInizioNuova+"  "+dataFineNuova).build();
-                stripeHelper.createPaymentIntent(paymentData);
+                long durataNuova = ChronoUnit.DAYS.between(dataInizioNuova, dataFineNuova);
+
+                if (durataNuova > durataVecchia) {
+                    long restoDaPagare = durataNuova - durataVecchia;
+                    double prezzoDouble = (prenotazione.getStanza().getCategoria().getPrezzo() * restoDaPagare) + categoria.getQtaPenale();
+                    String price = Double.toString(prezzoDouble);
+                    if (price.indexOf(".") == price.length() - 2) {
+                        StringBuilder priceS = new StringBuilder(price);
+                        priceS.append("0");
+                        price = priceS.toString();
+                    }
+                    price = price.replace(".", "");
+
+                    Hotel hotel = prenotazione.getHotel();
+                    ClienteHotel clienteHotel = clienteHotelRepository.findByCliente_IdAndHotel_Id(cliente.getId(), hotel.getId());
+
+                    PaymentData paymentData = PaymentData.builder()
+                            .customerId(clienteHotel.getCustomerId())
+                            .key(hotel.getPublicKey())
+                            .price(price)
+                            .paymentMethod(clienteHotel.getPaymentMethodId())
+                            .description("Prenotazione aggiornata + penale " + cliente.getNome() + " " + cliente.getCognome() + " " + dataInizioNuova + "  " + dataFineNuova).build();
+                    stripeHelper.createPaymentIntent(paymentData);
+                }
+
+                prenotazioneRepository.save(prenotazione);
+            } else if (diffDataInizioPrenotazione <= categoria.getGiorniBlocco()) {
+                log.info("Rientriamo nei giorni blocco, ovvero il numero di giorno vicino al check-in " +
+                        "per il quale non si possono più effettuare modifiche alla prenotazione");
             }
 
-
-            prenotazioneRepository.save(prenotazione);
             return prenotazione.getId();
-
         }
 
         prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_DNC");
@@ -345,8 +389,9 @@ public class PrenotazioneHelper {
 
     /**
      * Metodo che restituisce tutte le fatture di un hotel dove:
-     *  -il nome e/o cognome del cliente, che ha effettuato la prenotazioni, iniziano per nomeCliente e/o cognomeCliente;
-     *  -le prenotazioni sono state effettuate in un intervallo di date
+     * -il nome e/o cognome del cliente, che ha effettuato la prenotazioni, iniziano per nomeCliente e/o cognomeCliente;
+     * -le prenotazioni sono state effettuate in un intervallo di date
+     *
      * @param nomeCliente
      * @param cognomeCliente
      * @param dataInizio
@@ -385,6 +430,7 @@ public class PrenotazioneHelper {
 
     /**
      * Metodo che converte le prenotazioni, passate come parametro, in fatture
+     *
      * @param prenotazioni
      * @return List<FatturaDTO>
      */
