@@ -9,11 +9,29 @@ import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
-import com.stripe.model.*;
+import com.stripe.model.Customer;
+import com.stripe.model.PaymentIntent;
+import com.stripe.model.PaymentMethod;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * La classe StripeHelper contiene i metodi che si occupano dell'implementazione delle logiche
+ * e funzionalità vere e proprie degli endpoint richiamati dal front-end. I dati che vengono forniti a questi metodi
+ * provengono dal livello "service" nel quale è stato controllato che i campi obbligatori sono stati inseriti correttamente
+ * nel front-end.
+ * Per "logiche e funzionalita" si intende:
+ *  -es. aggiungere un nuovo cliente nel sistema stripe;
+ *  -es. associare una carta ad un cliente stripe.
+ *  -varie operazioni di logica (calcoli, operazioni, controlli generici)
+ *  -restituire, al front-end, le eccezioni custom in caso di errore
+ *  -in caso di operazioni andate a buon fine, verranno restituiti al livello service i dati che dovranno essere inviati al front-end.
+ */
 
 @Component
 public class StripeHelper {
@@ -33,10 +51,9 @@ public class StripeHelper {
 
 
     /**
-     * Il metodo crea un customer stripe
-     *
+     * Il metodo crea un account stripe (al cliente) basandosi sui dati cliente presente nel sistema
      * @param cliente
-     * @return Cliente
+     * @return customerId
      * @throws StripeException
      */
     public String createCustomer(Cliente cliente, String key) throws Exception {
@@ -53,6 +70,11 @@ public class StripeHelper {
         return stripeCustomer.getId();
     }
 
+    /**
+     * Il metodo associa la carta, cui cui fare i pagamenti, al cliente passato come parametro
+     * @param cliente
+     * @throws Exception
+     */
     public void addClienteHotelCarta(Cliente cliente) throws Exception {
         if (!clienteHotelRepository.findAll().isEmpty()) {
             List<ClienteHotel> clienti = clienteHotelRepository.findByCliente_Id(cliente.getId());
@@ -67,7 +89,12 @@ public class StripeHelper {
         }
     }
 
-    //
+    /**
+     * Il metodo restituisce i dettagli della carta associata al cliente e all'hotel
+     * @param clienteHotel
+     * @return CardData
+     * @throws StripeException
+     */
     public CardData getPaymentMethodByClienteHotel(ClienteHotel clienteHotel) throws StripeException {
         Stripe.apiKey = clienteHotel.getHotel().getPublicKey();
 
@@ -80,18 +107,22 @@ public class StripeHelper {
                 .exp_year(paymentMethod.getCard().getExpYear().toString()).build();
     }
 
-    public void deleteCustomerById(List<ClienteHotel> clientiHotel) throws StripeException {
+    /**
+     * Il metodo elimina l'account stripe del cliente asscoaito all'hotel
+     * @param clientiHotel
+     * @throws StripeException
+     */
+    /*public void deleteCustomerById(List<ClienteHotel> clientiHotel) throws StripeException {
         for (ClienteHotel ch : clientiHotel) {
             Stripe.apiKey = ch.getHotel().getPublicKey();
 
             Customer customer = Customer.retrieve(ch.getCustomerId());
             customer.delete();
         }
-    }
+    }*/
 
     /**
-     * Il metodo aggiunge un nuovo metodo (carta) di pagamento
-     *
+     * Il metodo aggiunge una nuovo metodo di pagamento, ovvero aggiunge una nuova carta nel sistema stripe e l'associa al cliente proprietario
      * @param cardData
      * @throws Exception
      */
@@ -163,7 +194,12 @@ public class StripeHelper {
 
     }
 
-
+    /**
+     * Il metodo restituisce i dettagli della carta associata al cliente
+     * @param idCliente
+     * @return CardData
+     * @throws StripeException
+     */
     public CardData getPaymentMethod(Long idCliente) throws StripeException {
         List<ClienteHotel> clientiHotel = clienteHotelRepository.findByCliente_Id(idCliente);
 
@@ -184,6 +220,11 @@ public class StripeHelper {
                 .exp_year(paymentMethod.getCard().getExpYear().toString()).build();
     }
 
+    /**
+     * Il metodo elimina, in tutto il sistema stripe e in tutti gli hotel, la carta associata al cliente
+     * @param idCliente
+     * @throws StripeException
+     */
     public void detachPaymentMethod(Long idCliente) throws StripeException {
         List<ClienteHotel> clientiHotel = clienteHotelRepository.findByCliente_Id(idCliente);
 
@@ -220,8 +261,8 @@ public class StripeHelper {
 
 
     /**
-     * Il metodo effettua il pagamento
-     *
+     * Il metodo effettua il pagamento. Ad esempio l'addebito di una nuova prenotazione o l'addebito assegnato per aver inserito
+     * un servizio nella prenotazione.
      * @param paymentData
      * @throws StripeException
      */

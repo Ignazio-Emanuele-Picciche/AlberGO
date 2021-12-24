@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 import java.util.List;
 
-/*
-    -Nella classe PrenotazioneController vengono gestiti ed organizzati tutti gli endpoint relativi alla prenotazione.
+/**
+    -Nella classe PrenotazioneController vengono gestiti e organizzati tutti gli endpoint relativi alla prenotazione.
     -I path delle api, ovvero delle attività che si possono svolgere relative alla prenotazione, iniziano con:
     "http://localhost:8080/api/prenotazione/...".
     -Nei metodi presenti in questa classe vengono semplicemente richiamati i metodi dela classe PrenotazioneService
@@ -25,7 +25,7 @@ public class PrenotazioneController {
     private final PrenotazioneService prenotazioneService;
 
     /**
-     * In questo metodo viene implmenetata la logica dell'annotazione @Autowired per l'attributo prenotazioneService,
+     * In questo metodo viene implementata la logica dell'annotazione @Autowired per l'attributo prenotazioneService,
      * ovvero stiamo chiedendo a Spring di invocare il metodo setter in questione subito
      * dopo aver istanziato il bean della classe PrenotazioneService.
      * @param prenotazioneService
@@ -55,7 +55,7 @@ public class PrenotazioneController {
     }
 
     /**
-     * Endpoint che restitusce tutte le prenotazioni in cui è stata scelta una specifica stanza di un hotel
+     * Endpoint che restituisce tutte le prenotazioni in cui è stata scelta una specifica stanza di un hotel
      * @param idStanza
      * @return List<PrenotazioneDTO>
      */

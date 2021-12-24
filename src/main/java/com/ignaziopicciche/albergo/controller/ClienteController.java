@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/*
-    -Nella classe ClienteController vengono gestiti ed organizzati tutti gli endpoint relativi al cliente.
+/**
+    -Nella classe ClienteController vengono gestiti e organizzati tutti gli endpoint relativi al cliente.
     -I path delle api, ovvero delle attività che si possono svolgere relative al cliente, iniziano con:
     "http://localhost:8080/api/cliente/...".
     -Nei metodi presenti in questa classe vengono semplicemente richiamati i metodi dela classe ClienteService
@@ -23,7 +23,7 @@ public class ClienteController {
     private final ClienteService clienteService;
 
     /**
-     * In questo metodo viene implmenetata la logica dell'annotazione @Autowired per l'attributo clienteService,
+     * In questo metodo viene implementata la logica dell'annotazione @Autowired per l'attributo clienteService,
      * ovvero stiamo chiedendo a Spring di invocare il metodo setter in questione subito
      * dopo aver istanziato il bean della classe ClienteService.
      * @param clienteService
@@ -50,18 +50,6 @@ public class ClienteController {
     @GetMapping("/lista")
     public List<ClienteDTO> findAll(@RequestParam(name = "idHotel") Long idHotel) {
         return clienteService.findAll(idHotel);
-    }
-
-    //TODO rimuovere
-    @PutMapping("/update")
-    public ClienteDTO update(@RequestBody ClienteDTO clienteDTO) {
-        return clienteService.update(clienteDTO);
-    }
-
-    //TODO rimuovere
-    @DeleteMapping("/delete")
-    public Boolean delete(@RequestParam(name = "idCliente") Long idCliente) {
-        return clienteService.delete(idCliente);
     }
 
     /**

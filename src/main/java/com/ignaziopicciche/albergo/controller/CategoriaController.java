@@ -6,14 +6,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/*
-    -Nella classe CategoriaController vengono gestiti ed organizzati tutti gli endpoint relativi alla categoria.
+/**
+    -Nella classe CategoriaController vengono gestiti e organizzati tutti gli endpoint relativi alla categoria.
     -I path delle api, ovvero delle attività che si possono svolgere relative alla categoria, iniziano con:
     "http://localhost:8080/api/categoria/...".
     -Nei metodi presenti in questa classe vengono semplicemente richiamati i metodi dela classe CategoriaService
     per il controllo e la validità dei dati in input delle request dal front-end.
     -Infine tutte le response ricevute dal livello "service" verranno inviare al front-end.
  */
+
 @RestController
 @RequestMapping("/api/categoria")
 public class CategoriaController {
@@ -21,7 +22,7 @@ public class CategoriaController {
     private final CategoriaService categoriaService;
 
     /**
-     * In questo metodo viene implmenetata la logica dell'annotazione @Autowired per l'attributo categoriaService,
+     * In questo metodo viene implementata la logica dell'annotazione @Autowired per l'attributo categoriaService,
      * ovvero stiamo chiedendo a Spring di invocare il metodo setter in questione subito
      * dopo aver istanziato il bean della classe CategoriaService.
      * @param categoriaService

@@ -16,6 +16,13 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Il metodo della classe UserService viene richiamato dalla classe SecurityConfig.
+ * Questo metodo ha il compito di controllare che l'utente (cliente o amministratore) che effettuare il login è
+ * presente nel sistema. Se non è presente vengono restituiti dei log ed eccezioni di errore.
+ * In caso positivo, invece, viene effettuata tutta la logica di login, presente nel package Security.
+ */
+
 @Service
 @RequiredArgsConstructor
 @Transactional

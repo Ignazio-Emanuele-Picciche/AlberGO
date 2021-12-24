@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/*
-    -Nella classe HotelController vengono gestiti ed organizzati tutti gli endpoint relativi all'hotel.
+/**
+    -Nella classe HotelController vengono gestiti e organizzati tutti gli endpoint relativi all'hotel.
     -I path delle api, ovvero delle attività che si possono svolgere relative all'hotel, iniziano con:
     "http://localhost:8080/api/hotel/...".
     -Nei metodi presenti in questa classe vengono semplicemente richiamati i metodi dela classe HotelService
@@ -22,7 +22,7 @@ public class HotelController {
     private final HotelService hotelService;
 
     /**
-     * In questo metodo viene implmenetata la logica dell'annotazione @Autowired per l'attributo hotelService,
+     * In questo metodo viene implementata la logica dell'annotazione @Autowired per l'attributo hotelService,
      * ovvero stiamo chiedendo a Spring di invocare il metodo setter in questione subito
      * dopo aver istanziato il bean della classe HotelService.
      * @param hotelService
@@ -52,13 +52,6 @@ public class HotelController {
     public HotelDTO create(@RequestBody HotelDTO hotelDTO) throws Exception {
         return hotelService.create(hotelDTO);
     }
-
-    //TODO non si puo fare l'update di hotel, non si puo cambiare niente
-    /*@PutMapping("/update")
-    public HotelDTO update(@RequestBody HotelDTO hotelDTO){
-        return hotelService.update(hotelDTO);
-    }*/
-
 
     /**
      * Endpoint che restituisce tutti gli hotel con nome che iniziano per nomeHotel

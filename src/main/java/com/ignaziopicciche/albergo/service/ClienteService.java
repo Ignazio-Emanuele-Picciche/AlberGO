@@ -12,6 +12,20 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 
+/**
+    Nella classe ClienteService sono presenti i metodi che controllano che i dati passati dalla classe
+    ClienteController non siano nulli, in generale controllare che i dati obbligatori non siano nulli o vuoti.
+    Nel caso in cui non fossero nulli, i dati dal livello "service" verranno passati al livello "helper" che si occuperà
+    dell'implementazione della logica, ovvero le operazioni, del metodo.
+    Nel caso in cui, invece, qualche dato obbligatorio non fosse stato compilato, viene restituita un'eccezione nei log
+    del back-end.
+    Per il controllo dei campi viene usato il metodo checkArgument() della classe Preconditions (fornito dalla dependency
+    Guava Preconditions), ponendo il campo obbligatorio diverso da null.
+
+    In generale:
+    Preconditions.checkArgument(!Objects.isNull("campo obbligatorio"));
+ */
+
 @Service
 @Slf4j
 public class ClienteService {
@@ -20,6 +34,12 @@ public class ClienteService {
 
     private static ClienteEnum clienteEnum;
 
+    /**
+     * In questo metodo viene implementata la logica dell'annotazione @Autowired per l'attributo clienteHelper,
+     * ovvero stiamo chiedendo a Spring d'invocare il metodo setter in questione subito
+     * dopo aver istanziato il bean della classe ClienteHelper.
+     * @param clienteHelper
+     */
     public ClienteService(ClienteHelper clienteHelper) {
         this.clienteHelper = clienteHelper;
     }
@@ -38,21 +58,6 @@ public class ClienteService {
         log.error("Non sono stati compilati dei campi obbligatori");
         clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_EF");
         throw new ApiRequestException(clienteEnum.getMessage());
-    }
-
-    public Boolean delete(Long idCliente) {
-        Preconditions.checkArgument(!Objects.isNull(idCliente));
-
-        return clienteHelper.delete(idCliente);
-    }
-
-    public ClienteDTO update(ClienteDTO clienteDTO) {
-        Preconditions.checkArgument(!Objects.isNull(clienteDTO.id));
-        Preconditions.checkArgument(!Objects.isNull(clienteDTO.nome));
-        Preconditions.checkArgument(!Objects.isNull(clienteDTO.cognome));
-        Preconditions.checkArgument(!Objects.isNull(clienteDTO.telefono));
-
-        return clienteHelper.update(clienteDTO);
     }
 
     public ClienteDTO findById(Long id) {

@@ -13,6 +13,20 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * La classe HotelHelper contiene i metodi che si occupano dell'implementazione delle logiche
+ * e funzionalità vere e proprie degli endpoint richiamati dal front-end. I dati che vengono forniti a questi metodi
+ * provengono dal livello "service" nel quale è stato controllato che i campi obbligatori sono stati inseriti correttamente
+ * nel front-end.
+ * Per "logiche e funzionalita" si intende:
+ *  -comunicazioni con il livello "repository" che si occuperà delle operazioni CRUD e non solo:
+ *      -es. controllare che un hotel è gia presente nel sistema;
+ *      -es. aggiungere, eliminare, cercare, aggiornare un hotel.
+ *  -varie operazioni di logica (calcoli, operazioni, controlli generici)
+ *  -restituire, al front-end, le eccezioni custom in caso di errore (es. L'hotel che vuoi inserire è già presente nel sistema)
+ *  -in caso di operazioni andate a buon fine, verranno restituiti al livello service i dati che dovranno essere inviati al front-end.
+ */
+
 @Component
 public class HotelHelper {
 
@@ -32,7 +46,14 @@ public class HotelHelper {
         this.clienteHotelRepository = clienteHotelRepository;
     }
 
-
+    /**
+     * Metodo che controlla se l'hotel che si vuole aggiungere non è presente nel sistema.
+     * In caso positivo viene aggiunto l'hotel e vengono associati i clienti presenti nel sistema all'hotel.
+     * In caso negativo viene restituita un'eccezione custom
+     * @param hotelDTO
+     * @return HotelDTO
+     * @throws Exception
+     */
     public HotelDTO create(HotelDTO hotelDTO) throws Exception {
         if (!hotelRepository.existsByNomeOrCodiceHotel(hotelDTO.nome, hotelDTO.codiceHotel)) {
 
@@ -66,27 +87,14 @@ public class HotelHelper {
         throw new ApiRequestException(hotelEnum.getMessage());
     }
 
-
-    /*public HotelDTO update(HotelDTO hotelDTO) {
-
-        if (hotelRepository.existsById(hotelDTO.id)) {
-            Hotel hotel = hotelRepository.findById(hotelDTO.id).get();
-
-            hotel.setDescrizione(hotelDTO.descrizione);
-            hotel.setStelle(hotelDTO.stelle);
-            hotel.setTelefono(hotelDTO.telefono);
-
-            hotelRepository.save(hotel);
-            return new HotelDTO(hotel);
-        }
-
-        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_NF");
-        throw new ApiRequestException(hotelEnum.getMessage());
-    }*/
-
-
+    /**
+     * Metodo che controlla se l'hotel che si vuole cercare è presente nel sistema.
+     * In caso positivo viene restituito l'hotell associato all'id
+     * In caso negativo viene restituita un'eccezione custom
+     * @param id
+     * @return HotelDTO
+     */
     public HotelDTO findById(Long id) {
-
         if (hotelRepository.existsById(id)) {
             return new HotelDTO(hotelRepository.findById(id).get());
         }
@@ -95,7 +103,11 @@ public class HotelHelper {
         throw new ApiRequestException(hotelEnum.getMessage());
     }
 
-
+    /**
+     * Metodo che restuisce gli hotel il cui nome inizia per nomehotel
+     * @param nomeHotel
+     * @return List<HotelDTO>
+     */
     public List<HotelDTO> findHotelByName(String nomeHotel) {
         List<Hotel> hotels = hotelRepository.findHotelByNomeStartingWith(nomeHotel);
 
@@ -103,11 +115,23 @@ public class HotelHelper {
 
     }
 
+    /**
+     * Metodo che restituisce gli hotel il cui inidirzzo inizia per indirizzoHotel
+     * @param indirizzoHotel
+     * @return List<HotelDTO>
+     */
     public List<HotelDTO> findHotelByIndirizzo(String indirizzoHotel) {
         List<Hotel> hotels = hotelRepository.findHotelByIndirizzoStartingWith(indirizzoHotel);
         return hotels.stream().map(hotel -> new HotelDTO(hotel)).collect(Collectors.toList());
     }
 
+    /**
+     * Metodo che controlla se esiste un hotel associato al codiceHotel passato da front-end.
+     * In caso positivo restituisce l'hotel associato
+     * In caso negativo restituisce un'eccezione custom (L'hotel che stai cercando, tramite codiceHotel, non esiste)
+     * @param codiceHotel
+     * @return HotelDTO
+     */
     public HotelDTO findHotelByCodiceHotel (String codiceHotel) {
         if(hotelRepository.existsByCodiceHotel(codiceHotel)) {
             return new HotelDTO(hotelRepository.findByCodiceHotel(codiceHotel));
@@ -117,6 +141,10 @@ public class HotelHelper {
         throw new ApiRequestException(hotelEnum.getMessage());
     }
 
+    /**
+     * Metodo che restituisce tutti gli hotel presenti nel sistema
+     * @return
+     */
     public List<HotelDTO> getAllHotel() {
         List<Hotel> allHotel = hotelRepository.findAll();
         return allHotel.stream().map(HotelDTO::new).collect(Collectors.toList());

@@ -22,6 +22,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * La classe PrenotazioneHelper contiene i metodi che si occupano dell'implementazione delle logiche
+ * e funzionalità vere e proprie degli endpoint richiamati dal front-end. I dati che vengono forniti a questi metodi
+ * provengono dal livello "service" nel quale è stato controllato che i campi obbligatori sono stati inseriti correttamente
+ * nel front-end.
+ * Per "logiche e funzionalita" si intende:
+ *  -comunicazioni con il livello "repository" che si occuperà delle operazioni CRUD e non solo:
+ *      -es. controllare che una prenotazione è gia presente nel sistema;
+ *      -es. aggiungere, eliminare, cercare una prenotazione.
+ *  -varie operazioni di logica (calcoli, operazioni, controlli generici)
+ *  -restituire, al front-end, le eccezioni custom in caso di errore (es. La prenotazione che vuoi inserire è già presente nel sistema)
+ *  -in caso di operazioni andate a buon fine, verranno restituiti al livello service i dati che dovranno essere inviati al front-end.
+ */
+
 @Component
 public class PrenotazioneHelper {
 
@@ -47,7 +61,13 @@ public class PrenotazioneHelper {
         this.stripeHelper = stripeHelper;
     }
 
-
+    /**
+     * Metodo che controlla se la prenotazione che si vuole cercare è presente nel sistema.
+     * In caso positivo restituisce la prenotazione associata all'id
+     * In caso negativo restituisce un'eccezione custom (La prenotazione che stai cercando non esiste)
+     * @param id
+     * @return PrenotazioneDTO
+     */
     public PrenotazioneDTO findById(Long id) {
         if (prenotazioneRepository.existsById(id)) {
             return new PrenotazioneDTO(prenotazioneRepository.findById(id).get());
@@ -57,6 +77,13 @@ public class PrenotazioneHelper {
         throw new ApiRequestException(prenotazioneEnum.getMessage());
     }
 
+    /**
+     * Metodo che controllare se l'hotel, per il quale si vogliono ritornare tutte le fatture delle prenotazioni associate, esiste
+     * In caso positivo restituisce tutte le fatture cercate con la logica poco fa citata
+     * In caso negativo restituisce un'eccezione custom
+     * @param idHotel
+     * @return List<FatturaDTO>
+     */
     public List<FatturaDTO> findAll(Long idHotel) {
         if (hotelRepository.existsById(idHotel)) {
             List<Prenotazione> prenotazioni = prenotazioneRepository.findPrenotazionesByHotel_Id(idHotel);
@@ -71,6 +98,11 @@ public class PrenotazioneHelper {
         throw new ApiRequestException(hotelEnum.getMessage());
     }
 
+    /**
+     * Metodo che, dopo aver controllato che il cliente è presente nel sistema, ritorna tutte le fattura associate a quel cliente
+     * @param idCliente
+     * @return List<FatturaDTO>
+     */
     public List<FatturaDTO> findAllFatture(Long idCliente) {
         if (clienteRepository.existsById(idCliente)) {
 
@@ -94,7 +126,15 @@ public class PrenotazioneHelper {
         throw new ApiRequestException(prenotazioneEnum.getMessage());
     }
 
-
+    /**
+     * Metodo che, dopo aver controllato se la prenotazione è presente nel sistema, la elimina.
+     * Inoltre viene controllato tutto il sistema delle penali. Ovvero se si rientra nei "giorni penale" (es 10 giorni prima del check-in)
+     * si può cancellare la prenotazione ma c'è una penale da pagare. Oppure se si rientra nei "giorni blocco"
+     * (es. 3 giorni prima del check-in) non si può piu cancellare la prenotazione.
+     * @param idPrenotazione
+     * @return Boolean
+     * @throws StripeException
+     */
     public Boolean delete(Long idPrenotazione) throws StripeException {
         if (prenotazioneRepository.existsById(idPrenotazione)) {
 
@@ -153,7 +193,17 @@ public class PrenotazioneHelper {
         throw new ApiRequestException(prenotazioneEnum.getMessage());
     }
 
-
+    /**
+     * Prenotazione che, dovo aver controllato che la prenotazione passata non essiste nel sistema, aggiunge la nuova prenotazione.
+     * Per "prenotazione che esiste nel sistema" si intende che:
+     *  -La stanza che si vuole prenotare in un intervallo di date non sia già stata prenotata da un altro cliente;
+     *  -La stanza che si vuole prenotare non sia fuori servizio;
+     * Se tutto è andato a buon fine viene addebitato il costo della prenotazione al cliente
+     * @param prenotazioneDTO
+     * @return PrenotazioneDTO
+     * @throws StripeException
+     * @throws ParseException
+     */
     public PrenotazioneDTO create(PrenotazioneDTO prenotazioneDTO) throws StripeException, ParseException {
 
         String date = LocalDate.now().toString();
@@ -204,6 +254,12 @@ public class PrenotazioneHelper {
         throw new ApiRequestException(prenotazioneEnum.getMessage());
     }
 
+    /**
+     * Metodo che, dopo aver controllato che esiste la stanza associata all'idStanza passato, restituisce tutte le
+     * prenotazioni effettuate per quella stanza
+     * @param idStanza
+     * @return List<PrenotazioneDTO>
+     */
     public List<PrenotazioneDTO> findPrenotazionesByStanza_Id(Long idStanza) {
         if (stanzaRepository.existsById(idStanza)) {
             List<Prenotazione> prenotazioniLista = prenotazioneRepository.findPrenotazionesByStanza_Id(idStanza);
@@ -214,7 +270,18 @@ public class PrenotazioneHelper {
         throw new ApiRequestException(stanzaEnum.getMessage());
     }
 
-
+    /**
+     * Metodo che, dopo aver controllato se esiste la prenotazione che si vuole aggiornare, aggiorna i campi della prenotazione
+     * e assegna un addebito al cliente, associato alla prenotazione, calcolato in base ai giorni aggiuntivi rispetto alla prenotazione
+     * prima che venisse effettuata la modifica
+     * Inoltre viene controllato tutto il sistema delle penali. Ovvero se si rientra nei "giorni penale" (es 10 giorni prima del check-in)
+     * si può modificare la prenotazione ma c'è una penale da pagare. Oppure se si rientra nei "giorni blocco"
+     * (es. 3 giorni prima del check-in) non si possono fare modifiche alla prenotazione
+     * @param prenotazioneDTO
+     * @return idPrenotazione
+     * @throws ParseException
+     * @throws StripeException
+     */
     public Long update(PrenotazioneDTO prenotazioneDTO) throws ParseException, StripeException {
 
         String data = LocalDate.now().toString();
@@ -276,11 +343,19 @@ public class PrenotazioneHelper {
         throw new ApiRequestException(prenotazioneEnum.getMessage());
     }
 
-
+    /**
+     * Metodo che restituisce tutte le fatture di un hotel dove:
+     *  -il nome e/o cognome del cliente, che ha effettuato la prenotazioni, iniziano per nomeCliente e/o cognomeCliente;
+     *  -le prenotazioni sono state effettuate in un intervallo di date
+     * @param nomeCliente
+     * @param cognomeCliente
+     * @param dataInizio
+     * @param dataFine
+     * @param idHotel
+     * @return List<FatturaDTO>
+     */
     public List<FatturaDTO> findAllByNomeCognomeClienteAndDataInizioAndDataFine(String nomeCliente, String cognomeCliente, Date dataInizio, Date dataFine, Long idHotel) {
-
         List<Prenotazione> prenotazioni;
-
 
         if (hotelRepository.existsById(idHotel)) {
             if (dataInizio == null && dataFine == null && cognomeCliente == null && nomeCliente != null) {
@@ -306,12 +381,14 @@ public class PrenotazioneHelper {
 
         hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
         throw new ApiRequestException(hotelEnum.getMessage());
-
     }
 
-
+    /**
+     * Metodo che converte le prenotazioni, passate come parametro, in fatture
+     * @param prenotazioni
+     * @return List<FatturaDTO>
+     */
     public List<FatturaDTO> convertPrenotazioneToFattura(List<Prenotazione> prenotazioni) {
-
         List<FatturaDTO> fatture = new ArrayList<>();
 
         for (Prenotazione p : prenotazioni) {
@@ -322,10 +399,6 @@ public class PrenotazioneHelper {
 
             fatture.add(new FatturaDTO(p, cliente, stanza, categoria, hotel));
         }
-
         return fatture;
-
     }
-
-
 }

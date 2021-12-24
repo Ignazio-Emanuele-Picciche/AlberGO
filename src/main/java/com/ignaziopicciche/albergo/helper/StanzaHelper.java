@@ -17,6 +17,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * La classe StanzaHelper contiene i metodi che si occupano dell'implementazione delle logiche
+ * e funzionalità vere e proprie degli endpoint richiamati dal front-end. I dati che vengono forniti a questi metodi
+ * provengono dal livello "service" nel quale è stato controllato che i campi obbligatori sono stati inseriti correttamente
+ * nel front-end.
+ * Per "logiche e funzionalita" si intende:
+ *  -comunicazioni con il livello "repository" che si occuperà delle operazioni CRUD e non solo:
+ *      -es. controllare che una stanza è già presente nel sistema;
+ *      -es. aggiungere, eliminare, cercare, aggiornare una stanza.
+ *  -varie operazioni di logica (calcoli, operazioni, controlli generici)
+ *  -restituire, al front-end, le eccezioni custom in caso di errore (es. La stanza che vuoi inserire è già presente nel sistema)
+ *  -in caso di operazioni andate a buon fine, verranno restituiti al livello service i dati che dovranno essere inviati al front-end.
+ */
+
 @Component
 public class StanzaHelper {
 
@@ -40,7 +54,12 @@ public class StanzaHelper {
         this.prenotazioneRepository = prenotazioneRepository;
     }
 
-
+    /**
+     * Metodo che crea una nuova stanza di un hotel nel sistema
+     * Se le sstanza dovesse gia esistere nel sistema viene restituita un'eccezione custom
+     * @param stanzaDTO
+     * @return StanzaDTO
+     */
     public StanzaDTO create(StanzaDTO stanzaDTO) {
 
         if (!stanzaRepository.existsStanzaByNumeroStanzaAndHotel_Id(stanzaDTO.numeroStanza, stanzaDTO.idHotel) &&
@@ -63,6 +82,12 @@ public class StanzaHelper {
         throw new ApiRequestException(stanzaEnum.getMessage());
     }
 
+    /**
+     * Metodo che elimina una stanza dell'hotel dal sistema
+     * Nel caso in cui la stanza che si vuole rimuovere non dovesse esistere viene restituita un'eccezione custom
+     * @param id
+     * @return Boolean
+     */
     public Boolean delete(Long id) {
         if (stanzaRepository.existsById(id)) {
             try {
@@ -78,7 +103,12 @@ public class StanzaHelper {
         throw new ApiRequestException(stanzaEnum.getMessage());
     }
 
-
+    /**
+     * Metodo che aggiorna i campi "editabili" della stanza
+     * Nel caso in cui la stanza che si vuole aggiornare non è presente nel sistema viene restituita un'eccezione custom
+     * @param stanzaDTO
+     * @return StanzaDTO
+     */
     public StanzaDTO update(StanzaDTO stanzaDTO) {
 
         if (stanzaRepository.existsById(stanzaDTO.id)) {
@@ -100,7 +130,12 @@ public class StanzaHelper {
         throw new ApiRequestException(stanzaEnum.getMessage());
     }
 
-
+    /**
+     * Metodo che, dopo aver controllato che esiste la stanza nel sistema, restituisce il dettaglio della stanza associata all'id passato come parametro
+     * In caso di errore restituisce un'eccezione custom
+     * @param id
+     * @return StanzaDTO
+     */
     public StanzaDTO findById(Long id) {
         if (stanzaRepository.existsById(id)) {
             return new StanzaDTO(stanzaRepository.findById(id).get());
@@ -110,7 +145,12 @@ public class StanzaHelper {
         throw new ApiRequestException(stanzaEnum.getMessage());
     }
 
-
+    /**
+     * Metodo che, dopo aver controllato che l'hotel è presente nel sistema, restituisce tutte le stanze presenti in quell'hotel
+     * In caso di errore restituisce un'eccezione custom
+     * @param idHotel
+     * @return List<StanzaDTO>
+     */
     public List<StanzaDTO> findAll(Long idHotel) {
         if (hotelRepository.existsById(idHotel)) {
             return stanzaRepository.findStanzasByHotel_Id(idHotel).stream().map(x -> new StanzaDTO(x)).collect(Collectors.toList());
@@ -120,7 +160,13 @@ public class StanzaHelper {
         throw new ApiRequestException(hotelEnum.getMessage());
     }
 
-
+    /**
+     * Metodo che restituisce tutte le stanze associate a una categoria che sono state prenotate in un intervallo di date specifico
+     * @param idCategoria
+     * @param dataInizio
+     * @param dataFine
+     * @return List<StanzaDTO>
+     */
     public List<StanzaDTO> findStanzasByCategoria_IdAndDates(Long idCategoria, Date dataInizio, Date dataFine) {
 
         if (categoriaRepository.existsById(idCategoria)) {
@@ -137,7 +183,12 @@ public class StanzaHelper {
         throw new ApiRequestException(categoriaEnum.getMessage());
     }
 
-
+    /**
+     * Metodo che restituisce il numero delle stanze fuori servizio di un hotel specifico
+     * Nel caso in cui l'hotel a cui si fa riferimento non dovesse esistere nel sistema viene restituita un'eccezione custom
+     * @param idHotel
+     * @return int
+     */
     public int findCountStanzasFuoriServizioByHotel_Id(Long idHotel){
         if(hotelRepository.existsById(idHotel)){
             return stanzaRepository.findCountStanzasFuoriServizioByHotel_Id(idHotel);
@@ -147,6 +198,14 @@ public class StanzaHelper {
         throw new ApiRequestException(hotelEnum.getMessage());
     }
 
+    /**
+     * Metodo che, dopo aver controllate che l'hotel è presente nel sistema, restituisce tutte le stanze libere in un'intervallo
+     * di date specifico
+     * @param idHotel
+     * @param dataInizio
+     * @param dataFine
+     * @return List<StanzaDTO>
+     */
     public List<StanzaDTO> findStanzasLibereByHotel_IdAndDates(Long idHotel, Date dataInizio, Date dataFine){
         if(hotelRepository.existsById(idHotel)){
             if(dataInizio.before(dataFine)) {
@@ -162,6 +221,13 @@ public class StanzaHelper {
         throw new ApiRequestException(hotelEnum.getMessage());
     }
 
+    /**
+     * Metodo che restituisce le stanze occupate di un hotel in un intervallo di date specifico
+     * @param idHotel
+     * @param dataInizio
+     * @param dataFine
+     * @return List<StanzaDTO>
+     */
     public List<StanzaDTO> findStanzasOccupateByHotel_IdAndDates(Long idHotel, Date dataInizio, Date dataFine){
         if(hotelRepository.existsById(idHotel)){
             if(dataInizio.before(dataFine)) {
@@ -177,7 +243,12 @@ public class StanzaHelper {
         throw new ApiRequestException(hotelEnum.getMessage());
     }
 
-
+    /**
+     * Metodo che, dopo aver verificato che la categoria è presente nel sistema, ritorna il numero di stanze associate alla
+     * categoria passata come parametro
+     * @param idCategoria
+     * @return int
+     */
     public int findCountStanzeByCategoria_Id(Long idCategoria){
         if(categoriaRepository.existsById(idCategoria)){
             return stanzaRepository.findCountStanzeByCategoria_Id(idCategoria);
