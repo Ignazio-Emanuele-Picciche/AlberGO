@@ -36,6 +36,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     /**
      * Questo metodo viene richiamato nella fase di login. Vengono nella request vengono richiesti username e password,
      * successivamente si passa al controllo e all'autenticazione di quest'ultimi.
+     *
      * @param request
      * @param response
      * @return
@@ -45,8 +46,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        /*log.info("Username is: {}", username);
-        log.info("Password is: {}", password);*/
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         return authenticationManager.authenticate(authenticationToken);
     }
@@ -55,6 +54,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
      * In questo metodo viene decifrata e controllata la password, viene controllato il ruolo associato all'utente che vuole
      * effettuare l'accesso. Se tutto va a buon fine viene effettuato il login e fornito al front-end il token di sessione
      * con la sua durata
+     *
      * @param request
      * @param response
      * @param chain
@@ -63,7 +63,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
      * @throws ServletException
      */
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication)
+            throws IOException, ServletException {
         User user = (User) authentication.getPrincipal();
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
         Date token_expiration = new Date(System.currentTimeMillis() + 100 * 120 * 1000); //3 ore e 30 minuti circa
@@ -74,19 +75,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(algorithm);
 
-        /*String refresh_token = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 30*60*1000)) //durata del token (+30 minuti)
-                .withIssuer(request.getRequestURL().toString())
-                .sign(algorithm);*/
-
-        /*response.setHeader("access_token", access_token);
-        response.setHeader("refresh_token", refresh_token);*/
-
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", access_token);
         tokens.put("token_expiration", token_expiration.toString());
-        //tokens.put("refresh_token", refresh_token);
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }

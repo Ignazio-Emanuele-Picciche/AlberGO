@@ -37,6 +37,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
      * In caso di errore, cioe se l'utente non è autorizzato o il token è scaduto verrà restituito un messaggio d'errore che
      * specifica il motivo dell'interruzione della chiamata API.
      * In caso positivo invece si continua con l'esecuzione della richiesta.
+     *
      * @param request
      * @param response
      * @param filterChain
@@ -71,7 +72,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     response.setStatus(FORBIDDEN.value());
                     //response.sendError(FORBIDDEN.value());
 
-                    Map<String , String> error = new HashMap<>();
+                    Map<String, String> error = new HashMap<>();
                     error.put("error_message", e.getMessage());
                     response.setContentType(APPLICATION_JSON_VALUE);
                     new ObjectMapper().writeValue(response.getOutputStream(), error);

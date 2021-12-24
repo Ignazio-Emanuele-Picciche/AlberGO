@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
-    -Nella classe ClienteController vengono gestiti e organizzati tutti gli endpoint relativi al cliente.
-    -I path delle api, ovvero delle attività che si possono svolgere relative al cliente, iniziano con:
-    "http://localhost:8080/api/cliente/...".
-    -Nei metodi presenti in questa classe vengono semplicemente richiamati i metodi dela classe ClienteService
-    per il controllo e la validità dei dati in input delle request dal front-end.
-    -Infine tutte le response ricevute dal livello "service" verranno inviare al front-end.
+ * -Nella classe ClienteController vengono gestiti e organizzati tutti gli endpoint relativi al cliente.
+ * -I path delle api, ovvero delle attività che si possono svolgere relative al cliente, iniziano con:
+ * "http://localhost:8080/api/cliente/...".
+ * -Nei metodi presenti in questa classe vengono semplicemente richiamati i metodi dela classe ClienteService
+ * per il controllo e la validità dei dati in input delle request dal front-end.
+ * -Infine tutte le response ricevute dal livello "service" verranno inviare al front-end.
  */
 
 @RestController
@@ -26,6 +26,7 @@ public class ClienteController {
      * In questo metodo viene implementata la logica dell'annotazione @Autowired per l'attributo clienteService,
      * ovvero stiamo chiedendo a Spring di invocare il metodo setter in questione subito
      * dopo aver istanziato il bean della classe ClienteService.
+     *
      * @param clienteService
      */
     public ClienteController(ClienteService clienteService) {
@@ -34,6 +35,7 @@ public class ClienteController {
 
     /**
      * Enpoint che restituisce un cliente associato all'idCliente passato in input
+     *
      * @param id
      * @return ClienteDTO
      */
@@ -44,6 +46,7 @@ public class ClienteController {
 
     /**
      * Endpoint che ritorna tutti i clienti registrati in uno specifico hotel
+     *
      * @param idHotel
      * @return List<ClienteDTO>
      */
@@ -54,13 +57,12 @@ public class ClienteController {
 
     /**
      * Endpoint che restituisce tutti i clienti che iniziano per nome e cognome di un hotel
+     *
      * @param nome
      * @param cognome
      * @param idHotel
      * @return List<ClienteDTO>
      */
-    //find all Cienti startWith nome or cognome
-    //TODO idHOtel non ha senso visto che i clienti si troano in tutti gli hotel
     @GetMapping("/searchNomeCognome")
     public List<ClienteDTO> findAllByNomeCognome(@RequestParam("nome") String nome, @RequestParam("cognome") String cognome, @RequestParam("idHotel") Long idHotel) {
         return clienteService.findAllByNomeCognome(nome, cognome, idHotel);
@@ -68,6 +70,7 @@ public class ClienteController {
 
     /**
      * Endpoint per la registrazione di un nuovo cliente
+     *
      * @param clienteDTO
      * @return ClienteDTO
      * @throws Exception
@@ -79,11 +82,12 @@ public class ClienteController {
 
     /**
      * Endpoint che restituisce un cliente cercato per username
+     *
      * @param username
      * @return ClienteDTO
      */
     @GetMapping("/dettaglio/username")
-    public ClienteDTO findClienteByUsername(@RequestParam("username") String username){
+    public ClienteDTO findClienteByUsername(@RequestParam("username") String username) {
         return clienteService.findClienteByUsername(username);
     }
 
