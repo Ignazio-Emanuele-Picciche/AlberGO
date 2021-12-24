@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+/**
+ * In questa classe vengono gestite le eccezioni custom che vengono restituite in caso di un errore specifico.
+ */
+
 @ControllerAdvice
 public class ApiExceptionHandler {
 

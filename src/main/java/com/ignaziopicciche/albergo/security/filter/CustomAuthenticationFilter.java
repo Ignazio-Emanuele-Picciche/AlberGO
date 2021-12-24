@@ -17,8 +17,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +33,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         this.authenticationManager = authenticationManager;
     }
 
+    /**
+     * Questo metodo viene richiamato nella fase di login. Vengono nella request vengono richiesti username e password,
+     * successivamente si passa al controllo e all'autenticazione di quest'ultimi.
+     * @param request
+     * @param response
+     * @return
+     * @throws AuthenticationException
+     */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         String username = request.getParameter("username");
@@ -45,11 +51,22 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         return authenticationManager.authenticate(authenticationToken);
     }
 
+    /**
+     * In questo metodo viene decifrata e controllata la password, viene controllato il ruolo associato all'utente che vuole
+     * effettuare l'accesso. Se tutto va a buon fine viene effettuato il login e fornito al front-end il token di sessione
+     * con la sua durata
+     * @param request
+     * @param response
+     * @param chain
+     * @param authentication
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = (User) authentication.getPrincipal();
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-        Date token_expiration = new Date(System.currentTimeMillis() + 100 * 120 * 1000);
+        Date token_expiration = new Date(System.currentTimeMillis() + 100 * 120 * 1000); //3 ore e 30 minuti circa
         String access_token = JWT.create()
                 .withSubject(user.getUsername())
                 .withExpiresAt(token_expiration) //durata del token (3 ore e 30 minuti circa)

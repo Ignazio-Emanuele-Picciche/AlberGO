@@ -34,6 +34,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
     }
 
+    /**
+     * In questo metodo vengono gestiti tutti i path delle API, ovvero come o da chi, in base al ruolo,
+     * possono essere chiamate gli endpoint con le rispettive API.
+     * Ci sono delle API libere, che possono essere chiamate da tutti indipendentemente dalla sessione e dal ruolo.
+     * Altre API invece possono essere chiamate soltanto da utenti autorizzati (l'autorizzazione viene specificata in base al ruolo)
+     * e inoltre bisogna  che la sessione sia valida.
+     * @param http
+     * @throws Exception
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
@@ -132,6 +141,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    /**
+     * In questo metodo vengono gestiti i CORS, per maggiore informazioni guardare la documentazione
+     * @return CorsConfiguration
+     */
     private CorsConfiguration getCorsConfiguration(){
         CorsConfiguration corsConfiguration =new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);

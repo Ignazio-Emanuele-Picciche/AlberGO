@@ -8,6 +8,13 @@ import org.springframework.data.repository.query.Param;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * L'interfaccia StanzaRepository estende JpaRepository<T, ID>.
+ * Quest'interfaccia, utilizzata nelle classi helper, offre diversi metodi base (es. findAll(), findById() e tanti altri)
+ * per relazionarsi con il db.
+ * Invece, se si ha bisogno di query SQL native si può utilizzare l’annotazione @Query.
+ */
+
 public interface StanzaRepository extends JpaRepository<Stanza, Long> {
 
     Boolean existsStanzaByNumeroStanzaAndHotel_Id(Integer numeroStanza, Long idHotel);
