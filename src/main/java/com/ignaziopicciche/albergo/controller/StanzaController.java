@@ -12,12 +12,12 @@ import java.util.List;
 
 
 /**
-    -Nella classe StanzaController vengono gestiti e organizzati tutti gli endpoint relativi alla stanza.
-    -I path delle api, ovvero delle attività che si possono svolgere relative alla stanza, iniziano con:
-    "http://localhost:8080/api/stanza/...".
-    -Nei metodi presenti in questa classe vengono semplicemente richiamati i metodi dela classe StanzaService
-    per il controllo e la validità dei dati in input delle request dal front-end.
-    -Infine tutte le response ricevute dal livello "service" verranno inviare al front-end.
+ * -Nella classe StanzaController vengono gestiti e organizzati tutti gli endpoint relativi alla stanza.
+ * -I path delle api, ovvero delle attività che si possono svolgere relative alla stanza, iniziano con:
+ * "http://localhost:8080/api/stanza/...".
+ * -Nei metodi presenti in questa classe vengono semplicemente richiamati i metodi dela classe StanzaService
+ * per il controllo e la validità dei dati in input delle request dal front-end.
+ * -Infine tutte le response ricevute dal livello "service" verranno inviare al front-end.
  */
 
 @RestController
@@ -30,6 +30,7 @@ public class StanzaController {
      * In questo metodo viene implementata la logica dell'annotazione @Autowired per l'attributo stanzaService,
      * ovvero stiamo chiedendo a Spring d'invocare il metodo setter in questione subito
      * dopo aver istanziato il bean della classe StanzaService.
+     *
      * @param stanzaService
      */
     public StanzaController(StanzaService stanzaService) {
@@ -38,6 +39,7 @@ public class StanzaController {
 
     /**
      * Endpoint che restituisce una stanza cercata per idStanza
+     *
      * @param id
      * @return StanzaDTO
      */
@@ -48,6 +50,7 @@ public class StanzaController {
 
     /**
      * Endpoint che restituisce tutte le stanze presenti in un hotel
+     *
      * @param idHotel
      * @return List<StanzaDTO>
      */
@@ -58,6 +61,7 @@ public class StanzaController {
 
     /**
      * Endpoint che inserissce una nuova stanza del sistema
+     *
      * @param stanzaDTO
      * @return StanzaDTO
      */
@@ -68,6 +72,7 @@ public class StanzaController {
 
     /**
      * Endpoint che aggiorna i campi di una stanza presente del sistema
+     *
      * @param stanzaDTO
      * @return StanzaDTO
      */
@@ -78,6 +83,7 @@ public class StanzaController {
 
     /**
      * Endpoint che elimina una stanza
+     *
      * @param id
      * @return Boolean
      */
@@ -89,6 +95,7 @@ public class StanzaController {
     /**
      * Questo endpoint viene usato per la parte "statistiche" nel front-end.
      * Restituisce tutte le stanze che fanno parte di una categoria vengono prenotate in un intervallo di date
+     *
      * @param idCategoria
      * @param dInizio
      * @param dFine
@@ -105,6 +112,7 @@ public class StanzaController {
     /**
      * Questo endpoint viene usato per la parte "statistiche" nel front-end.
      * Restituisce il numero di stanze fuori servizio di un hotel
+     *
      * @param idHotel
      * @return int
      */
@@ -115,6 +123,7 @@ public class StanzaController {
 
     /**
      * Endpoint che restituisce tutte le stanze libere di un hotel in un intervallo di date
+     *
      * @param idHotel
      * @param dInizio
      * @param dFine
@@ -130,6 +139,7 @@ public class StanzaController {
 
     /**
      * Endpoint che restituisce tutte le stanze occupate di un hotel in un intervallo di date
+     *
      * @param idHotel
      * @param dInizio
      * @param dFine
@@ -145,6 +155,7 @@ public class StanzaController {
 
     /**
      * Endpoint che restituisce il numero di stanze che hanno la stessa
+     *
      * @param idCategoria
      * @return int
      */

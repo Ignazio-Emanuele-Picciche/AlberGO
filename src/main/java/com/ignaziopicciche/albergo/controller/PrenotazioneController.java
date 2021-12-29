@@ -10,12 +10,12 @@ import java.text.ParseException;
 import java.util.List;
 
 /**
-    -Nella classe PrenotazioneController vengono gestiti e organizzati tutti gli endpoint relativi alla prenotazione.
-    -I path delle api, ovvero delle attività che si possono svolgere relative alla prenotazione, iniziano con:
-    "http://localhost:8080/api/prenotazione/...".
-    -Nei metodi presenti in questa classe vengono semplicemente richiamati i metodi dela classe PrenotazioneService
-    per il controllo e la validità dei dati in input delle request dal front-end.
-    -Infine tutte le response ricevute dal livello "service" verranno inviare al front-end.
+ * -Nella classe PrenotazioneController vengono gestiti e organizzati tutti gli endpoint relativi alla prenotazione.
+ * -I path delle api, ovvero delle attività che si possono svolgere relative alla prenotazione, iniziano con:
+ * "http://localhost:8080/api/prenotazione/...".
+ * -Nei metodi presenti in questa classe vengono semplicemente richiamati i metodi dela classe PrenotazioneService
+ * per il controllo e la validità dei dati in input delle request dal front-end.
+ * -Infine tutte le response ricevute dal livello "service" verranno inviare al front-end.
  */
 
 @RestController
@@ -28,6 +28,7 @@ public class PrenotazioneController {
      * In questo metodo viene implementata la logica dell'annotazione @Autowired per l'attributo prenotazioneService,
      * ovvero stiamo chiedendo a Spring di invocare il metodo setter in questione subito
      * dopo aver istanziato il bean della classe PrenotazioneService.
+     *
      * @param prenotazioneService
      */
     public PrenotazioneController(PrenotazioneService prenotazioneService) {
@@ -36,6 +37,7 @@ public class PrenotazioneController {
 
     /**
      * Endpoint che restituisce una prenotazione cercata per idPrenotazione
+     *
      * @param id
      * @return PrenotazioneDTO
      */
@@ -46,6 +48,7 @@ public class PrenotazioneController {
 
     /**
      * Enpoint che restituisce tutte le fatture fatte in un hotel
+     *
      * @param idHotel
      * @return List<FatturaDTO>
      */
@@ -56,6 +59,7 @@ public class PrenotazioneController {
 
     /**
      * Endpoint che restituisce tutte le prenotazioni in cui è stata scelta una specifica stanza di un hotel
+     *
      * @param idStanza
      * @return List<PrenotazioneDTO>
      */
@@ -66,6 +70,7 @@ public class PrenotazioneController {
 
     /**
      * Enpoint per la creazione di una nuova prenotazione e relativo addebito
+     *
      * @param prenotazioneDTO
      * @return PrenotazioneDTO
      * @throws StripeException
@@ -78,6 +83,7 @@ public class PrenotazioneController {
 
     /**
      * Enpoint per l'aggiornamento dei dati di una prenotazione presente nel sistema(es. cambio date)
+     *
      * @param prenotazioneDTO
      * @return idPrenotazione
      * @throws ParseException
@@ -90,6 +96,7 @@ public class PrenotazioneController {
 
     /**
      * Endpoint per l'eliminazione di una prenotazione
+     *
      * @param id
      * @return Boolean
      * @throws StripeException
@@ -101,6 +108,7 @@ public class PrenotazioneController {
 
     /**
      * Endpoint che restituisce tutte le fatture fatte da un cliente
+     *
      * @param idCliente
      * @return List<FatturaDTO>
      */
@@ -113,13 +121,14 @@ public class PrenotazioneController {
      * Endpoint che restituisce tutte le fatture di un hotel dove nome e cognome del cliente, associato alla fattura,
      * iniziano per nomeCliente e cognomeCliente.
      * Inoltre la ricerca viene fatta in un intervallo di date (dInizio e dFine).
+     *
      * @param nomeCliente
      * @param cognomeCliente
      * @param dInizio
      * @param dFine
      * @param idHotel
-     * @returnList<FatturaDTO>
      * @throws ParseException
+     * @returnList<FatturaDTO>
      */
     @GetMapping("/searchNomeCognomeDate")
     public List<FatturaDTO> findAllByNomeCognomeClienteAndDataInizioAndDataFine(@RequestParam("nomeCliente") String nomeCliente, @RequestParam("cognomeCliente") String cognomeCliente, @RequestParam("dataInizio") String dInizio, @RequestParam("dataFine") String dFine, @RequestParam("idHotel") Long idHotel) throws ParseException {

@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
-    -Nella classe CategoriaController vengono gestiti e organizzati tutti gli endpoint relativi alla categoria.
-    -I path delle api, ovvero delle attività che si possono svolgere relative alla categoria, iniziano con:
-    "http://localhost:8080/api/categoria/...".
-    -Nei metodi presenti in questa classe vengono semplicemente richiamati i metodi dela classe CategoriaService
-    per il controllo e la validità dei dati in input delle request dal front-end.
-    -Infine tutte le response ricevute dal livello "service" verranno inviare al front-end.
+ * -Nella classe CategoriaController vengono gestiti e organizzati tutti gli endpoint relativi alla categoria.
+ * -I path delle api, ovvero delle attività che si possono svolgere relative alla categoria, iniziano con:
+ * "http://localhost:8080/api/categoria/...".
+ * -Nei metodi presenti in questa classe vengono semplicemente richiamati i metodi dela classe CategoriaService
+ * per il controllo e la validità dei dati in input delle request dal front-end.
+ * -Infine tutte le response ricevute dal livello "service" verranno inviare al front-end.
  */
 
 @RestController
@@ -25,6 +25,7 @@ public class CategoriaController {
      * In questo metodo viene implementata la logica dell'annotazione @Autowired per l'attributo categoriaService,
      * ovvero stiamo chiedendo a Spring di invocare il metodo setter in questione subito
      * dopo aver istanziato il bean della classe CategoriaService.
+     *
      * @param categoriaService
      */
     public CategoriaController(CategoriaService categoriaService) {
@@ -34,6 +35,7 @@ public class CategoriaController {
 
     /**
      * Endpoint che, tramite un id in input, ritorna la categoria associata all'id
+     *
      * @param id
      * @return CategoriaDTO
      */
@@ -45,6 +47,7 @@ public class CategoriaController {
     /**
      * Endpoint che, tramite un idHotel in input, ritorna la lista delle categorie presenti
      * in quell'hotel
+     *
      * @param idHotel
      * @return List<CategoriaDTO>
      */
@@ -55,6 +58,7 @@ public class CategoriaController {
 
     /**
      * Endpoint per l'update dei dati di una categoria già presente nel sistema
+     *
      * @param categoriaDTO
      * @return id categoria
      */
@@ -65,6 +69,7 @@ public class CategoriaController {
 
     /**
      * Endpoint per la creazione di una nuova categoria
+     *
      * @param categoriaDTO
      * @return id categoria
      */
@@ -75,6 +80,7 @@ public class CategoriaController {
 
     /**
      * Endpoint per l'liminazione di una categoria
+     *
      * @param id
      * @return Boolean (true se tutto è andato a buon fine)
      */
@@ -85,6 +91,7 @@ public class CategoriaController {
 
     /**
      * Enpoint che cerca tutte le categorie di un hotel, che iniziano per nome
+     *
      * @param nome
      * @param idHotel
      * @return List<CategoriaDTO>

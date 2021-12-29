@@ -6,12 +6,12 @@ import com.stripe.exception.StripeException;
 import org.springframework.web.bind.annotation.*;
 
 /**
-    -Nella classe StripeController vengono gestiti e organizzati tutti gli endpoint relativi alle operazioni che si possono fare con la carta.
-    -I path delle api, ovvero delle attività che si possono svolgere relative alla carta, iniziano con:
-    "http://localhost:8080/api/stripe/...".
-    -Nei metodi presenti in questa classe vengono semplicemente richiamati i metodi dela classe StripeService
-    per il controllo e la validità dei dati in input delle request dal front-end.
-    -Infine tutte le response ricevute dal livello "service" verranno inviare al front-end.
+ * -Nella classe StripeController vengono gestiti e organizzati tutti gli endpoint relativi alle operazioni che si possono fare con la carta.
+ * -I path delle api, ovvero delle attività che si possono svolgere relative alla carta, iniziano con:
+ * "http://localhost:8080/api/stripe/...".
+ * -Nei metodi presenti in questa classe vengono semplicemente richiamati i metodi dela classe StripeService
+ * per il controllo e la validità dei dati in input delle request dal front-end.
+ * -Infine tutte le response ricevute dal livello "service" verranno inviare al front-end.
  */
 
 @RestController
@@ -24,6 +24,7 @@ public class StripeController {
      * In questo metodo viene implementata la logica dell'annotazione @Autowired per l'attributo stripeService,
      * ovvero stiamo chiedendo a Spring d'invocare il metodo setter in questione subito
      * dopo aver istanziato il bean della classe StripeService.
+     *
      * @param stripeService
      */
     public StripeController(StripeService stripeService) {
@@ -32,6 +33,7 @@ public class StripeController {
 
     /**
      * Endpoint che aggiunge la carta associata al cliente
+     *
      * @param cardData
      * @throws Exception
      */
@@ -44,6 +46,7 @@ public class StripeController {
 
     /**
      * Endpoint che restituisce i dati della carta di un cliente
+     *
      * @param idCliente
      * @return CardData
      * @throws StripeException
@@ -55,6 +58,7 @@ public class StripeController {
 
     /**
      * Endpoint che elimina la carta del cliente
+     *
      * @param idCliente
      * @throws StripeException
      */

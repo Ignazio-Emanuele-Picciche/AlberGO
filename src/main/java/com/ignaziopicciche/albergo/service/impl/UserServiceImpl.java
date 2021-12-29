@@ -1,4 +1,4 @@
-package com.ignaziopicciche.albergo.service;
+package com.ignaziopicciche.albergo.service.impl;
 
 import com.ignaziopicciche.albergo.model.Amministratore;
 import com.ignaziopicciche.albergo.model.Cliente;
@@ -27,7 +27,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class UserService implements UserDetailsService {
+public class UserServiceImpl implements UserDetailsService {
 
     private final AmministratoreRepository amministratoreRepository;
     private final ClienteRepository clienteRepository;

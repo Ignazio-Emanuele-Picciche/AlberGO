@@ -7,12 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
-    -Nella classe AmministratoreController vengono gestiti e organizzati tutti gli endpoint relativi all'amministratore.
-    -I path delle api, ovvero delle attività che si possono svolgere relative all'amministratore, iniziano con:
-    "http://localhost:8080/api/amministratore/...".
-    -Nei metodi presenti in questa classe vengono semplicemente richiamati i metodi dela classe AmministratoreService
-    per il controllo e la validità dei dati in input delle request dal front-end.
-    -Infine tutte le response ricevute dal livello "service" verranno inviare al front-end.
+ * -Nella classe AmministratoreController vengono gestiti e organizzati tutti gli endpoint relativi all'amministratore.
+ * -I path delle api, ovvero delle attività che si possono svolgere relative all'amministratore, iniziano con:
+ * "http://localhost:8080/api/amministratore/...".
+ * -Nei metodi presenti in questa classe vengono semplicemente richiamati i metodi dela classe AmministratoreService
+ * per il controllo e la validità dei dati in input delle request dal front-end.
+ * -Infine tutte le response ricevute dal livello "service" verranno inviare al front-end.
  */
 
 @RestController
@@ -25,6 +25,7 @@ public class AmministratoreController {
      * In questo metodo viene implementata la logica dell'annotazione @Autowired per l'attributo amministratoreService,
      * ovvero stiamo chiedendo a Spring d'invocare il metodo setter in questione subito
      * dopo aver istanziato il bean della classe AmministratoreService.
+     *
      * @param amministratoreService
      */
     public AmministratoreController(AmministratoreService amministratoreService) {
@@ -33,6 +34,7 @@ public class AmministratoreController {
 
     /**
      * Enpoint per la registrazione di un nuovo amministratore
+     *
      * @param amministratoreDTO
      * @return Id amministratore
      */
@@ -43,6 +45,7 @@ public class AmministratoreController {
 
     /**
      * Enpoint per cercare un amministratore per username
+     *
      * @param username
      * @return AmministratoreDTO
      */
