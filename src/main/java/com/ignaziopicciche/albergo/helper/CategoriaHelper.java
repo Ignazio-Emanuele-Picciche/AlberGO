@@ -19,19 +19,18 @@ import java.util.stream.Collectors;
  * provengono dal livello "service" nel quale è stato controllato che i campi obbligatori sono stati inseriti correttamente
  * nel front-end.
  * Per "logiche e funzionalita" si intende:
- *  -comunicazioni con il livello "repository" che si occuperà delle operazioni CRUD e non solo:
- *      -es. controllare che una categoria è gia presente nel sistema;
- *      -es. aggiungere, eliminare, cercare, aggiornare una categoria.
- *  -varie operazioni di logica (calcoli, operazioni, controlli generici)
- *  -restituire, al front-end, le eccezioni custom in caso di errore (es. La categoria che vuoi inserire è già presente nel sistema)
- *  -in caso di operazioni andate a buon fine, verranno restituiti al livello service i dati che dovranno essere inviati al front-end.
+ * -comunicazioni con il livello "repository" che si occuperà delle operazioni CRUD e non solo:
+ * -es. controllare che una categoria è gia presente nel sistema;
+ * -es. aggiungere, eliminare, cercare, aggiornare una categoria.
+ * -varie operazioni di logica (calcoli, operazioni, controlli generici)
+ * -restituire, al front-end, le eccezioni custom in caso di errore (es. La categoria che vuoi inserire è già presente nel sistema)
+ * -in caso di operazioni andate a buon fine, verranno restituiti al livello service i dati che dovranno essere inviati al front-end.
  */
 
 @Component
 public class CategoriaHelper {
 
     private final CategoriaRepository categoriaRepository;
-
     private final HotelRepository hotelRepository;
 
     private static CategoriaEnum categoriaEnum;
@@ -46,6 +45,7 @@ public class CategoriaHelper {
      * Metodo che si occupa di controllare se la categoria che si vuole aggiungere non è presente nel sistema.
      * In caso positivo la categoria verrà inserito nel database di sistema tramite il livello "repository".
      * In caso negativo verrà restituita un'eccezione custom al front-end (La categoria che si vuole aggiungere è presente nel sistema).
+     *
      * @param categoriaDTO
      * @return idCategoria
      */
@@ -79,6 +79,7 @@ public class CategoriaHelper {
      * Metodo che controlla se la categoria che si vuole aggiornare è presente nel sistema.
      * In caso positivo verranno aggiornati solo i campi "editabili".
      * In caso negatio verrà restituita un'eccezione custom al front-end (La categoria che stai cercando non esiste)
+     *
      * @param categoriaDTO
      * @return idCategoria
      */
@@ -106,6 +107,7 @@ public class CategoriaHelper {
      * Metodo che controlla se la categoria che si vuole eliminare è presente nel sistema.
      * In caso positivo verrà eliminata dal sistema
      * In caso negati verrà restituita un'eccezione custom al front-end (Errore durante l'eliminazione della categoria)
+     *
      * @param id
      * @return Boolean
      */
@@ -130,12 +132,13 @@ public class CategoriaHelper {
      * Metodo che si occupa di controllare se la categoria che si sta cercando è presente nel sistema.
      * In caso positivo verra cercata e restituita la categoria tramite il suo idCategoria associato
      * In caso negativo verrà restituita un'eccezione custom (La categoria che stai cercando non è stata trovata)
+     *
      * @param id
-     * @return CategoriaDTO
+     * @return Categoria
      */
-    public CategoriaDTO findById(Long id) {
+    public Categoria findById(Long id) {
         if (categoriaRepository.existsById(id)) {
-            return new CategoriaDTO(categoriaRepository.findById(id).get());
+            return categoriaRepository.findById(id).get();
         }
 
         categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_NF");
@@ -147,14 +150,13 @@ public class CategoriaHelper {
      * Metodo che controlla se l'hotel, per il quale si vogliono restituire tutte le categorie, esiste.
      * In caso positivo restituisce tutte le categoria dell'hotel
      * In caso negativo restituisce un'eccezione custom (L'hotel che stai cercando non esiste)
+     *
      * @param idHotel
-     * @return List<CategoriaDTO>
+     * @return List<Categoria>
      */
-    public List<CategoriaDTO> findAll(Long idHotel) {
-
+    public List<Categoria> findAll(Long idHotel) {
         if (hotelRepository.existsById(idHotel)) {
-            List<Categoria> listCategorie = categoriaRepository.findCategoriasByHotel_Id(idHotel);
-            return listCategorie.stream().map(x -> new CategoriaDTO(x)).collect(Collectors.toList());
+            return categoriaRepository.findCategoriasByHotel_Id(idHotel);
         }
 
         hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
@@ -163,12 +165,12 @@ public class CategoriaHelper {
 
     /**
      * Metodo che cerca tutte le categorie dell'hotel che iniziano per nome
+     *
      * @param nome
      * @param idHotel
-     * @return List<CategoriaDTO>
+     * @return List<Categoria>
      */
-    public List<CategoriaDTO> findAllByNome(String nome, Long idHotel) {
-        List<Categoria> categorie = categoriaRepository.findCategoriasByNomeStartingWithAndHotel_Id(nome, idHotel);
-        return categorie.stream().map(categoria -> new CategoriaDTO(categoria)).collect(Collectors.toList());
+    public List<Categoria> findAllByNome(String nome, Long idHotel) {
+        return categoriaRepository.findCategoriasByNomeStartingWithAndHotel_Id(nome, idHotel);
     }
 }

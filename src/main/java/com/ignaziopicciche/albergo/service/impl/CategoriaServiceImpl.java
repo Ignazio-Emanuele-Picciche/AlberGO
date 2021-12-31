@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Nella classe CategoriaService sono presenti i metodi che controllano che i dati passati dalla classe
@@ -64,7 +65,7 @@ public class CategoriaServiceImpl implements CategoriaService {
     public CategoriaDTO findById(Long id) {
         Preconditions.checkArgument(!Objects.isNull(id));
 
-        return categoriaHelper.findById(id);
+        return new CategoriaDTO(categoriaHelper.findById(id));
     }
 
     @Override
@@ -83,14 +84,14 @@ public class CategoriaServiceImpl implements CategoriaService {
     public List<CategoriaDTO> findAll(Long idHotel) {
         Preconditions.checkArgument(!Objects.isNull(idHotel));
 
-        return categoriaHelper.findAll(idHotel);
+        return categoriaHelper.findAll(idHotel).stream().map(CategoriaDTO::new).collect(Collectors.toList());
     }
 
     @Override
     public List<CategoriaDTO> findAllByNome(String nome, Long idHotel) {
         Preconditions.checkArgument(!Objects.isNull(nome));
         Preconditions.checkArgument(!Objects.isNull(idHotel));
-        return categoriaHelper.findAllByNome(nome, idHotel);
+        return categoriaHelper.findAllByNome(nome, idHotel).stream().map(CategoriaDTO::new).collect(Collectors.toList());
     }
 
 }

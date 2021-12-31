@@ -3,6 +3,7 @@ package com.ignaziopicciche.albergo.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -31,7 +32,7 @@ public class Servizio {
     @JoinColumn(name = "servizioId"), inverseJoinColumns =
     @JoinColumn(name = "prenotazioneId"))
     @Singular("prenotazione")
-    private Set<Prenotazione> prenotazioni;
+    private Set<Prenotazione> prenotazioni = new HashSet<>();
 
 
     public void addPrenotazione(Prenotazione prenotazione) {

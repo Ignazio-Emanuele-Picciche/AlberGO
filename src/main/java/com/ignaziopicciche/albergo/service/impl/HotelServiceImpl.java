@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Nella classe HotelService sono presenti i metodi che controllano che i dati passati dalla classe
@@ -56,32 +57,32 @@ public class HotelServiceImpl implements HotelService {
     public HotelDTO findById(Long id) {
         Preconditions.checkArgument(!Objects.isNull(id));
 
-        return hotelHelper.findById(id);
+        return new HotelDTO(hotelHelper.findById(id));
     }
 
     @Override
     public List<HotelDTO> findHotelByName(String nomeHotel) {
         Preconditions.checkArgument(!Objects.isNull(nomeHotel));
 
-        return hotelHelper.findHotelByName(nomeHotel);
+        return hotelHelper.findHotelByName(nomeHotel).stream().map(HotelDTO::new).collect(Collectors.toList());
     }
 
     @Override
     public List<HotelDTO> findHotelByIndirizzo(String indirizzoHotel) {
         Preconditions.checkArgument(!Objects.isNull(indirizzoHotel));
 
-        return hotelHelper.findHotelByIndirizzo(indirizzoHotel);
+        return hotelHelper.findHotelByIndirizzo(indirizzoHotel).stream().map(HotelDTO::new).collect(Collectors.toList());
     }
 
     @Override
     public HotelDTO findHotelByCodiceHotel(String publicKey) {
         Preconditions.checkArgument(!Objects.isNull(publicKey));
 
-        return hotelHelper.findHotelByCodiceHotel(publicKey);
+        return new HotelDTO(hotelHelper.findHotelByCodiceHotel(publicKey));
     }
 
     @Override
     public List<HotelDTO> getAllHotel() {
-        return hotelHelper.getAllHotel();
+        return hotelHelper.getAllHotel().stream().map(HotelDTO::new).collect(Collectors.toList());
     }
 }

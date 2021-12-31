@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Nella classe ServizioService sono presenti i metodi che controllano che i dati passati dalla classe
@@ -53,14 +54,14 @@ public class ServizioServiceImpl implements ServizioService {
     public ServizioDTO findById(Long id) {
         Preconditions.checkArgument(!Objects.isNull(id));
 
-        return servizioHelper.findById(id);
+        return new ServizioDTO(servizioHelper.findById(id));
     }
 
     @Override
     public List<ServizioDTO> findAll(Long idHotel) {
         Preconditions.checkArgument(!Objects.isNull(idHotel));
 
-        return servizioHelper.findAll(idHotel);
+        return servizioHelper.findAll(idHotel).stream().map(ServizioDTO::new).collect(Collectors.toList());
     }
 
     @Override
@@ -92,7 +93,7 @@ public class ServizioServiceImpl implements ServizioService {
     public List<ServizioDTO> findNotInByPrenotazione(Long idPrenotazione) {
         Preconditions.checkArgument(!Objects.isNull(idPrenotazione));
 
-        return servizioHelper.findNotInByPrenotazione(idPrenotazione);
+        return servizioHelper.findNotInByPrenotazione(idPrenotazione).stream().map(ServizioDTO::new).collect(Collectors.toList());
     }
 
     @Override
@@ -107,6 +108,6 @@ public class ServizioServiceImpl implements ServizioService {
     public List<ServizioDTO> findServiziInPrenotazione(Long idPrenotazione) {
         Preconditions.checkArgument(!Objects.isNull(idPrenotazione));
 
-        return servizioHelper.findServiziInPrenotazione(idPrenotazione);
+        return servizioHelper.findServiziInPrenotazione(idPrenotazione).stream().map(ServizioDTO::new).collect(Collectors.toList());
     }
 }

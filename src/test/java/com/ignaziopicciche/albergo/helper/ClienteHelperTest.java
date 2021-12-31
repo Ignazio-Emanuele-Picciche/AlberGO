@@ -7,6 +7,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
+import com.ignaziopicciche.albergo.dto.ClienteDTO;
 import com.ignaziopicciche.albergo.model.Cliente;
 import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.AmministratoreRepository;
@@ -62,27 +63,79 @@ class ClienteHelperTest {
     }
 
     @Test
-    void findClienteById() {
-        /*
-        AppUser user1 = new AppUser();
-		AppUser user2 = new AppUser();
-		AppUser user3 = new AppUser();
-		List<AppUser> list = List.of(user1, user2, user3);
-
-		lenient().when(userRepository.findAll()).thenReturn(list);
-		assertEquals(list, service.getUsers());
-		verify(userRepository, atLeastOnce()).findAll();
-		reset(userRepository);
-         */
-
-//        Long idCliente = clienteRepository.findAll().get(0).getId();
-//        Cliente cliente = clienteRepository.findById(idCliente).get();
-        Long idCliente = 3L;
-
+    void findClienteByIdTest(){
+        Long clienteId = 0L;
         Cliente cliente = new Cliente();
-        lenient().when(clienteRepository.findById(idCliente)).thenReturn(Optional.of(cliente));
-        assertEquals(cliente, clienteHelper.findById(idCliente));
-        verify(clienteRepository, atLeastOnce()).findById(idCliente);
+
+        lenient().when(clienteRepository.findById(clienteId)).thenReturn(Optional.of(cliente));
+        lenient().when(clienteRepository.existsById(clienteId)).thenReturn(true);
+        assertEquals(cliente, clienteHelper.findById(clienteId));
+        verify(clienteRepository, atLeastOnce()).findById(clienteId);
+        verify(clienteRepository, atLeastOnce()).existsById(clienteId);
+        reset(clienteRepository);
+    }
+
+    @Test
+    void findAllClientiByIdHotelTest(){
+        Long idHotel = 0L;
+        Cliente cliente1 = new Cliente();
+        Cliente cliente2 = new Cliente();
+        Cliente cliente3 = new Cliente();
+        List<Cliente> list = List.of(cliente1, cliente2, cliente3);
+
+        lenient().when(hotelRepository.existsById(idHotel)).thenReturn(true);
+        lenient().when(clienteRepository.findClientiByHotel_Id(idHotel)).thenReturn(list);
+        assertEquals(list, clienteHelper.findAll(idHotel));
+        verify(clienteRepository, atLeastOnce()).findClientiByHotel_Id(idHotel);
+        verify(hotelRepository, atLeastOnce()).existsById(idHotel);
+        reset(clienteRepository);
+        reset(hotelRepository);
+    }
+
+    @Test
+    void findClientiStartingWithNomeTest(){
+        String nome = "ignazio";
+        String cognome = null;
+        Long idHotel = 0L;
+
+        Cliente cliente1 = new Cliente();
+        Cliente cliente2 = new Cliente();
+        Cliente cliente3 = new Cliente();
+        List<Cliente> list = List.of(cliente1, cliente2, cliente3);
+
+        lenient().when(clienteRepository.findClientesByNomeStartingWith(nome, idHotel)).thenReturn(list);
+        assertEquals(list, clienteHelper.findAllByNomeCognome(nome, cognome, idHotel));
+        verify(clienteRepository, atLeastOnce()).findClientesByNomeStartingWith(nome, idHotel);
+        reset(clienteRepository);
+    }
+
+    @Test
+    void findClientiStartingWithCognomeTest(){
+        String nome = null;
+        String cognome = "picciche";
+        Long idHotel = 0L;
+
+        Cliente cliente1 = new Cliente();
+        Cliente cliente2 = new Cliente();
+        Cliente cliente3 = new Cliente();
+        List<Cliente> list = List.of(cliente1, cliente2, cliente3);
+
+        lenient().when(clienteRepository.findClientesByCognomeStartingWith(cognome, idHotel)).thenReturn(list);
+        assertEquals(list, clienteHelper.findAllByNomeCognome(nome, cognome, idHotel));
+        verify(clienteRepository, atLeastOnce()).findClientesByCognomeStartingWith(cognome, idHotel);
+        reset(clienteRepository);
+    }
+
+    @Test
+    void findClienteByUsername(){
+        String username = "pippo";
+        Cliente cliente = new Cliente();
+
+        lenient().when(clienteRepository.existsByUsername(username)).thenReturn(true);
+        lenient().when(clienteRepository.findByUsername(username)).thenReturn(cliente);
+        assertEquals(cliente, clienteHelper.findClienteByUsername(username));
+        verify(clienteRepository, atLeastOnce()).findByUsername(username);
+        verify(clienteRepository, atLeastOnce()).existsByUsername(username);
         reset(clienteRepository);
     }
 

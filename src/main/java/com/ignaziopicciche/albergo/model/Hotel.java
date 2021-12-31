@@ -3,6 +3,8 @@ package com.ignaziopicciche.albergo.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -29,27 +31,23 @@ public class Hotel {
 
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Amministratore> amministratori;
+    private List<Amministratore> amministratori = new ArrayList<>();
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Cliente> clienti;
+    private List<Cliente> clienti = new ArrayList<>();
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Prenotazione> prenotazioni;
+    private List<Prenotazione> prenotazioni = new ArrayList<>();
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Stanza> stanze;
+    private List<Stanza> stanze = new ArrayList<>();
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Categoria> categorie;
+    private List<Categoria> categorie = new ArrayList<>();
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Servizio> servizi;
-
+    private List<Servizio> servizi = new ArrayList<>();
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<ClienteHotel> hotelsCliente;
-
-
-
+    private Set<ClienteHotel> hotelsCliente = new HashSet<>();
 }

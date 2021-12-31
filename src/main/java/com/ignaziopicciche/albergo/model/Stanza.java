@@ -4,6 +4,7 @@ package com.ignaziopicciche.albergo.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,7 +25,7 @@ public class Stanza {
     private Integer metriQuadri;
 
     @OneToMany(mappedBy = "stanza", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Prenotazione> prenotazioni;
+    private List<Prenotazione> prenotazioni = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "ID_STANZA_HOTEL")

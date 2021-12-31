@@ -5,7 +5,6 @@ import com.ignaziopicciche.albergo.exception.enums.HotelEnum;
 import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Cliente;
 import com.ignaziopicciche.albergo.model.Hotel;
-import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
 import org.springframework.stereotype.Component;
@@ -19,12 +18,12 @@ import java.util.stream.Collectors;
  * provengono dal livello "service" nel quale è stato controllato che i campi obbligatori sono stati inseriti correttamente
  * nel front-end.
  * Per "logiche e funzionalita" si intende:
- *  -comunicazioni con il livello "repository" che si occuperà delle operazioni CRUD e non solo:
- *      -es. controllare che un hotel è gia presente nel sistema;
- *      -es. aggiungere, eliminare, cercare, aggiornare un hotel.
- *  -varie operazioni di logica (calcoli, operazioni, controlli generici)
- *  -restituire, al front-end, le eccezioni custom in caso di errore (es. L'hotel che vuoi inserire è già presente nel sistema)
- *  -in caso di operazioni andate a buon fine, verranno restituiti al livello service i dati che dovranno essere inviati al front-end.
+ * -comunicazioni con il livello "repository" che si occuperà delle operazioni CRUD e non solo:
+ * -es. controllare che un hotel è gia presente nel sistema;
+ * -es. aggiungere, eliminare, cercare, aggiornare un hotel.
+ * -varie operazioni di logica (calcoli, operazioni, controlli generici)
+ * -restituire, al front-end, le eccezioni custom in caso di errore (es. L'hotel che vuoi inserire è già presente nel sistema)
+ * -in caso di operazioni andate a buon fine, verranno restituiti al livello service i dati che dovranno essere inviati al front-end.
  */
 
 @Component
@@ -34,22 +33,21 @@ public class HotelHelper {
     private final ClienteRepository clienteRepository;
     private final StripeHelper stripeHelper;
     private final ClienteHotelHelper clienteHotelHelper;
-    private final ClienteHotelRepository clienteHotelRepository;
 
     private static HotelEnum hotelEnum;
 
-    public HotelHelper(HotelRepository hotelRepository, ClienteRepository clienteRepository, StripeHelper stripeHelper, ClienteHotelHelper clienteHotelHelper, ClienteHotelRepository clienteHotelRepository) {
+    public HotelHelper(HotelRepository hotelRepository, ClienteRepository clienteRepository, StripeHelper stripeHelper, ClienteHotelHelper clienteHotelHelper) {
         this.hotelRepository = hotelRepository;
         this.clienteRepository = clienteRepository;
         this.stripeHelper = stripeHelper;
         this.clienteHotelHelper = clienteHotelHelper;
-        this.clienteHotelRepository = clienteHotelRepository;
     }
 
     /**
      * Metodo che controlla se l'hotel che si vuole aggiungere non è presente nel sistema.
      * In caso positivo viene aggiunto l'hotel e vengono associati i clienti presenti nel sistema all'hotel.
      * In caso negativo viene restituita un'eccezione custom
+     *
      * @param hotelDTO
      * @return HotelDTO
      * @throws Exception
@@ -91,12 +89,13 @@ public class HotelHelper {
      * Metodo che controlla se l'hotel che si vuole cercare è presente nel sistema.
      * In caso positivo viene restituito l'hotell associato all'id
      * In caso negativo viene restituita un'eccezione custom
+     *
      * @param id
-     * @return HotelDTO
+     * @return Hotel
      */
-    public HotelDTO findById(Long id) {
+    public Hotel findById(Long id) {
         if (hotelRepository.existsById(id)) {
-            return new HotelDTO(hotelRepository.findById(id).get());
+            return hotelRepository.findById(id).get();
         }
 
         hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
@@ -105,36 +104,35 @@ public class HotelHelper {
 
     /**
      * Metodo che restuisce gli hotel il cui nome inizia per nomehotel
+     *
      * @param nomeHotel
-     * @return List<HotelDTO>
+     * @return List<Hotel>
      */
-    public List<HotelDTO> findHotelByName(String nomeHotel) {
-        List<Hotel> hotels = hotelRepository.findHotelByNomeStartingWith(nomeHotel);
-
-        return hotels.stream().map(hotel -> new HotelDTO(hotel)).collect(Collectors.toList());
-
+    public List<Hotel> findHotelByName(String nomeHotel) {
+        return hotelRepository.findHotelByNomeStartingWith(nomeHotel);
     }
 
     /**
      * Metodo che restituisce gli hotel il cui inidirzzo inizia per indirizzoHotel
+     *
      * @param indirizzoHotel
-     * @return List<HotelDTO>
+     * @return List<Hotel>
      */
-    public List<HotelDTO> findHotelByIndirizzo(String indirizzoHotel) {
-        List<Hotel> hotels = hotelRepository.findHotelByIndirizzoStartingWith(indirizzoHotel);
-        return hotels.stream().map(hotel -> new HotelDTO(hotel)).collect(Collectors.toList());
+    public List<Hotel> findHotelByIndirizzo(String indirizzoHotel) {
+        return hotelRepository.findHotelByIndirizzoStartingWith(indirizzoHotel);
     }
 
     /**
      * Metodo che controlla se esiste un hotel associato al codiceHotel passato da front-end.
      * In caso positivo restituisce l'hotel associato
      * In caso negativo restituisce un'eccezione custom (L'hotel che stai cercando, tramite codiceHotel, non esiste)
+     *
      * @param codiceHotel
-     * @return HotelDTO
+     * @return Hotel
      */
-    public HotelDTO findHotelByCodiceHotel (String codiceHotel) {
-        if(hotelRepository.existsByCodiceHotel(codiceHotel)) {
-            return new HotelDTO(hotelRepository.findByCodiceHotel(codiceHotel));
+    public Hotel findHotelByCodiceHotel(String codiceHotel) {
+        if (hotelRepository.existsByCodiceHotel(codiceHotel)) {
+            return hotelRepository.findByCodiceHotel(codiceHotel);
         }
 
         hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_CHNE");
@@ -143,11 +141,11 @@ public class HotelHelper {
 
     /**
      * Metodo che restituisce tutti gli hotel presenti nel sistema
-     * @return
+     *
+     * @return List<Hotel>
      */
-    public List<HotelDTO> getAllHotel() {
-        List<Hotel> allHotel = hotelRepository.findAll();
-        return allHotel.stream().map(HotelDTO::new).collect(Collectors.toList());
+    public List<Hotel> getAllHotel() {
+        return hotelRepository.findAll();
     }
 
 }

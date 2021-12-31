@@ -5,6 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,5 +44,5 @@ public class Prenotazione {
 
 
     @ManyToMany(mappedBy = "prenotazioni", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Servizio> servizi;
+    private List<Servizio> servizi = new ArrayList<>();
 }

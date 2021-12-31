@@ -160,11 +160,11 @@ public class ClienteHelper{
      * In caso positivo viene restituito il cliente cercato per idCliente
      * In caso negativo viene restituita al front-end un'eccezione custom
      * @param id
-     * @return ClienteDTO
+     * @return Cliente
      */
-    public ClienteDTO findById(Long id) {
+    public Cliente findById(Long id) {
         if (clienteRepository.existsById(id)) {
-            return new ClienteDTO(clienteRepository.findById(id).get());
+            return clienteRepository.findById(id).get();
         }
 
         clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_IDNE");
@@ -176,11 +176,11 @@ public class ClienteHelper{
      * In caso positivo vengono restituiti tutti i clienti cercati con la logica poco fa citata.
      * In caso negativo viene restituita un'eccezione custom
      * @param idHotel
-     * @return List<ClienteDTO>
+     * @return List<Cliente>
      */
-    public List<ClienteDTO> findAll(Long idHotel) {
+    public List<Cliente> findAll(Long idHotel) {
         if (hotelRepository.existsById(idHotel)) {
-            return clienteRepository.findClientiByHotel_Id(idHotel).stream().map(ClienteDTO::new).collect(Collectors.toList());
+            return clienteRepository.findClientiByHotel_Id(idHotel);
         }
 
         hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
@@ -194,17 +194,17 @@ public class ClienteHelper{
      * @param nome
      * @param cognome
      * @param idHotel
-     * @return List<ClienteDTO>
+     * @return List<Cliente>
      */
-    public List<ClienteDTO> findAllByNomeCognome(String nome, String cognome, Long idHotel) {
+    public List<Cliente> findAllByNomeCognome(String nome, String cognome, Long idHotel) {
         List<Cliente> clienti;
 
         if (cognome == null && nome != null) {
             clienti = clienteRepository.findClientesByNomeStartingWith(nome, idHotel);
-            return clienti.stream().map(ClienteDTO::new).collect(Collectors.toList());
+            return clienti;
         } else if (nome == null && cognome != null) {
             clienti = clienteRepository.findClientesByCognomeStartingWith(cognome, idHotel);
-            return clienti.stream().map(ClienteDTO::new).collect(Collectors.toList());
+            return clienti;
         }
 
         clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_NF");
@@ -218,10 +218,10 @@ public class ClienteHelper{
      * @param username
      * @return ClienteDTO
      */
-    public ClienteDTO findClienteByUsername(String username){
+    public Cliente findClienteByUsername(String username){
         if(clienteRepository.existsByUsername(username)){
             Cliente cliente = clienteRepository.findByUsername(username);
-            return new ClienteDTO(cliente);
+            return cliente;
         }
 
         clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_NF");

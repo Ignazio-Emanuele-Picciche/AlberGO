@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -23,12 +24,12 @@ import java.util.stream.Collectors;
  * provengono dal livello "service" nel quale è stato controllato che i campi obbligatori sono stati inseriti correttamente
  * nel front-end.
  * Per "logiche e funzionalita" si intende:
- *  -comunicazioni con il livello "repository" che si occuperà delle operazioni CRUD e non solo:
- *      -es. controllare che un servzio è gia presente nel sistema;
- *      -es. aggiungere, eliminare, cercare, aggiornare un servizio.
- *  -varie operazioni di logica (calcoli, operazioni, controlli generici)
- *  -restituire, al front-end, le eccezioni custom in caso di errore (es. Il servizio che vuoi inserire è già presente nel sistema)
- *  -in caso di operazioni andate a buon fine, verranno restituiti al livello service i dati che dovranno essere inviati al front-end.
+ * -comunicazioni con il livello "repository" che si occuperà delle operazioni CRUD e non solo:
+ * -es. controllare che un servzio è gia presente nel sistema;
+ * -es. aggiungere, eliminare, cercare, aggiornare un servizio.
+ * -varie operazioni di logica (calcoli, operazioni, controlli generici)
+ * -restituire, al front-end, le eccezioni custom in caso di errore (es. Il servizio che vuoi inserire è già presente nel sistema)
+ * -in caso di operazioni andate a buon fine, verranno restituiti al livello service i dati che dovranno essere inviati al front-end.
  */
 
 @Component
@@ -55,13 +56,13 @@ public class ServizioHelper {
     /**
      * Metodo che, dopo aver controllato che il servizio è presente nel sistema, restituisce un servizio associato all'id passato
      * Nel caso in cui non è presente nel sistema restituisce un'eccezione custom
+     *
      * @param id
-     * @return ServizioDTO
+     * @return Servizio
      */
-    public ServizioDTO findById(Long id) {
+    public Servizio findById(Long id) {
         if (servizioRepository.existsById(id)) {
-            Servizio servizio = servizioRepository.findById(id).get();
-            return new ServizioDTO(servizio);
+            return servizioRepository.findById(id).get();
         }
 
         servizioEnum = ServizioEnum.getServizioEnumByMessageCode("SERV_IDNE");
@@ -71,14 +72,13 @@ public class ServizioHelper {
     /**
      * Metodo che, dopo aver controllato che l'hotel esiste nel sistema, restituisce tutti i servizi presenti in quell'hotel
      * Nel caso l'hotel non dovesse esistere viene restituita un'eccezione custom.
+     *
      * @param idHotel
-     * @return List<ServizioDTO>
+     * @return List<Servizio>
      */
-    public List<ServizioDTO> findAll(Long idHotel) {
+    public List<Servizio> findAll(Long idHotel) {
         if (hotelRepository.existsById(idHotel)) {
-
-            List<Servizio> servizi = servizioRepository.findAllByHotel_Id(idHotel);
-            return servizi.stream().map(servizio -> new ServizioDTO(servizio)).collect(Collectors.toList());
+            return servizioRepository.findAllByHotel_Id(idHotel);
         }
 
         hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_IDNE");
@@ -89,6 +89,7 @@ public class ServizioHelper {
      * Metodo che, dopo aver verificato che il servizio che si vuole aggiungere non è presente nel sistema,
      * viene aggiunto il nuovo servizio dell'hotel.
      * In caso di errore viene restituita un'eccezione custom
+     *
      * @param servizioDTO
      * @return idServizio
      */
@@ -113,6 +114,7 @@ public class ServizioHelper {
     /**
      * Metodo che, dopo aver controllato che il servizio è presente nel sistema, lo elimina.
      * Nel caso in cui non dovesse esistere o in caso di problemi durante l'eliminazione viene restituita un'eccezione custom
+     *
      * @param id
      * @return Boolean
      */
@@ -134,6 +136,7 @@ public class ServizioHelper {
     /**
      * Metodo che, dopo aver verificato che il servizio è presente nel sistema, aggiorna i campi "editabili" da front-end.
      * Nel caso il servizio non dovesse esistere viene resituita un'eccezione custom (Il servizio che stai cercando non esiste)
+     *
      * @param servizioDTO
      * @return idServizio
      */
@@ -158,6 +161,7 @@ public class ServizioHelper {
      * selezionalo nella prenotazione presente.
      * Inoltre al cliente viene addebitato il costo del servizio appena viene aggiunto alla prenotazione.
      * Nel caso in cui le associazioni non corrispondono viene restituita un'eccezione custom
+     *
      * @param idServizio
      * @param idPrenotazione
      * @param idHotel
@@ -211,10 +215,11 @@ public class ServizioHelper {
      * Metodo che, dopo aver controllato che la prenotazione è presente nel sistema, restituisce tutti i servizi dell'hotel, in cui è
      * stata effettuata la prenotazione, che non sono stati inseriti nella prenotazione.
      * In caso di errore restituisce un'eccezione custom
+     *
      * @param idPrenotazione
-     * @return List<ServizioDTO>
+     * @return List<Servizio>
      */
-    public List<ServizioDTO> findNotInByPrenotazione(Long idPrenotazione) {
+    public List<Servizio> findNotInByPrenotazione(Long idPrenotazione) {
         if (prenotazioneRepository.existsById(idPrenotazione)) {
             List<Servizio> serviziPrenotazione = prenotazioneRepository.findById(idPrenotazione).get().getServizi();
             List<Servizio> serviziTotali = servizioRepository.findAllByHotel_Id(prenotazioneRepository.findById(idPrenotazione).get().getHotel().getId());
@@ -225,7 +230,7 @@ public class ServizioHelper {
             for (Servizio st : serviziTotali) {
                 check = false;
                 for (Servizio sp : serviziPrenotazione) {
-                    if (st.getId() == sp.getId()) {
+                    if (Objects.equals(st.getId(), sp.getId())) {
                         check = true;
                     }
                 }
@@ -236,7 +241,7 @@ public class ServizioHelper {
             }
 
 
-            return serviziNotInPrenotazione.stream().map(servizio -> new ServizioDTO(servizio)).collect(Collectors.toList());
+            return serviziNotInPrenotazione;
         }
 
         prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_IDNE");
@@ -247,6 +252,7 @@ public class ServizioHelper {
     /**
      * Metodo che, dopo aver verificato che la prenotazione e il servizio associato esistono, rimuove il servizio dalla prenotazione.
      * In caso di errori, es. non esiste la prenotazione o il servizio, viene restituita un'eccezione custom
+     *
      * @param idServizio
      * @param idPrenotazione
      * @return Boolean
@@ -282,14 +288,14 @@ public class ServizioHelper {
     /**
      * Metodo che, dopo aver verificato che la prenotazione esiste nel sistema, ritorna tutti i servizi aggiunti in quella prenotazione
      * In caso di errore restituisce un'eccezione custom
+     *
      * @param idPrenotazione
-     * @return List<ServizioDTO>
+     * @return List<Servizio>
      */
-    public List<ServizioDTO> findServiziInPrenotazione(Long idPrenotazione) {
+    public List<Servizio> findServiziInPrenotazione(Long idPrenotazione) {
         if (prenotazioneRepository.existsById(idPrenotazione)) {
             Prenotazione prenotazione = prenotazioneRepository.findById(idPrenotazione).get();
-            List<Servizio> serviziPrenotazione = prenotazione.getServizi();
-            return serviziPrenotazione.stream().map(servizio -> new ServizioDTO(servizio)).collect(Collectors.toList());
+            return prenotazione.getServizi();
         }
 
         prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_IDNE");

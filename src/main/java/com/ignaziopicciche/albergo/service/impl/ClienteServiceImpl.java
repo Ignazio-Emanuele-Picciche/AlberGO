@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Nella classe ClienteService sono presenti i metodi che controllano che i dati passati dalla classe
@@ -67,14 +68,14 @@ public class ClienteServiceImpl implements ClienteService {
     public ClienteDTO findById(Long id) {
         Preconditions.checkArgument(!Objects.isNull(id));
 
-        return clienteHelper.findById(id);
+        return new ClienteDTO(clienteHelper.findById(id));
     }
 
     @Override
     public List<ClienteDTO> findAll(Long idHotel) {
         Preconditions.checkArgument(!Objects.isNull(idHotel));
 
-        return clienteHelper.findAll(idHotel);
+        return clienteHelper.findAll(idHotel).stream().map(ClienteDTO::new).collect(Collectors.toList());
     }
 
     @Override
@@ -82,14 +83,14 @@ public class ClienteServiceImpl implements ClienteService {
         nome = StringUtils.isNotBlank(nome) ? nome : null;
         cognome = StringUtils.isNotBlank(cognome) ? cognome : null;
         Preconditions.checkArgument(!Objects.isNull(idHotel));
-        return clienteHelper.findAllByNomeCognome(nome, cognome, idHotel);
+        return clienteHelper.findAllByNomeCognome(nome, cognome, idHotel).stream().map(ClienteDTO::new).collect(Collectors.toList());
     }
 
     @Override
     public ClienteDTO findClienteByUsername(String username) {
         Preconditions.checkArgument(!Objects.isNull(username));
 
-        return clienteHelper.findClienteByUsername(username);
+        return new ClienteDTO(clienteHelper.findClienteByUsername(username));
     }
 
 }

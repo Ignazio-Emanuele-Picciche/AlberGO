@@ -26,10 +26,10 @@ public class Cliente {
     private String ruolo;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Prenotazione> prenotazioni;
+    private List<Prenotazione> prenotazioni = new ArrayList<>();
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<ClienteHotel> clientiHotel;
+    private Set<ClienteHotel> clientiHotel = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "ID_CLIENTE_HOTEL")
