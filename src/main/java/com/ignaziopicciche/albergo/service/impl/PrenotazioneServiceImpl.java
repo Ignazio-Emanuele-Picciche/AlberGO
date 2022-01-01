@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Nella classe PrenotazioneService sono presenti i metodi che controllano che i dati passati dalla classe
@@ -49,28 +50,28 @@ public class PrenotazioneServiceImpl implements PrenotazioneService {
     public PrenotazioneDTO findById(Long id) {
         Preconditions.checkArgument(!Objects.isNull(id));
 
-        return prenotazioneHelper.findById(id);
+        return new PrenotazioneDTO(prenotazioneHelper.findPrenotazioneById(id));
     }
 
     @Override
     public List<FatturaDTO> findAll(Long idHotel) {
         Preconditions.checkArgument(!Objects.isNull(idHotel));
 
-        return prenotazioneHelper.findAll(idHotel);
+        return prenotazioneHelper.findAllPrenotazioniByIdHotel(idHotel);
     }
 
     @Override
     public List<FatturaDTO> findAllFatture(Long idCliente) {
         Preconditions.checkArgument(!Objects.isNull(idCliente));
 
-        return prenotazioneHelper.findAllFatture(idCliente);
+        return prenotazioneHelper.findAllFattureByIdCliente(idCliente);
     }
 
     @Override
     public Boolean delete(Long id) throws StripeException {
         Preconditions.checkArgument(!Objects.isNull(id));
 
-        return prenotazioneHelper.delete(id);
+        return prenotazioneHelper.deletePrenotazione(id);
     }
 
     @Override
@@ -81,14 +82,14 @@ public class PrenotazioneServiceImpl implements PrenotazioneService {
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.idCliente));
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.idStanza));
 
-        return prenotazioneHelper.create(prenotazioneDTO);
+        return new PrenotazioneDTO(prenotazioneHelper.createPrenotazione(prenotazioneDTO));
     }
 
     @Override
     public List<PrenotazioneDTO> findPrenotazionesByStanza_Id(Long idStanza) {
         Preconditions.checkArgument(!Objects.isNull(idStanza));
 
-        return prenotazioneHelper.findPrenotazionesByStanza_Id(idStanza);
+        return prenotazioneHelper.findPrenotazioniByStanzaId(idStanza).stream().map(PrenotazioneDTO::new).collect(Collectors.toList());
     }
 
     @Override
@@ -97,7 +98,7 @@ public class PrenotazioneServiceImpl implements PrenotazioneService {
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.dataFine));
         Preconditions.checkArgument(!Objects.isNull(prenotazioneDTO.dataInizio));
 
-        return prenotazioneHelper.update(prenotazioneDTO);
+        return prenotazioneHelper.updatePrenotazione(prenotazioneDTO);
     }
 
     @Override

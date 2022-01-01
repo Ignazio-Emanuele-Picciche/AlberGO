@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Nella classe StanzaService sono presenti i metodi che controllano che i dati passati dalla classe
@@ -70,21 +71,21 @@ public class StanzaServiceImpl implements StanzaService {
         //Preconditions.checkArgument(!Objects.isNull(stanzaDTO.idHotel));
         //Preconditions.checkArgument(!Objects.isNull(stanzaDTO.idCategoria));
 
-        return stanzaHelper.update(stanzaDTO);
+        return new StanzaDTO(stanzaHelper.updateStanza(stanzaDTO));
     }
 
     @Override
     public StanzaDTO findById(Long id) {
         Preconditions.checkArgument(!Objects.isNull(id));
 
-        return stanzaHelper.findById(id);
+        return new StanzaDTO(stanzaHelper.findById(id));
     }
 
     @Override
     public List<StanzaDTO> findAll(Long idHotel) {
         Preconditions.checkArgument(!Objects.isNull(idHotel));
 
-        return stanzaHelper.findAll(idHotel);
+        return stanzaHelper.findAllStanzeByIdHotel(idHotel).stream().map(StanzaDTO::new).collect(Collectors.toList());
     }
 
 
@@ -94,14 +95,14 @@ public class StanzaServiceImpl implements StanzaService {
         Preconditions.checkArgument(!Objects.isNull(dataInizio));
         Preconditions.checkArgument(!Objects.isNull(dataFine));
 
-        return stanzaHelper.findStanzasByCategoria_IdAndDates(idCategoria, dataInizio, dataFine);
+        return stanzaHelper.findStanzasByCategoria_IdAndDates(idCategoria, dataInizio, dataFine).stream().map(StanzaDTO::new).collect(Collectors.toList());
     }
 
     @Override
     public int findCountStanzasFuoriServizioByHotel_Id(Long idHotel) {
         Preconditions.checkArgument(!Objects.isNull(idHotel));
 
-        return stanzaHelper.findCountStanzasFuoriServizioByHotel_Id(idHotel);
+        return stanzaHelper.findNumeroStanzeFuoriServizioByIdHotel(idHotel);
     }
 
     @Override
@@ -110,7 +111,7 @@ public class StanzaServiceImpl implements StanzaService {
         Preconditions.checkArgument(!Objects.isNull(dataFine));
         Preconditions.checkArgument(!Objects.isNull(dataInizio));
 
-        return stanzaHelper.findStanzasLibereByHotel_IdAndDates(idHotel, dataInizio, dataFine);
+        return stanzaHelper.findStanzeLibereByHotel_IdAndDates(idHotel, dataInizio, dataFine).stream().map(StanzaDTO::new).collect(Collectors.toList());
     }
 
     @Override
@@ -119,7 +120,7 @@ public class StanzaServiceImpl implements StanzaService {
         Preconditions.checkArgument(!Objects.isNull(dataFine));
         Preconditions.checkArgument(!Objects.isNull(dataInizio));
 
-        return stanzaHelper.findStanzasOccupateByHotel_IdAndDates(idHotel, dataInizio, dataFine);
+        return stanzaHelper.findStanzeOccupateByHotel_IdAndDates(idHotel, dataInizio, dataFine).stream().map(StanzaDTO::new).collect(Collectors.toList());
     }
 
     @Override

@@ -51,7 +51,7 @@ public class AmministratoreServiceImpl implements AmministratoreService {
     @Override
     public AmministratoreDTO findAmministratoreByUsername(String username){
         Preconditions.checkArgument(!Objects.isNull(username));
-        return amministratoreHelper.findAmministratoreByUsername(username);
+        return new AmministratoreDTO(amministratoreHelper.findAmministratoreByUsername(username));
     }
 
 

@@ -45,7 +45,6 @@ public class PrenotazioneHelper {
     private final HotelRepository hotelRepository;
     private final ClienteRepository clienteRepository;
     private final StanzaRepository stanzaRepository;
-    private final CategoriaRepository categoriaRepository;
     private final ClienteHotelRepository clienteHotelRepository;
     private final StripeHelper stripeHelper;
 
@@ -53,12 +52,11 @@ public class PrenotazioneHelper {
     private static HotelEnum hotelEnum;
     private static StanzaEnum stanzaEnum;
 
-    public PrenotazioneHelper(PrenotazioneRepository prenotazioneRepository, HotelRepository hotelRepository, ClienteRepository clienteRepository, StanzaRepository stanzaRepository, CategoriaRepository categoriaRepository, ClienteHotelRepository clienteHotelRepository, StripeHelper stripeHelper) {
+    public PrenotazioneHelper(PrenotazioneRepository prenotazioneRepository, HotelRepository hotelRepository, ClienteRepository clienteRepository, StanzaRepository stanzaRepository, ClienteHotelRepository clienteHotelRepository, StripeHelper stripeHelper) {
         this.prenotazioneRepository = prenotazioneRepository;
         this.hotelRepository = hotelRepository;
         this.clienteRepository = clienteRepository;
         this.stanzaRepository = stanzaRepository;
-        this.categoriaRepository = categoriaRepository;
         this.clienteHotelRepository = clienteHotelRepository;
         this.stripeHelper = stripeHelper;
     }
@@ -69,11 +67,11 @@ public class PrenotazioneHelper {
      * In caso negativo restituisce un'eccezione custom (La prenotazione che stai cercando non esiste)
      *
      * @param id
-     * @return PrenotazioneDTO
+     * @return Prenotazione
      */
-    public PrenotazioneDTO findById(Long id) {
+    public Prenotazione findPrenotazioneById(Long id) {
         if (prenotazioneRepository.existsById(id)) {
-            return new PrenotazioneDTO(prenotazioneRepository.findById(id).get());
+            return prenotazioneRepository.findById(id).get();
         }
 
         prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_IDNE");
@@ -88,7 +86,7 @@ public class PrenotazioneHelper {
      * @param idHotel
      * @return List<FatturaDTO>
      */
-    public List<FatturaDTO> findAll(Long idHotel) {
+    public List<FatturaDTO> findAllPrenotazioniByIdHotel(Long idHotel) {
         if (hotelRepository.existsById(idHotel)) {
             List<Prenotazione> prenotazioni = prenotazioneRepository.findPrenotazionesByHotel_Id(idHotel);
             List<FatturaDTO> fatture;
@@ -108,7 +106,7 @@ public class PrenotazioneHelper {
      * @param idCliente
      * @return List<FatturaDTO>
      */
-    public List<FatturaDTO> findAllFatture(Long idCliente) {
+    public List<FatturaDTO> findAllFattureByIdCliente(Long idCliente) {
         if (clienteRepository.existsById(idCliente)) {
 
 
@@ -141,7 +139,7 @@ public class PrenotazioneHelper {
      * @return Boolean
      * @throws StripeException
      */
-    public Boolean delete(Long idPrenotazione) throws StripeException {
+    public Boolean deletePrenotazione(Long idPrenotazione) throws StripeException {
         if (prenotazioneRepository.existsById(idPrenotazione)) {
 
             Prenotazione prenotazione = prenotazioneRepository.getById(idPrenotazione);
@@ -207,11 +205,11 @@ public class PrenotazioneHelper {
      * Se tutto è andato a buon fine viene addebitato il costo della prenotazione al cliente
      *
      * @param prenotazioneDTO
-     * @return PrenotazioneDTO
+     * @return Prenotazione
      * @throws StripeException
      * @throws ParseException
      */
-    public PrenotazioneDTO create(PrenotazioneDTO prenotazioneDTO) throws StripeException, ParseException {
+    public Prenotazione createPrenotazione(PrenotazioneDTO prenotazioneDTO) throws StripeException, ParseException {
 
         String date = LocalDate.now().toString();
         Date dataAttuale = new SimpleDateFormat("yyyy-MM-dd").parse(date);
@@ -252,9 +250,9 @@ public class PrenotazioneHelper {
                     .description("Prenotazione creata " + cliente.getNome() + " " + cliente.getCognome() + " " + dataInizioNuova + "  " + dataFineNuova).build();
             stripeHelper.createPaymentIntent(paymentData);
 
-            prenotazioneRepository.save(prenotazione);
+            prenotazione = prenotazioneRepository.save(prenotazione);
 
-            return new PrenotazioneDTO(prenotazione);
+            return prenotazione;
         }
 
         prenotazioneEnum = PrenotazioneEnum.getPrenotazioneEnumByMessageCode("PREN_DNC");
@@ -266,12 +264,11 @@ public class PrenotazioneHelper {
      * prenotazioni effettuate per quella stanza
      *
      * @param idStanza
-     * @return List<PrenotazioneDTO>
+     * @return List<Prenotazione>
      */
-    public List<PrenotazioneDTO> findPrenotazionesByStanza_Id(Long idStanza) {
+    public List<Prenotazione> findPrenotazioniByStanzaId(Long idStanza) {
         if (stanzaRepository.existsById(idStanza)) {
-            List<Prenotazione> prenotazioniLista = prenotazioneRepository.findPrenotazionesByStanza_Id(idStanza);
-            return prenotazioniLista.stream().map(x -> new PrenotazioneDTO(x)).collect(Collectors.toList());
+            return prenotazioneRepository.findPrenotazionesByStanza_Id(idStanza);
         }
 
         stanzaEnum = StanzaEnum.getStanzaEnumByMessageCode("STA_IDNE");
@@ -291,7 +288,7 @@ public class PrenotazioneHelper {
      * @throws ParseException
      * @throws StripeException
      */
-    public Long update(PrenotazioneDTO prenotazioneDTO) throws ParseException, StripeException {
+    public Long updatePrenotazione(PrenotazioneDTO prenotazioneDTO) throws ParseException, StripeException {
 
         String data = LocalDate.now().toString();
         Date dataAttuale = new SimpleDateFormat("yyyy-MM-dd").parse(data);
