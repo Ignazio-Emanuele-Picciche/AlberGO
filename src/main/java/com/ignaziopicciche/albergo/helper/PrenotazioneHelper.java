@@ -109,7 +109,6 @@ public class PrenotazioneHelper {
     public List<FatturaDTO> findAllFattureByIdCliente(Long idCliente) {
         if (clienteRepository.existsById(idCliente)) {
 
-
             Cliente cliente = clienteRepository.findById(idCliente).get();
             List<Prenotazione> prenotazioni = prenotazioneRepository.findPrenotazionesByCliente_Id(idCliente);
             List<FatturaDTO> fattureList = new ArrayList<>();

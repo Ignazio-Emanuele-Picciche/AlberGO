@@ -3,6 +3,7 @@ package com.ignaziopicciche.albergo.helper;
 import com.ignaziopicciche.albergo.dto.FatturaDTO;
 import com.ignaziopicciche.albergo.model.*;
 import com.ignaziopicciche.albergo.repository.*;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -76,16 +77,51 @@ class PrenotazioneHelperTest {
         Long idCliente = 0L;
         Long idCategoria = 0L;
         Long idStanza = 0L;
+        Long idPrenotazione1 = 0L;
+        Long idPrenotazione2 = 1L;
+        Long idPrenotazione3 = 2L;
 
+        Hotel hotel = Hotel.builder().id(idHotel).build();
 
+        Cliente cliente = Cliente.builder()
+                .id(idCliente)
+                .hotel(hotel).build();
 
-        List<Prenotazione> listPrenotazioni = List.of(/*prenotazione1, prenotazione2, prenotazione3*/);
+        Categoria categoria = Categoria.builder()
+                .id(idCategoria)
+                .hotel(hotel).build();
+
+        Stanza stanza = Stanza.builder()
+                .id(idStanza)
+                .categoria(categoria)
+                .hotel(hotel).build();
+
+        Prenotazione prenotazione1 = Prenotazione.builder()
+                .id(idPrenotazione1)
+                .hotel(hotel)
+                .stanza(stanza)
+                .cliente(cliente).build();
+
+        Prenotazione prenotazione2 = Prenotazione.builder()
+                .id(idPrenotazione2)
+                .hotel(hotel)
+                .stanza(stanza)
+                .cliente(cliente).build();
+
+        Prenotazione prenotazione3 = Prenotazione.builder()
+                .id(idPrenotazione3)
+                .hotel(hotel)
+                .stanza(stanza)
+                .cliente(cliente).build();
+
+        List<Prenotazione> listPrenotazioni = List.of(prenotazione1, prenotazione2, prenotazione3);
 
         List<FatturaDTO> listFatture = prenotazioneHelper.convertPrenotazioneToFattura(listPrenotazioni);
 
         lenient().when(hotelRepository.existsById(idHotel)).thenReturn(true);
         lenient().when(prenotazioneRepository.findPrenotazionesByHotel_Id(idHotel)).thenReturn(listPrenotazioni);
-        assertEquals(listFatture, prenotazioneHelper.findAllPrenotazioniByIdHotel(idHotel));
+        Assertions.assertNotNull(prenotazioneHelper.findAllPrenotazioniByIdHotel(idHotel));
+        assertEquals(listFatture.get(0).prenotazione.id, prenotazioneHelper.findAllPrenotazioniByIdHotel(idHotel).get(0).prenotazione.id);
         verify(hotelRepository, atLeastOnce()).existsById(idHotel);
         verify(prenotazioneRepository, atLeastOnce()).findPrenotazionesByHotel_Id(idHotel);
         reset(hotelRepository);
@@ -94,10 +130,66 @@ class PrenotazioneHelperTest {
 
     @Test
     void findAllFattureByIdCliente() {
+        Long idHotel = 0L;
+        Long idCliente = 0L;
+        Long idCategoria = 0L;
+        Long idStanza = 0L;
+        Long idPrenotazione1 = 0L;
+        Long idPrenotazione2 = 1L;
+        Long idPrenotazione3 = 2L;
+
+        Hotel hotel = Hotel.builder().id(idHotel).build();
+
+        Cliente cliente = Cliente.builder()
+                .id(idCliente)
+                .hotel(hotel).build();
+
+        Categoria categoria = Categoria.builder()
+                .id(idCategoria)
+                .hotel(hotel).build();
+
+        Stanza stanza = Stanza.builder()
+                .id(idStanza)
+                .categoria(categoria)
+                .hotel(hotel).build();
+
+        Prenotazione prenotazione1 = Prenotazione.builder()
+                .id(idPrenotazione1)
+                .hotel(hotel)
+                .stanza(stanza)
+                .cliente(cliente).build();
+
+        Prenotazione prenotazione2 = Prenotazione.builder()
+                .id(idPrenotazione2)
+                .hotel(hotel)
+                .stanza(stanza)
+                .cliente(cliente).build();
+
+        Prenotazione prenotazione3 = Prenotazione.builder()
+                .id(idPrenotazione3)
+                .hotel(hotel)
+                .stanza(stanza)
+                .cliente(cliente).build();
+
+        List<Prenotazione> listPrenotazioni = List.of(prenotazione1, prenotazione2, prenotazione3);
+
+        List<FatturaDTO> listFatture = prenotazioneHelper.convertPrenotazioneToFattura(listPrenotazioni);
+
+        lenient().when(clienteRepository.existsById(idCliente)).thenReturn(true);
+        lenient().when(clienteRepository.findById(idCliente)).thenReturn(Optional.ofNullable(cliente));
+        lenient().when(prenotazioneRepository.findPrenotazionesByCliente_Id(idCliente)).thenReturn(listPrenotazioni);
+        Assertions.assertNotNull(prenotazioneHelper.findAllFattureByIdCliente(idCliente));
+        assertEquals(listFatture.get(0).prenotazione.id, prenotazioneHelper.findAllFattureByIdCliente(idCliente).get(0).prenotazione.id);
+        verify(clienteRepository, atLeastOnce()).existsById(idCliente);
+        verify(clienteRepository, atLeastOnce()).findById(idCliente);
+        verify(prenotazioneRepository, atLeastOnce()).findPrenotazionesByCliente_Id(idCliente);
+        reset(clienteRepository);
+        reset(prenotazioneRepository);
     }
 
     @Test
     void deletePrenotazione() {
+
     }
 
     @Test
@@ -106,10 +198,24 @@ class PrenotazioneHelperTest {
 
     @Test
     void findPrenotazioniByStanzaId() {
+        Long idStanza = 0L;
+        Prenotazione prenotazione1 = new Prenotazione();
+        Prenotazione prenotazione2 = new Prenotazione();
+        Prenotazione prenotazione3 = new Prenotazione();
+        List<Prenotazione> list = List.of(prenotazione1, prenotazione2, prenotazione3);
+
+        lenient().when(stanzaRepository.existsById(idStanza)).thenReturn(true);
+        lenient().when(prenotazioneRepository.findPrenotazionesByStanza_Id(idStanza)).thenReturn(list);
+        assertEquals(list, prenotazioneHelper.findPrenotazioniByStanzaId(idStanza));
+        verify(stanzaRepository, atLeastOnce()).existsById(idStanza);
+        verify(prenotazioneRepository, atLeastOnce()).findPrenotazionesByStanza_Id(idStanza);
+        reset(stanzaRepository);
+        reset(prenotazioneRepository);
     }
 
     @Test
     void updatePrenotazione() {
+
     }
 
     @Test
