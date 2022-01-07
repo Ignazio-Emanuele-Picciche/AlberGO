@@ -47,9 +47,9 @@ public class CategoriaHelper {
      * In caso negativo verrà restituita un'eccezione custom al front-end (La categoria che si vuole aggiungere è presente nel sistema).
      *
      * @param categoriaDTO
-     * @return idCategoria
+     * @return Categoria
      */
-    public Long create(CategoriaDTO categoriaDTO) {
+    public Categoria create(CategoriaDTO categoriaDTO) {
 
         Hotel hotel = hotelRepository.findById(categoriaDTO.idHotel).get();
 
@@ -67,7 +67,7 @@ public class CategoriaHelper {
 
 
             categoria = categoriaRepository.save(categoria);
-            return categoria.getId();
+            return categoria;
         }
 
         categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_AE");

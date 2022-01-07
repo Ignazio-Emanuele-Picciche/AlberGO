@@ -268,8 +268,6 @@ public class StripeHelper {
             clienteHotelRepository.save(clienteHotel);
 
         });
-
-
     }
 
 

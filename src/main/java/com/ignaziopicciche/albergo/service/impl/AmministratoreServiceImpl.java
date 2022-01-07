@@ -45,7 +45,7 @@ public class AmministratoreServiceImpl implements AmministratoreService {
         Preconditions.checkArgument(!Objects.isNull(amministratoreDTO.password));
         Preconditions.checkArgument(!Objects.isNull(amministratoreDTO.idHotel));
 
-        return amministratoreHelper.create(amministratoreDTO);
+        return amministratoreHelper.createAmministratore(amministratoreDTO).getId();
     }
 
     @Override

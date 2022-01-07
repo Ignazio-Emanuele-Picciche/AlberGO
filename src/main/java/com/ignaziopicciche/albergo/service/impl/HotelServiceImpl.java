@@ -50,7 +50,7 @@ public class HotelServiceImpl implements HotelService {
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.publicKey));
         Preconditions.checkArgument(!Objects.isNull(hotelDTO.codiceHotel));
 
-        return hotelHelper.create(hotelDTO);
+        return new HotelDTO(hotelHelper.createHotel(hotelDTO));
     }
 
     @Override

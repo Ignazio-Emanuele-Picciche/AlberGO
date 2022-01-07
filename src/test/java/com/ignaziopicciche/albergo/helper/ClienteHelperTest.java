@@ -14,6 +14,7 @@ import com.ignaziopicciche.albergo.repository.AmministratoreRepository;
 import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -137,6 +138,28 @@ class ClienteHelperTest {
         verify(clienteRepository, atLeastOnce()).findByUsername(username);
         verify(clienteRepository, atLeastOnce()).existsByUsername(username);
         reset(clienteRepository);
+    }
+
+    @Test
+    void createClienteTest() throws Exception {
+        Long idCliente = 0L;
+        String documento = "ASER";
+        String usernmae = "username";
+        ClienteDTO clienteDTO = ClienteDTO.builder()
+                .id(idCliente)
+                .documento(documento)
+                .username(usernmae).build();
+
+        lenient().when(clienteRepository.existsByDocumentoOrUsername(clienteDTO.documento, clienteDTO.username)).thenReturn(false);
+        lenient().when(amministratoreRepository.existsByUsername(clienteDTO.username)).thenReturn(false);
+        lenient().when(hotelRepository.findAll()).thenReturn(null);
+
+        Assertions.assertNull(clienteHelper.createCliente(clienteDTO));
+
+        verify(clienteRepository, atLeastOnce()).existsByDocumentoOrUsername(clienteDTO.documento, clienteDTO.username);
+        verify(amministratoreRepository, atLeastOnce()).existsByUsername(clienteDTO.username);
+        reset(clienteRepository);
+        reset(amministratoreRepository);
     }
 
 }

@@ -5,7 +5,6 @@ import com.ignaziopicciche.albergo.exception.enums.ClienteEnum;
 import com.ignaziopicciche.albergo.exception.enums.HotelEnum;
 import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Cliente;
-import com.ignaziopicciche.albergo.model.ClienteHotel;
 import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.AmministratoreRepository;
 import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
@@ -14,9 +13,7 @@ import com.ignaziopicciche.albergo.repository.HotelRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import javax.transaction.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * La classe ClienteHelper contiene i metodi che si occupano dell'implementazione delle logiche
@@ -62,10 +59,10 @@ public class ClienteHelper{
      * In caso positivo viene aggiunto il cliente nel sistema.
      * In caso negativo viene restituita un'eccezione custom al front-end
      * @param clienteDTO
-     * @return idCliente
+     * @return Cliente
      * @throws Exception
      */
-    public Long create(ClienteDTO clienteDTO) throws Exception {
+    public Cliente createCliente(ClienteDTO clienteDTO) throws Exception {
 
         if (!clienteRepository.existsByDocumentoOrUsername(clienteDTO.documento, clienteDTO.username) &&
                 !amministratoreRepository.existsByUsername(clienteDTO.username)) {
@@ -83,7 +80,7 @@ public class ClienteHelper{
 
             List<Hotel> hotels = hotelRepository.findAll();
 
-            if (!hotels.isEmpty()) {
+            if (hotels != null && !hotels.isEmpty()) {
                 for (Hotel hotel : hotels) {
                     String customerId = stripeHelper.createCustomer(cliente, hotel.getPublicKey());
                     clienteHotelHelper.createByCliente(cliente, customerId, hotel);
@@ -92,7 +89,7 @@ public class ClienteHelper{
                 }
             }
 
-            return cliente.getId();
+            return cliente;
         }
 
         clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_AE");

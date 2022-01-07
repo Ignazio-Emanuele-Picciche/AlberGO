@@ -51,7 +51,7 @@ public class StanzaServiceImpl implements StanzaService {
         Preconditions.checkArgument(!Objects.isNull(stanzaDTO.idHotel));
         Preconditions.checkArgument(!Objects.isNull(stanzaDTO.idCategoria));
 
-        return stanzaHelper.create(stanzaDTO);
+        return new StanzaDTO(stanzaHelper.createStanza(stanzaDTO));
     }
 
     @Override

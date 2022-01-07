@@ -143,7 +143,8 @@ public class PrenotazioneHelper {
 
             Prenotazione prenotazione = prenotazioneRepository.getById(idPrenotazione);
             Categoria categoria = prenotazione.getStanza().getCategoria();
-            LocalDate dataInizio = LocalDate.parse(prenotazione.getDataInizio().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            //LocalDate dataInizio = LocalDate.parse(prenotazione.getDataInizio().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            LocalDate dataInizio = prenotazione.getDataInizio().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
 
             long diffDataInizioPrenotazione = ChronoUnit.DAYS.between(LocalDate.now(), dataInizio);

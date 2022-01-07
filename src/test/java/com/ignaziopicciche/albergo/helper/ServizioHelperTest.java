@@ -120,29 +120,6 @@ class ServizioHelperTest {
         reset(servizioRepository);
     }
 
-    //TODO da vedere
-    @Test
-    void insertByPrentazioneAndHotelTest() throws StripeException {
-        Long idServizio = 0L;
-        Long idHotel = 0L;
-        Long idPrenotazione = 0L;
-        Long idCliente = 0L;
-
-        Prenotazione prenotazione = new Prenotazione();
-        Servizio updateServizio = new Servizio();
-        Cliente cliente = new Cliente();
-        ClienteHotel clienteHotel = new ClienteHotel();
-
-        lenient().when(servizioRepository.existsServizioByIdAndHotel_Id(idServizio, idHotel)).thenReturn(true);
-        lenient().when(prenotazioneRepository.existsPrenotazioneByIdAndHotel_Id(idPrenotazione, idHotel)).thenReturn(true);
-        lenient().when(prenotazioneRepository.findById(idPrenotazione)).thenReturn(Optional.of(prenotazione));
-        lenient().when(servizioRepository.findById(idServizio)).thenReturn(Optional.of(updateServizio));
-        lenient().when(clienteHotelRepository.findByCliente_IdAndHotel_Id(idCliente, idHotel)).thenReturn(clienteHotel);
-        lenient().when(servizioRepository.save(updateServizio)).thenReturn(updateServizio);
-        assertEquals(idServizio, servizioHelper.insertByPrentazioneAndHotel(idServizio, idPrenotazione, idHotel));
-
-    }
-
     @Test
     void findServiziNotInByPrenotazioneTest() {
         Long idPrenotazione = 0L;
@@ -211,6 +188,21 @@ class ServizioHelperTest {
         verify(prenotazioneRepository, atLeastOnce()).existsById(idPrenotazione);
         verify(prenotazioneRepository, atLeastOnce()).findById(idPrenotazione);
         reset(prenotazioneRepository);
+    }
+
+    @Test
+    void createServizioTest(){
+        Long idServizio = 0L;
+        Long idHotel = 0L;
+        String nomeServizio = "nomeServizioTest";
+        ServizioDTO servizioDTO = ServizioDTO.builder().id(idServizio).idHotel(idHotel).nome(nomeServizio).build();
+        Hotel hotel = Hotel.builder().id(idHotel).build();
+
+        lenient().when(servizioRepository.existsByNomeAndHotel_Id(servizioDTO.nome, servizioDTO.idHotel)).thenReturn(false);
+        lenient().when(hotelRepository.findById(idHotel)).thenReturn(Optional.ofNullable(hotel));
+        Assertions.assertNull(servizioHelper.createServizio(servizioDTO));
+        verify(servizioRepository, atLeastOnce()).existsByNomeAndHotel_Id(servizioDTO.nome, servizioDTO.idHotel);
+        reset(servizioRepository);
     }
 
 

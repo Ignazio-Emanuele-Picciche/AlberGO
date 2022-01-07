@@ -10,7 +10,6 @@ import com.ignaziopicciche.albergo.repository.HotelRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * La classe HotelHelper contiene i metodi che si occupano dell'implementazione delle logiche
@@ -49,10 +48,10 @@ public class HotelHelper {
      * In caso negativo viene restituita un'eccezione custom
      *
      * @param hotelDTO
-     * @return HotelDTO
+     * @return Hotel
      * @throws Exception
      */
-    public HotelDTO create(HotelDTO hotelDTO) throws Exception {
+    public Hotel createHotel(HotelDTO hotelDTO) throws Exception {
         if (!hotelRepository.existsByNomeOrCodiceHotel(hotelDTO.nome, hotelDTO.codiceHotel)) {
 
             Hotel hotel = new Hotel();
@@ -69,7 +68,7 @@ public class HotelHelper {
 
             hotel = hotelRepository.save(hotel);
 
-            if (!clienti.isEmpty()) {
+            if (clienti != null && !clienti.isEmpty()) {
                 for (Cliente cliente : clienti) {
                     String customerId = stripeHelper.createCustomer(cliente, hotelDTO.publicKey);
                     clienteHotelHelper.createByCliente(cliente, customerId, hotel);
@@ -78,7 +77,7 @@ public class HotelHelper {
                 }
             }
 
-            return new HotelDTO(hotel);
+            return hotel;
         }
 
         hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_AE");

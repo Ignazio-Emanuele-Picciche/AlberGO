@@ -56,7 +56,7 @@ public class ClienteServiceImpl implements ClienteService {
                 StringUtils.isNotBlank(clienteDTO.telefono) &&
                 StringUtils.isNotBlank(clienteDTO.username) &&
                 StringUtils.isNotBlank(clienteDTO.password)) {
-            return clienteHelper.create(clienteDTO);
+            return clienteHelper.createCliente(clienteDTO).getId();
         }
 
         log.error("Non sono stati compilati dei campi obbligatori");

@@ -1,6 +1,8 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.StanzaDTO;
+import com.ignaziopicciche.albergo.model.Categoria;
+import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.model.Stanza;
 import com.ignaziopicciche.albergo.repository.CategoriaRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
@@ -208,6 +210,33 @@ class StanzaHelperTest {
         verify(stanzaRepository, atLeastOnce()).findCountStanzeByCategoria_Id(idCategoria);
         reset(categoriaRepository);
         reset(stanzaRepository);
+    }
+
+    @Test
+    void createStanzaTest(){
+        Integer numeroStanza = 1;
+        String descrizioneStanza = "descrizioneTest";
+        Long idHotel = 0L;
+        Long idCategoria = 0L;
+        Long idStanza = 0L;
+        Hotel hotel = Hotel.builder().id(idHotel).build();
+        Categoria categoria = Categoria.builder().id(idCategoria).build();
+        StanzaDTO stanzaDTO = StanzaDTO.builder()
+                .id(idStanza)
+                .numeroStanza(numeroStanza)
+                .descrizione(descrizioneStanza)
+                .idHotel(idHotel).build();
+
+        lenient().when(stanzaRepository.existsStanzaByNumeroStanzaAndHotel_Id(stanzaDTO.numeroStanza, stanzaDTO.idHotel)).thenReturn(false);
+        lenient().when(hotelRepository.findById(stanzaDTO.idHotel)).thenReturn(Optional.ofNullable(hotel));
+        lenient().when(categoriaRepository.findById(stanzaDTO.idCategoria)).thenReturn(Optional.ofNullable(categoria));
+        Assertions.assertNull(stanzaHelper.createStanza(stanzaDTO));
+        verify(stanzaRepository, atLeastOnce()).existsStanzaByNumeroStanzaAndHotel_Id(stanzaDTO.numeroStanza, stanzaDTO.idHotel);
+        verify(hotelRepository, atLeastOnce()).findById(stanzaDTO.idHotel);
+        verify(categoriaRepository, atLeastOnce()).findById(stanzaDTO.idCategoria);
+        reset(stanzaRepository);
+        reset(hotelRepository);
+        reset(categoriaRepository);
     }
 
 }

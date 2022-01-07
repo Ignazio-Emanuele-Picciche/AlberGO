@@ -51,7 +51,7 @@ public class CategoriaServiceImpl implements CategoriaService {
         Preconditions.checkArgument(!Objects.isNull(categoriaDTO.qtaPenale));
         Preconditions.checkArgument(!Objects.isNull(categoriaDTO.idHotel));
 
-        return categoriaHelper.create(categoriaDTO);
+        return categoriaHelper.create(categoriaDTO).getId();
     }
 
     @Override

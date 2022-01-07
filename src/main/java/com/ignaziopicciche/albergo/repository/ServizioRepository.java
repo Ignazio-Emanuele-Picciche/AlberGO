@@ -14,7 +14,7 @@ import java.util.List;
 
 public interface ServizioRepository extends JpaRepository<Servizio, Long> {
 
-    Boolean existsByNome(String nome);
+    Boolean existsByNomeAndHotel_Id(String nome, Long idHotel);
     List<Servizio> findAllByHotel_Id(Long idHotel);
 
     Boolean existsServizioByIdAndHotel_Id(Long idServizio, Long idHotel);

@@ -2,6 +2,7 @@ package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.CategoriaDTO;
 import com.ignaziopicciche.albergo.model.Categoria;
+import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.CategoriaRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
 import org.junit.jupiter.api.Assertions;
@@ -111,7 +112,7 @@ class CategoriaHelperTest {
 
     @Test
     void findAllCategorieStartingWithNomeTest(){
-        String nome = "test";
+        String nome = "nomeCategoria";
         Long idHotel = 0L;
 
         Categoria categoria1 = new Categoria();
@@ -123,5 +124,27 @@ class CategoriaHelperTest {
         assertEquals(list, categoriaHelper.findAllByNome(nome, idHotel));
         verify(categoriaRepository, atLeastOnce()).findCategoriasByNomeStartingWithAndHotel_Id(nome, idHotel);
         reset(categoriaRepository);
+    }
+
+    @Test
+    void createCategoriaTest(){
+        Long idHotel = 0L;
+        Long idCategoria = 0L;
+        String nomeCategoria = "nomeCategoria";
+        String descrizione = "descrizioneCategoria";
+        CategoriaDTO categoriaDTO = CategoriaDTO.builder()
+                .id(idCategoria)
+                .nome(nomeCategoria)
+                .descrizione(descrizione)
+                .idHotel(idHotel).build();
+        Hotel hotel = Hotel.builder().id(idHotel).build();
+
+        lenient().when(categoriaRepository.existsCategoriaByNomeAndHotel_Id(nomeCategoria, idHotel)).thenReturn(false);
+        lenient().when(hotelRepository.findById(idHotel)).thenReturn(Optional.ofNullable(hotel));
+        Assertions.assertNull(categoriaHelper.create(categoriaDTO));
+        verify(categoriaRepository, atLeastOnce()).existsCategoriaByNomeAndHotel_Id(nomeCategoria, idHotel);
+        verify(hotelRepository, atLeastOnce()).findById(idHotel);
+        reset(categoriaRepository);
+        reset(hotelRepository);
     }
 }

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * La classe StanzaHelper contiene i metodi che si occupano dell'implementazione delle logiche
@@ -55,7 +54,7 @@ public class StanzaHelper {
      * @param stanzaDTO
      * @return StanzaDTO
      */
-    public StanzaDTO create(StanzaDTO stanzaDTO) {
+    public Stanza createStanza(StanzaDTO stanzaDTO) {
 
         if (!stanzaRepository.existsStanzaByNumeroStanzaAndHotel_Id(stanzaDTO.numeroStanza, stanzaDTO.idHotel) &&
                 stanzaDTO.numeroStanza != null && !stanzaDTO.descrizione.equals("")) {
@@ -69,8 +68,8 @@ public class StanzaHelper {
             stanza.setHotel(hotelRepository.findById(stanzaDTO.idHotel).get());
             stanza.setCategoria(categoriaRepository.findById(stanzaDTO.idCategoria).get());
 
-            stanzaRepository.save(stanza);
-            return new StanzaDTO(stanza);
+            stanza = stanzaRepository.save(stanza);
+            return stanza;
         }
 
         stanzaEnum = StanzaEnum.getStanzaEnumByMessageCode("STA_AE");

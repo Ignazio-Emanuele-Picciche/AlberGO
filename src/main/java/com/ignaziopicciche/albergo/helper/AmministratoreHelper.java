@@ -46,9 +46,9 @@ public class AmministratoreHelper {
      * In caso negativo verrà restituita un'eccezione custom al front-end (l'amministratore che si vuole aggiungere è presente nel sistema).
      *
      * @param amministratoreDTO
-     * @return idAmministratore
+     * @return Amministratore
      */
-    public Long create(AmministratoreDTO amministratoreDTO) {
+    public Amministratore createAmministratore(AmministratoreDTO amministratoreDTO) {
 
         if (!amministratoreRepository.existsByUsername(amministratoreDTO.username) &&
                 !clienteRepository.existsByUsername(amministratoreDTO.username)) {
@@ -63,7 +63,7 @@ public class AmministratoreHelper {
 
             amministratore = amministratoreRepository.save(amministratore);
 
-            return amministratore.getId();
+            return amministratore;
         }
 
         amministratoreEnum = AmministratoreEnum.getAmministratoreEnumByMessageCode("AMM_AE");

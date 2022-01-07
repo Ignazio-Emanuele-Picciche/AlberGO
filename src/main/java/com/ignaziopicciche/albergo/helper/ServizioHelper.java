@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * La classe ServizioHelper contiene i metodi che si occupano dell'implementazione delle logiche
@@ -91,18 +90,18 @@ public class ServizioHelper {
      * In caso di errore viene restituita un'eccezione custom
      *
      * @param servizioDTO
-     * @return idServizio
+     * @return Servizio
      */
-    public Long create(ServizioDTO servizioDTO) {
+    public Servizio createServizio(ServizioDTO servizioDTO) {
 
-        if (!servizioRepository.existsByNome(servizioDTO.nome)) {
+        if (!servizioRepository.existsByNomeAndHotel_Id(servizioDTO.nome, servizioDTO.idHotel)) {
             Servizio servizio = Servizio.builder()
                     .nome(servizioDTO.nome)
                     .prezzo(servizioDTO.prezzo)
                     .hotel(hotelRepository.findById(servizioDTO.idHotel).get()).build();
 
             servizio = servizioRepository.save(servizio);
-            return servizio.getId();
+            return servizio;
 
         }
 

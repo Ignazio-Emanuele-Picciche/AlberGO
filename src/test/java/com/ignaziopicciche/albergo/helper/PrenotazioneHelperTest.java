@@ -1,8 +1,11 @@
 package com.ignaziopicciche.albergo.helper;
 
 import com.ignaziopicciche.albergo.dto.FatturaDTO;
+import com.ignaziopicciche.albergo.exception.enums.PrenotazioneEnum;
+import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.*;
 import com.ignaziopicciche.albergo.repository.*;
+import com.stripe.exception.StripeException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +14,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.parameters.P;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,7 +77,6 @@ class PrenotazioneHelperTest {
         reset(prenotazioneRepository);
     }
 
-    //TODO rivedere
     @Test
     void findAllPrenotazioniByIdHotel() {
         Long idHotel = 0L;
@@ -188,12 +194,44 @@ class PrenotazioneHelperTest {
     }
 
     @Test
-    void deletePrenotazione() {
+    void deletePrenotazione() throws StripeException, ParseException {
+        Long idHotel = 0L;
+        Long idCliente = 0L;
+        Long idCategoria = 0L;
+        Long idStanza = 0L;
+        Long idPrenotazione1 = 0L;
 
-    }
+        Hotel hotel = Hotel.builder().id(idHotel).build();
 
-    @Test
-    void createPrenotazione() {
+        Cliente cliente = Cliente.builder()
+                .id(idCliente)
+                .hotel(hotel).build();
+
+        Categoria categoria = Categoria.builder()
+                .id(idCategoria)
+                .giorniPenale(10)
+                .giorniBlocco(2)
+                .hotel(hotel).build();
+
+        Stanza stanza = Stanza.builder()
+                .id(idStanza)
+                .categoria(categoria)
+                .hotel(hotel).build();
+
+        Prenotazione prenotazione1 = Prenotazione.builder()
+                .id(idPrenotazione1)
+                .hotel(hotel)
+                .stanza(stanza)
+                .cliente(cliente)
+                .dataInizio(new SimpleDateFormat("yyyy-MM-dd").parse("2022-05-05"))
+                .dataFine(new SimpleDateFormat("yyyy-MM-dd").parse("2022-05-15")).build();
+
+        lenient().when(prenotazioneRepository.existsById(idPrenotazione1)).thenReturn(true);
+        lenient().when(prenotazioneRepository.getById(idPrenotazione1)).thenReturn(prenotazione1);
+        Assertions.assertTrue(prenotazioneHelper.deletePrenotazione(idPrenotazione1));
+        verify(prenotazioneRepository, atLeastOnce()).existsById(idPrenotazione1);
+        verify(prenotazioneRepository, atLeastOnce()).getById(idPrenotazione1);
+        reset(prenotazioneRepository);
     }
 
     @Test
@@ -214,15 +252,70 @@ class PrenotazioneHelperTest {
     }
 
     @Test
-    void updatePrenotazione() {
-
-    }
-
-    @Test
     void findAllByNomeCognomeClienteAndDataInizioAndDataFine() {
-    }
+        //String nomeCliente, String cognomeCliente, Date dataInizio, Date dataFine, Long idHotel
+        String nomeCliente = "test";
+        String cognomeCliente = null;
+        Date dataInizio = null;
+        Date dataFine = null;
 
-    @Test
-    void convertPrenotazioneToFattura() {
+        Long idHotel = 0L;
+        Long idCliente = 0L;
+        Long idCategoria = 0L;
+        Long idStanza = 0L;
+        Long idPrenotazione1 = 0L;
+        Long idPrenotazione2 = 1L;
+        Long idPrenotazione3 = 2L;
+
+        Hotel hotel = Hotel.builder().id(idHotel).build();
+
+        Cliente cliente = Cliente.builder()
+                .id(idCliente)
+                .hotel(hotel).build();
+
+        Categoria categoria = Categoria.builder()
+                .id(idCategoria)
+                .hotel(hotel).build();
+
+        Stanza stanza = Stanza.builder()
+                .id(idStanza)
+                .categoria(categoria)
+                .hotel(hotel).build();
+
+        Prenotazione prenotazione1 = Prenotazione.builder()
+                .id(idPrenotazione1)
+                .hotel(hotel)
+                .stanza(stanza)
+                .cliente(cliente).build();
+
+        Prenotazione prenotazione2 = Prenotazione.builder()
+                .id(idPrenotazione2)
+                .hotel(hotel)
+                .stanza(stanza)
+                .cliente(cliente).build();
+
+        Prenotazione prenotazione3 = Prenotazione.builder()
+                .id(idPrenotazione3)
+                .hotel(hotel)
+                .stanza(stanza)
+                .cliente(cliente).build();
+
+        List<Prenotazione> listPrenotazioni = List.of(prenotazione1, prenotazione2, prenotazione3);
+        List<FatturaDTO> listFatture = prenotazioneHelper.convertPrenotazioneToFattura(listPrenotazioni);
+
+        lenient().when(hotelRepository.existsById(idHotel)).thenReturn(true);
+        lenient().when(prenotazioneRepository.findPrenotazionesByCliente_NomeStartingWithAndHotel_Id(nomeCliente, idHotel)).thenReturn(listPrenotazioni);
+        assertEquals(listFatture.get(0).prenotazione.id, prenotazioneHelper.findAllByNomeCognomeClienteAndDataInizioAndDataFine(nomeCliente, cognomeCliente, dataInizio, dataFine, idHotel).get(0).prenotazione.id);
+        verify(hotelRepository, atLeastOnce()).existsById(idHotel);
+        verify(prenotazioneRepository, atLeastOnce()).findPrenotazionesByCliente_NomeStartingWithAndHotel_Id(nomeCliente, idHotel);
+
+        nomeCliente = null;
+        cognomeCliente = "testCognome";
+        lenient().when(prenotazioneRepository.findPrenotazionesByCliente_CognomeStartingWithAndHotel_Id(cognomeCliente, idHotel)).thenReturn(listPrenotazioni);
+        assertEquals(listFatture.get(0).prenotazione.id, prenotazioneHelper.findAllByNomeCognomeClienteAndDataInizioAndDataFine(nomeCliente, cognomeCliente, dataInizio, dataFine, idHotel).get(0).prenotazione.id);
+        verify(prenotazioneRepository, atLeastOnce()).findPrenotazionesByCliente_CognomeStartingWithAndHotel_Id(cognomeCliente, idHotel);
+
+        reset(hotelRepository);
+        reset(prenotazioneRepository);
     }
 }

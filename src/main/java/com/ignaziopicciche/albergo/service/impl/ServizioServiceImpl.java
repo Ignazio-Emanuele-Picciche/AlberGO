@@ -47,7 +47,7 @@ public class ServizioServiceImpl implements ServizioService {
         Preconditions.checkArgument(!Objects.isNull(servizioDTO.prezzo));
         Preconditions.checkArgument(!Objects.isNull(servizioDTO.idHotel));
 
-        return servizioHelper.create(servizioDTO);
+        return servizioHelper.createServizio(servizioDTO).getId();
     }
 
     @Override

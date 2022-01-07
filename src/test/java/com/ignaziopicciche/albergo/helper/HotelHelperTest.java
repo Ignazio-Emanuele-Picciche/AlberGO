@@ -1,10 +1,12 @@
 package com.ignaziopicciche.albergo.helper;
 
+import com.ignaziopicciche.albergo.dto.HotelDTO;
 import com.ignaziopicciche.albergo.exception.enums.HotelEnum;
 import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -113,6 +115,22 @@ class HotelHelperTest {
         assertEquals(list, hotelHelper.getAllHotel());
         verify(hotelRepository, atLeastOnce()).findAll();
         reset(hotelRepository);
+    }
+
+    @Test
+    void createHotelTest() throws Exception {
+        String nomeHotel = "nome";
+        String codiceHotel = "codice";
+        Long idHotel = 0L;
+        HotelDTO hotelDTO = HotelDTO.builder().id(idHotel).codiceHotel(codiceHotel).nome(nomeHotel).build();
+
+        lenient().when(hotelRepository.existsByNomeOrCodiceHotel(hotelDTO.nome, hotelDTO.codiceHotel)).thenReturn(false);
+        lenient().when(clienteRepository.findAll()).thenReturn(null);
+        Assertions.assertNull(hotelHelper.createHotel(hotelDTO));
+        verify(hotelRepository, atLeastOnce()).existsByNomeOrCodiceHotel(hotelDTO.nome, hotelDTO.codiceHotel);
+        verify(clienteRepository, atLeastOnce()).findAll();
+        reset(hotelRepository);
+        reset(clienteRepository);
     }
 
 }
