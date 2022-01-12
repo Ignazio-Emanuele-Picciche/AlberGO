@@ -1,6 +1,8 @@
-package com.ignaziopicciche.albergo.helper;
+package com.ignaziopicciche.albergo;
 
 import com.ignaziopicciche.albergo.dto.ServizioDTO;
+import com.ignaziopicciche.albergo.helper.ServizioHelper;
+import com.ignaziopicciche.albergo.helper.StripeHelper;
 import com.ignaziopicciche.albergo.model.*;
 import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;

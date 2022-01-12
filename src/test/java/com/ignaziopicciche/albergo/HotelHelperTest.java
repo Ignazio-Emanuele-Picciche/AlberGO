@@ -1,8 +1,11 @@
-package com.ignaziopicciche.albergo.helper;
+package com.ignaziopicciche.albergo;
 
 import com.ignaziopicciche.albergo.dto.HotelDTO;
 import com.ignaziopicciche.albergo.exception.enums.HotelEnum;
 import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
+import com.ignaziopicciche.albergo.helper.ClienteHotelHelper;
+import com.ignaziopicciche.albergo.helper.HotelHelper;
+import com.ignaziopicciche.albergo.helper.StripeHelper;
 import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
 import com.ignaziopicciche.albergo.repository.HotelRepository;
@@ -53,7 +56,7 @@ class HotelHelperTest {
     @Test
     void findHotelByIdTest(){
         Long idHotel = 0L;
-        Hotel hotel = new Hotel();
+        Hotel hotel = Hotel.builder().id(idHotel).build();
 
         lenient().when(hotelRepository.existsById(idHotel)).thenReturn(true);
         lenient().when(hotelRepository.findById(idHotel)).thenReturn(Optional.of(hotel));

@@ -1,6 +1,7 @@
-package com.ignaziopicciche.albergo.helper;
+package com.ignaziopicciche.albergo;
 
 import com.ignaziopicciche.albergo.dto.StanzaDTO;
+import com.ignaziopicciche.albergo.helper.StanzaHelper;
 import com.ignaziopicciche.albergo.model.Categoria;
 import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.model.Stanza;

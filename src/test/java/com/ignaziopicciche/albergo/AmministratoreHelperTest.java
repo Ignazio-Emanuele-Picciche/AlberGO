@@ -1,6 +1,7 @@
-package com.ignaziopicciche.albergo.helper;
+package com.ignaziopicciche.albergo;
 
 import com.ignaziopicciche.albergo.dto.AmministratoreDTO;
+import com.ignaziopicciche.albergo.helper.AmministratoreHelper;
 import com.ignaziopicciche.albergo.model.Amministratore;
 import com.ignaziopicciche.albergo.model.Cliente;
 import com.ignaziopicciche.albergo.model.Hotel;

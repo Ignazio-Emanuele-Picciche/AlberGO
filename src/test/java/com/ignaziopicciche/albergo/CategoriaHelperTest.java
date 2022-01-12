@@ -1,6 +1,7 @@
-package com.ignaziopicciche.albergo.helper;
+package com.ignaziopicciche.albergo;
 
 import com.ignaziopicciche.albergo.dto.CategoriaDTO;
+import com.ignaziopicciche.albergo.helper.CategoriaHelper;
 import com.ignaziopicciche.albergo.model.Categoria;
 import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.CategoriaRepository;
@@ -55,8 +56,6 @@ class CategoriaHelperTest {
         CategoriaDTO categoriaDTO = CategoriaDTO.builder()
                 .id(idCategoria)
                 .descrizione(campoUpdate).build();
-
-        Categoria newCategoria = new Categoria();
 
         lenient().when(categoriaRepository.existsById(idCategoria)).thenReturn(true);
         lenient().when(categoriaRepository.findById(idCategoria)).thenReturn(Optional.ofNullable(updateCategoria));

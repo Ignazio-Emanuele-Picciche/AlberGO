@@ -1,8 +1,10 @@
-package com.ignaziopicciche.albergo.helper;
+package com.ignaziopicciche.albergo;
 
 import com.ignaziopicciche.albergo.dto.FatturaDTO;
 import com.ignaziopicciche.albergo.exception.enums.PrenotazioneEnum;
 import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
+import com.ignaziopicciche.albergo.helper.PrenotazioneHelper;
+import com.ignaziopicciche.albergo.helper.StripeHelper;
 import com.ignaziopicciche.albergo.model.*;
 import com.ignaziopicciche.albergo.repository.*;
 import com.stripe.exception.StripeException;

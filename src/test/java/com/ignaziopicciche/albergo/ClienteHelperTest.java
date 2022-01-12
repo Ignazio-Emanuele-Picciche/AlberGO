@@ -1,4 +1,4 @@
-package com.ignaziopicciche.albergo.helper;
+package com.ignaziopicciche.albergo;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.atLeastOnce;
@@ -8,6 +8,9 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import com.ignaziopicciche.albergo.dto.ClienteDTO;
+import com.ignaziopicciche.albergo.helper.ClienteHelper;
+import com.ignaziopicciche.albergo.helper.ClienteHotelHelper;
+import com.ignaziopicciche.albergo.helper.StripeHelper;
 import com.ignaziopicciche.albergo.model.Cliente;
 import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.AmministratoreRepository;
