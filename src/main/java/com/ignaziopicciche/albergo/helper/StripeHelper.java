@@ -134,7 +134,7 @@ public class StripeHelper {
      */
     public void addPaymentMethod(CardData cardData) throws Exception {
 
-        if (hotelRepository.findAll().size() > 0) {
+        if (hotelRepository.findAll().size() <= 0) {
 
             if (clienteRepository.existsById(cardData.getIdCliente())) {
                 List<Hotel> hotels = hotelRepository.findAll();
