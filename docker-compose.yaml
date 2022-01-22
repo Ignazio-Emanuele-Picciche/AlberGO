@@ -1,0 +1,22 @@
+version: '3'
+services:
+  albergo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: albergo:latest
+    ports:
+      - "80:8080"
+    networks:
+      - albergo-network
+    depends_on:
+      - mysqldb
+  mysqldb:
+    image: mysql:8
+    networks:
+      - albergo-network
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=albergodb
+networks:
+  albergo-network: null

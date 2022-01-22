@@ -136,6 +136,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>albergo-backend</finalName>
     </build>
 
 </project>
