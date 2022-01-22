@@ -199,10 +199,10 @@ public class StripeHelper {
                 clienteEnum = ClienteEnum.getClienteEnumByMessageCode("CLI_IDNE");
                 throw new ApiRequestException(clienteEnum.getMessage());
             }
+        } else {
+            hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_EPT");
+            throw new ApiRequestException(hotelEnum.getMessage());
         }
-
-        hotelEnum = HotelEnum.getHotelEnumByMessageCode("HOT_EPT");
-        throw new ApiRequestException(hotelEnum.getMessage());
     }
 
     /**
