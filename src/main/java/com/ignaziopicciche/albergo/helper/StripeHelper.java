@@ -223,12 +223,17 @@ public class StripeHelper {
         Stripe.apiKey = clienteHotel.getHotel().getPublicKey();
         PaymentMethod paymentMethod = PaymentMethod.retrieve(clienteHotel.getPaymentMethodId());
 
+        String mese = paymentMethod.getCard().getExpMonth().toString();
+        if (mese.length() == 1) {
+            mese = "0" + mese;
+        }
+
         return CardData.builder()
                 .paymentMethodId(paymentMethod.getId())
                 .idCliente(idCliente)
                 .number("4242424242424242")
                 .cvc(clienteHotel.getCvc())
-                .exp_month(paymentMethod.getCard().getExpMonth().toString())
+                .exp_month(mese)
                 .exp_year(paymentMethod.getCard().getExpYear().toString()).build();
     }
 
