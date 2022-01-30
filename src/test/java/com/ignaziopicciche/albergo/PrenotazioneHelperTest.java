@@ -1,8 +1,6 @@
 package com.ignaziopicciche.albergo;
 
 import com.ignaziopicciche.albergo.dto.FatturaDTO;
-import com.ignaziopicciche.albergo.exception.enums.PrenotazioneEnum;
-import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.helper.PrenotazioneHelper;
 import com.ignaziopicciche.albergo.helper.StripeHelper;
 import com.ignaziopicciche.albergo.model.*;
@@ -14,28 +12,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.parameters.P;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.atMost;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PrenotazioneHelperTest {

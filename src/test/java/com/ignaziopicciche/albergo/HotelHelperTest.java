@@ -1,8 +1,6 @@
 package com.ignaziopicciche.albergo;
 
 import com.ignaziopicciche.albergo.dto.HotelDTO;
-import com.ignaziopicciche.albergo.exception.enums.HotelEnum;
-import com.ignaziopicciche.albergo.exception.handler.ApiRequestException;
 import com.ignaziopicciche.albergo.helper.ClienteHotelHelper;
 import com.ignaziopicciche.albergo.helper.HotelHelper;
 import com.ignaziopicciche.albergo.helper.StripeHelper;
@@ -19,17 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.atMost;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class HotelHelperTest {

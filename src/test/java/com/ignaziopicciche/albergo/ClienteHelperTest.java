@@ -1,18 +1,10 @@
 package com.ignaziopicciche.albergo;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.atMost;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-
 import com.ignaziopicciche.albergo.dto.ClienteDTO;
 import com.ignaziopicciche.albergo.helper.ClienteHelper;
 import com.ignaziopicciche.albergo.helper.ClienteHotelHelper;
 import com.ignaziopicciche.albergo.helper.StripeHelper;
 import com.ignaziopicciche.albergo.model.Cliente;
-import com.ignaziopicciche.albergo.model.Hotel;
 import com.ignaziopicciche.albergo.repository.AmministratoreRepository;
 import com.ignaziopicciche.albergo.repository.ClienteHotelRepository;
 import com.ignaziopicciche.albergo.repository.ClienteRepository;
@@ -23,16 +15,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ClienteHelperTest {
