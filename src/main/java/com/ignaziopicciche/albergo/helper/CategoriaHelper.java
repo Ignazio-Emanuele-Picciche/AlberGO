@@ -11,7 +11,6 @@ import com.ignaziopicciche.albergo.repository.HotelRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * La classe CategoriaHelper contiene i metodi che si occupano dell'implementazione delle logiche
@@ -53,8 +52,14 @@ public class CategoriaHelper {
 
         Hotel hotel = hotelRepository.findById(categoriaDTO.idHotel).get();
 
+        if (categoriaDTO.giorniBlocco >= categoriaDTO.giorniPenale && categoriaDTO.giorniPenale > 0) {
+            categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_CRE");
+            throw new ApiRequestException(categoriaEnum.getMessage());
+        }
+
         if (!categoriaRepository.existsCategoriaByNomeAndHotel_Id(categoriaDTO.nome, hotel.getId()) &&
                 !categoriaDTO.nome.equals("") && !categoriaDTO.descrizione.equals("")) {
+
 
             Categoria categoria = Categoria.builder()
                     .nome(categoriaDTO.nome)
@@ -72,7 +77,6 @@ public class CategoriaHelper {
 
         categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_AE");
         throw new ApiRequestException(categoriaEnum.getMessage());
-
     }
 
     /**
@@ -84,6 +88,11 @@ public class CategoriaHelper {
      * @return idCategoria
      */
     public Long update(CategoriaDTO categoriaDTO) {
+
+        if (categoriaDTO.giorniBlocco >= categoriaDTO.giorniPenale && categoriaDTO.giorniPenale > 0) {
+            categoriaEnum = CategoriaEnum.getCategoriaEnumByMessageCode("CAT_UPE");
+            throw new ApiRequestException(categoriaEnum.getMessage());
+        }
 
         if (categoriaRepository.existsById(categoriaDTO.id)) {
             Categoria categoria = categoriaRepository.findById(categoriaDTO.id).get();
