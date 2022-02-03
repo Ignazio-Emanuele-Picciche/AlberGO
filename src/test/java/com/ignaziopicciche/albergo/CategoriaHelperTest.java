@@ -45,7 +45,10 @@ class CategoriaHelperTest {
 
         CategoriaDTO categoriaDTO = CategoriaDTO.builder()
                 .id(idCategoria)
-                .descrizione(campoUpdate).build();
+                .descrizione(campoUpdate)
+                .giorniBlocco(3)
+                .giorniPenale(10)
+                .qtaPenale(10.0).build();
 
         lenient().when(categoriaRepository.existsById(idCategoria)).thenReturn(true);
         lenient().when(categoriaRepository.findById(idCategoria)).thenReturn(Optional.ofNullable(updateCategoria));
@@ -125,7 +128,10 @@ class CategoriaHelperTest {
                 .id(idCategoria)
                 .nome(nomeCategoria)
                 .descrizione(descrizione)
-                .idHotel(idHotel).build();
+                .idHotel(idHotel)
+                .giorniBlocco(3)
+                .giorniPenale(10)
+                .qtaPenale(10.0).build();
         Hotel hotel = Hotel.builder().id(idHotel).build();
 
         lenient().when(categoriaRepository.existsCategoriaByNomeAndHotel_Id(nomeCategoria, idHotel)).thenReturn(false);
